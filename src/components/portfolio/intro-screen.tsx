@@ -18,10 +18,10 @@ export const IntroScreen = () => {
       setStage(2);
     }, 5000);
 
-    // Completely remove after animation finishes (9s total lifecycle)
+    // Completely remove after animation finishes (6s)
     const timer3 = setTimeout(() => {
       setIsVisible(false);
-    }, 9000);
+    }, 6000);
 
     return () => {
       clearTimeout(timer1);
@@ -81,11 +81,6 @@ export const IntroScreen = () => {
                   transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
                   className="flex flex-col items-center gap-6"
                 >
-                  <span className="text-primary tracking-[1em] uppercase text-[10px] md:text-xs font-black mb-2 flex items-center gap-4">
-                    <span className="w-12 h-px bg-primary/30" />
-                    INITIATING_SYSTEM
-                    <span className="w-12 h-px bg-primary/30" />
-                  </span>
                   <h1 className="text-8xl md:text-[10rem] font-headline font-black italic tracking-tighter text-gradient leading-none">
                     Welcome.
                   </h1>
@@ -154,7 +149,7 @@ export const IntroScreen = () => {
                            <span className="text-primary font-black text-[9px] tracking-[0.4em] font-mono mt-2">STEP_{item.step}</span>
                         </div>
 
-                        <span className="text-5xl md:text-7xl lg:text-8xl font-headline font-black text-white tracking-[0.05em]">
+                        <span className="text-5xl md:text-7xl lg:text-8xl font-headline font-black text-white tracking-[0.05em] mb-4">
                           {item.text}
                         </span>
                       </motion.div>
