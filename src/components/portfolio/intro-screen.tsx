@@ -34,9 +34,9 @@ export const IntroScreen = () => {
   if (!isVisible) return null;
 
   const phrases = [
-    { text: "DESIGN", step: "01" },
-    { text: "BUILD", step: "02" },
-    { text: "DEPLOY", step: "03" }
+    { text: "DESIGN", label: "Let's" },
+    { text: "BUILD", label: "Then" },
+    { text: "DEPLOY", label: "Finally" }
   ];
 
   return (
@@ -114,14 +114,16 @@ export const IntroScreen = () => {
                         }}
                         className="relative z-10 flex flex-col items-center justify-center py-4"
                       >
-                        {/* Status Hub - Minimalist indicator */}
-                        <div className="mb-4 md:mb-8 flex flex-col items-center">
-                           <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ delay: (i * 0.4) + 0.5 }}
-                            className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-primary shadow-[0_0_15px_md:0_0_20px_rgba(16,185,129,1)]"
-                           />
+                        {/* Narrative Label */}
+                        <div className="mb-2 md:mb-4 h-6 flex items-center justify-center">
+                           <motion.span
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: (i * 0.4) + 0.5, duration: 0.8 }}
+                            className="text-primary font-black text-[10px] md:text-xs tracking-[0.4em] uppercase"
+                           >
+                            {item.label}
+                           </motion.span>
                         </div>
 
                         <span className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-headline font-black text-white leading-none text-center tracking-tight px-2">
