@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useRef } from 'react';
@@ -27,29 +26,31 @@ export const Hero3D = () => {
     mountRef.current.appendChild(renderer.domElement);
 
     // Objects
-    const geometry = new THREE.IcosahedronGeometry(2, 1);
+    const geometry = new THREE.IcosahedronGeometry(2.5, 2);
     const material = new THREE.MeshPhongMaterial({
-      color: 0x56CBDE,
+      color: 0x10B981, // Emerald Green
       wireframe: true,
-      emissive: 0x1A1D22,
-      shininess: 100,
+      emissive: 0x064E3B,
+      shininess: 50,
+      transparent: true,
+      opacity: 0.3
     });
     const sphere = new THREE.Mesh(geometry, material);
     scene.add(sphere);
 
     // Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
     scene.add(ambientLight);
 
-    const pointLight = new THREE.PointLight(0x6B89CC, 2);
+    const pointLight = new THREE.PointLight(0x10B981, 3);
     pointLight.position.set(5, 5, 5);
     scene.add(pointLight);
 
     // Animation
     const animate = () => {
       requestAnimationFrame(animate);
-      sphere.rotation.x += 0.005;
-      sphere.rotation.y += 0.005;
+      sphere.rotation.x += 0.002;
+      sphere.rotation.y += 0.003;
       renderer.render(scene, camera);
     };
 
@@ -73,5 +74,5 @@ export const Hero3D = () => {
     };
   }, []);
 
-  return <div ref={mountRef} className="w-full h-full opacity-60" />;
+  return <div ref={mountRef} className="w-full h-full opacity-40" />;
 };
