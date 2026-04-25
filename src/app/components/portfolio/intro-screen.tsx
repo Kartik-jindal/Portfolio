@@ -34,9 +34,9 @@ export const IntroScreen = () => {
   if (!isVisible) return null;
 
   const phrases = [
-    { text: "DESIGN", step: "01" },
-    { text: "BUILD", step: "02" },
-    { text: "DEPLOY", step: "03" }
+    { text: "DESIGN", step: "01", status: "SYNCING_NODE" },
+    { text: "BUILD", step: "02", status: "ACTIVE_STREAM" },
+    { text: "DEPLOY", step: "03", status: "READY_FOR_LAUNCH" }
   ];
 
   return (
@@ -71,7 +71,7 @@ export const IntroScreen = () => {
             transition={{ duration: 5, ease: "linear" }}
           />
 
-          <div className="relative z-20 w-full">
+          <div className="relative z-20 w-full max-w-7xl mx-auto px-10">
             <AnimatePresence mode="wait">
               {stage === 0 && (
                 <motion.div
@@ -96,56 +96,70 @@ export const IntroScreen = () => {
               {stage === 1 && (
                 <motion.div
                   key="phrases-stage"
-                  className="relative flex flex-col md:flex-row items-center justify-center gap-20 md:gap-32 px-10"
+                  className="flex flex-col items-center gap-12"
                 >
-                  {/* Procedural Path Line */}
-                  <div className="hidden md:block absolute top-1/2 left-1/4 right-1/4 h-px bg-white/5 -translate-y-1/2 z-0">
-                    <motion.div 
-                      initial={{ width: "0%" }}
-                      animate={{ width: "100%" }}
-                      transition={{ duration: 2, ease: "easeInOut" }}
-                      className="h-full bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0"
-                    />
+                  {/* Transition Header */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="flex items-center gap-6"
+                  >
+                    <span className="w-12 h-[1px] bg-white/10" />
+                    <span className="text-2xl md:text-3xl font-headline italic font-light text-white/40 tracking-[0.2em]">Let&apos;s</span>
+                    <span className="w-12 h-[1px] bg-white/10" />
+                  </motion.div>
+
+                  <div className="relative flex flex-col md:flex-row items-center justify-center gap-16 md:gap-32 w-full">
+                    {/* Procedural Path Line */}
+                    <div className="hidden md:block absolute top-1/2 left-[10%] right-[10%] h-[1px] bg-white/5 -translate-y-1/2 z-0">
+                      <motion.div 
+                        initial={{ width: "0%" }}
+                        animate={{ width: "100%" }}
+                        transition={{ duration: 2, ease: "easeInOut" }}
+                        className="h-full bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0"
+                      />
+                    </div>
+
+                    {phrases.map((item, i) => (
+                      <motion.div
+                        key={item.text}
+                        initial={{ opacity: 0, scale: 1.5, filter: "blur(20px)" }}
+                        animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                        transition={{ 
+                          delay: i * 0.4, 
+                          duration: 1.2, 
+                          ease: [0.16, 1, 0.3, 1] 
+                        }}
+                        className="relative z-10 flex flex-col items-center group"
+                      >
+                        {/* Step Indicator */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: (i * 0.4) + 0.3 }}
+                          className="mb-6 flex flex-col items-center gap-2"
+                        >
+                          <span className="text-primary font-black text-[10px] tracking-[0.3em] font-mono">STEP_{item.step}</span>
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_15px_rgba(16,185,129,1)] ring-4 ring-primary/10" />
+                        </motion.div>
+
+                        <span className="text-5xl md:text-7xl lg:text-8xl font-headline font-black text-white/90 group-hover:text-primary transition-all duration-700 tracking-[0.1em]">
+                          {item.text}
+                        </span>
+
+                        {/* Path Status */}
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: [0, 1, 0.5] }}
+                          transition={{ delay: (i * 0.4) + 0.6 }}
+                          className="mt-6 text-[9px] uppercase tracking-[0.5em] font-black text-white/30"
+                        >
+                          {item.status}
+                        </motion.div>
+                      </motion.div>
+                    ))}
                   </div>
-
-                  {phrases.map((item, i) => (
-                    <motion.div
-                      key={item.text}
-                      initial={{ opacity: 0, scale: 1.5, filter: "blur(20px)" }}
-                      animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                      transition={{ 
-                        delay: i * 0.4, 
-                        duration: 1.2, 
-                        ease: [0.16, 1, 0.3, 1] 
-                      }}
-                      className="relative z-10 flex flex-col items-center group"
-                    >
-                      {/* Step Indicator */}
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: (i * 0.4) + 0.3 }}
-                        className="mb-6 flex flex-col items-center gap-2"
-                      >
-                        <span className="text-primary font-black text-[10px] tracking-[0.3em] font-mono">STEP_{item.step}</span>
-                        <div className="w-1 h-1 rounded-full bg-primary shadow-[0_0_10px_rgba(16,185,129,1)]" />
-                      </motion.div>
-
-                      <span className="text-5xl md:text-7xl lg:text-8xl font-headline font-black text-white/90 group-hover:text-primary transition-all duration-700 tracking-[0.1em]">
-                        {item.text}
-                      </span>
-
-                      {/* Path Status */}
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: [0, 1, 0.5] }}
-                        transition={{ delay: (i * 0.4) + 0.6 }}
-                        className="mt-6 text-[9px] uppercase tracking-[0.5em] font-black text-white/30"
-                      >
-                        {i === 2 ? "READY_FOR_LAUNCH" : "SYNCING_NODE"}
-                      </motion.div>
-                    </motion.div>
-                  ))}
                 </motion.div>
               )}
             </AnimatePresence>
