@@ -5,62 +5,66 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 
-const skills = ["TypeScript", "Next.js 15", "React", "Node.js", "Three.js", "GSAP", "Framer Motion", "UI/UX Architecture"];
+const skills = ["TypeScript", "Next.js 15", "React", "Node.js", "Three.js", "WebGL", "Framer Motion", "Cloud Architecture"];
 
 export const About = () => {
   return (
-    <section id="about" className="py-48 px-6 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-32 items-center">
+    <section id="about" className="py-64 px-6 relative overflow-hidden bg-background">
+      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-24 items-start">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="relative"
+          className="relative sticky top-32"
         >
-          <div className="absolute -left-20 -top-20 w-80 h-80 bg-primary/10 blur-[120px] rounded-full" />
-          <h2 className="text-6xl md:text-8xl font-headline font-black mb-12 tracking-tighter leading-[0.9]">
-            DESIGN IS <br /><span className="text-primary italic">INTELLIGENCE</span> <br /> MADE VISIBLE.
-          </h2>
-          <div className="space-y-8 text-xl text-muted-foreground/80 font-body font-light leading-relaxed max-w-xl">
-            <p>
-              I build systems that bridge the gap between high-level architectural complexity and refined user-centric simplicity. 
-            </p>
-            <p>
-              Every pixel is a decision. Every line of code is a commitment to performance and scalability. I specialize in crafting digital landscapes that don't just work—they resonate.
-            </p>
-          </div>
-
-          <div className="mt-20 flex gap-12 border-t border-white/5 pt-12">
-            {[
-              { label: "Crafting Since", value: "2018" },
-              { label: "Digital Units", value: "45+" }
-            ].map((stat, i) => (
-              <div key={i}>
-                <div className="text-4xl font-headline font-bold text-white">{stat.value}</div>
-                <div className="text-[10px] uppercase tracking-[0.5em] text-primary font-black mt-2">{stat.label}</div>
-              </div>
-            ))}
+          <div className="absolute -left-32 -top-32 w-[600px] h-[600px] bg-primary/5 blur-[150px] rounded-full -z-10" />
+          
+          <div className="space-y-12">
+            <span className="text-primary tracking-[0.8em] uppercase text-[10px] font-black block">The Visionary Path</span>
+            <h2 className="text-6xl md:text-[7rem] font-headline font-black mb-12 tracking-tighter leading-[0.85]">
+              CRAFTING <br /><span className="text-primary italic">DIGITAL</span> <br /> REALITIES.
+            </h2>
+            <div className="space-y-8 text-xl text-muted-foreground/80 font-body font-light leading-relaxed max-w-xl">
+              <p>
+                I thrive at the intersection of complex systems and emotive design. My goal is to build software that doesn't just function—it performs with a soul.
+              </p>
+              <p>
+                From low-latency architectures to high-fidelity user interactions, I treat every project as a piece of digital craftsmanship.
+              </p>
+            </div>
+            
+            <div className="flex gap-16 pt-12 border-t border-white/5">
+              {[
+                { label: "Engineering Units", value: "6.2k" },
+                { label: "Success Rate", value: "100%" }
+              ].map((stat, i) => (
+                <div key={i}>
+                  <div className="text-5xl font-headline font-bold text-white tabular-nums">{stat.value}</div>
+                  <div className="text-[10px] uppercase tracking-[0.5em] text-primary font-black mt-3">{stat.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1.2, delay: 0.2 }}
-          className="lg:pl-20 space-y-20"
+          className="lg:pl-12 space-y-32"
         >
           <div>
-            <h3 className="text-[10px] uppercase tracking-[0.8em] font-black mb-12 text-white/40">TECH STACK / ARSENAL</h3>
+            <h3 className="text-[10px] uppercase tracking-[1em] font-black mb-16 text-white/30">CORE ARSENAL</h3>
             <div className="flex flex-wrap gap-4">
               {skills.map((skill, index) => (
                 <motion.div
                   key={skill}
                   whileHover={{ scale: 1.05, y: -5 }}
-                  transition={{ type: "spring", stiffness: 400 }}
+                  transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <Badge className="px-8 py-4 rounded-full text-[10px] uppercase font-black tracking-[0.2em] glass border-white/5 hover:bg-primary transition-colors cursor-default">
+                  <Badge className="px-10 py-5 rounded-full text-[10px] uppercase font-black tracking-[0.3em] glass border-white/5 hover:bg-primary hover:text-black transition-all cursor-default shadow-xl">
                     {skill}
                   </Badge>
                 </motion.div>
@@ -68,24 +72,29 @@ export const About = () => {
             </div>
           </div>
 
-          <div className="glass p-12 rounded-[2rem] border-white/5 space-y-12 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-            <h4 className="font-headline text-3xl font-bold italic relative">The Workflow</h4>
-            <div className="space-y-8 relative">
-              {[
-                { title: "Architectural Integrity", desc: "Building scalable foundations with modern patterns." },
-                { title: "Motion Direction", desc: "Using fluid transitions to guide users naturally." },
-                { title: "Performance First", desc: "Optimizing for sub-second load times and 60FPS interactivity." }
-              ].map((item, i) => (
-                <div key={i} className="flex gap-8">
-                   <div className="w-px h-12 bg-primary/20" />
-                   <div>
-                     <div className="text-white font-black text-[10px] uppercase tracking-[0.4em] mb-2">{item.title}</div>
-                     <p className="text-sm text-muted-foreground">{item.desc}</p>
-                   </div>
-                </div>
-              ))}
-            </div>
+          <div className="space-y-24">
+             <h3 className="text-[10px] uppercase tracking-[1em] font-black text-white/30">THE METHODOLOGY</h3>
+             <div className="space-y-16">
+                {[
+                  { title: "Sytem Scalability", desc: "Building foundations that grow with the user base, using modern cloud patterns.", icon: "01" },
+                  { title: "Motion Architecture", desc: "Every animation serves a purpose: to guide, to delight, and to focus.", icon: "02" },
+                  { title: "Performance Engineering", desc: "Optimizing the critical path for sub-100ms interactions.", icon: "03" }
+                ].map((item, i) => (
+                  <motion.div 
+                    key={i} 
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    className="flex gap-12 group"
+                  >
+                     <span className="text-4xl font-headline font-bold text-white/10 group-hover:text-primary/40 transition-colors">{item.icon}</span>
+                     <div>
+                       <div className="text-white font-black text-[11px] uppercase tracking-[0.5em] mb-4 group-hover:text-primary transition-colors">{item.title}</div>
+                       <p className="text-base text-muted-foreground/80 leading-relaxed font-light">{item.desc}</p>
+                     </div>
+                  </motion.div>
+                ))}
+             </div>
           </div>
         </motion.div>
       </div>
