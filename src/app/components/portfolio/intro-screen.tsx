@@ -33,6 +33,12 @@ export const IntroScreen = () => {
 
   if (!isVisible) return null;
 
+  const phrases = [
+    { text: "DESIGN", step: "01" },
+    { text: "BUILD", step: "02" },
+    { text: "DEPLOY", step: "03" }
+  ];
+
   return (
     <AnimatePresence>
       {stage < 2 && (
@@ -43,7 +49,7 @@ export const IntroScreen = () => {
             y: "-100%", 
             transition: { 
               duration: 1.2, 
-              ease: [0.85, 0, 0.15, 1], // Cinematic power ease
+              ease: [0.85, 0, 0.15, 1],
               delay: 0.2
             } 
           }}
@@ -65,7 +71,7 @@ export const IntroScreen = () => {
             transition={{ duration: 5, ease: "linear" }}
           />
 
-          <div className="relative z-20 text-center">
+          <div className="relative z-20 w-full">
             <AnimatePresence mode="wait">
               {stage === 0 && (
                 <motion.div
@@ -78,7 +84,7 @@ export const IntroScreen = () => {
                 >
                   <span className="text-primary tracking-[1em] uppercase text-[10px] md:text-xs font-black mb-2 flex items-center gap-4">
                     <span className="w-12 h-px bg-primary/30" />
-                    Initiating Portfolio
+                    Initiating System
                     <span className="w-12 h-px bg-primary/30" />
                   </span>
                   <h1 className="text-8xl md:text-[10rem] font-headline font-black italic tracking-tighter text-gradient leading-none">
@@ -90,41 +96,54 @@ export const IntroScreen = () => {
               {stage === 1 && (
                 <motion.div
                   key="phrases-stage"
-                  className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-20"
+                  className="relative flex flex-col md:flex-row items-center justify-center gap-20 md:gap-32 px-10"
                 >
-                  {["DESIGN", "BUILD", "DEPLOY"].map((text, i) => (
+                  {/* Procedural Path Line */}
+                  <div className="hidden md:block absolute top-1/2 left-1/4 right-1/4 h-px bg-white/5 -translate-y-1/2 z-0">
+                    <motion.div 
+                      initial={{ width: "0%" }}
+                      animate={{ width: "100%" }}
+                      transition={{ duration: 2, ease: "easeInOut" }}
+                      className="h-full bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0"
+                    />
+                  </div>
+
+                  {phrases.map((item, i) => (
                     <motion.div
-                      key={text}
-                      initial={{ 
-                        opacity: 0, 
-                        scale: 4, // More dramatic zoom enter
-                        letterSpacing: "-0.5em", 
-                        filter: "blur(40px)" 
-                      }}
-                      animate={{ 
-                        opacity: 1, 
-                        scale: 1, 
-                        letterSpacing: "0.2em", 
-                        filter: "blur(0px)" 
-                      }}
+                      key={item.text}
+                      initial={{ opacity: 0, scale: 1.5, filter: "blur(20px)" }}
+                      animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
                       transition={{ 
                         delay: i * 0.4, 
-                        duration: 1.6, // Slower, more cinematic zoom
+                        duration: 1.2, 
                         ease: [0.16, 1, 0.3, 1] 
                       }}
-                      className="relative group"
+                      className="relative z-10 flex flex-col items-center group"
                     >
-                      <span className="text-5xl md:text-7xl lg:text-8xl font-headline font-black text-white/90 group-hover:text-primary transition-all duration-700">
-                        {text}
+                      {/* Step Indicator */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: (i * 0.4) + 0.3 }}
+                        className="mb-6 flex flex-col items-center gap-2"
+                      >
+                        <span className="text-primary font-black text-[10px] tracking-[0.3em] font-mono">STEP_{item.step}</span>
+                        <div className="w-1 h-1 rounded-full bg-primary shadow-[0_0_10px_rgba(16,185,129,1)]" />
+                      </motion.div>
+
+                      <span className="text-5xl md:text-7xl lg:text-8xl font-headline font-black text-white/90 group-hover:text-primary transition-all duration-700 tracking-[0.1em]">
+                        {item.text}
                       </span>
-                      {i < 2 && (
-                        <motion.div 
-                          initial={{ scale: 0, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ delay: (i + 1) * 0.5, duration: 0.8 }}
-                          className="hidden md:block absolute -right-12 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary/40 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
-                        />
-                      )}
+
+                      {/* Path Status */}
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: [0, 1, 0.5] }}
+                        transition={{ delay: (i * 0.4) + 0.6 }}
+                        className="mt-6 text-[9px] uppercase tracking-[0.5em] font-black text-white/30"
+                      >
+                        {i === 2 ? "READY_FOR_LAUNCH" : "SYNCING_NODE"}
+                      </motion.div>
                     </motion.div>
                   ))}
                 </motion.div>
@@ -135,12 +154,12 @@ export const IntroScreen = () => {
           {/* Persistent Progress Visualization */}
           <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-full max-w-md px-10">
             <div className="flex justify-between items-center mb-4 text-[10px] uppercase tracking-[0.5em] font-black text-white/30">
-              <span>Establishing Link</span>
+              <span>Optimizing Pipeline</span>
               <motion.span
                 animate={{ opacity: [0.3, 1, 0.3] }}
                 transition={{ duration: 1, repeat: Infinity }}
               >
-                100%
+                STABLE
               </motion.span>
             </div>
             <div className="h-[1px] w-full bg-white/5 relative overflow-hidden">
