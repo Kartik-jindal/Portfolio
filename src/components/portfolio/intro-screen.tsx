@@ -70,7 +70,7 @@ export const IntroScreen = () => {
             transition={{ duration: 6, ease: "linear" }}
           />
 
-          <div className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-10">
+          <div className="relative z-20 w-full max-w-7xl mx-auto px-6">
             <AnimatePresence mode="wait">
               {stage === 0 && (
                 <motion.div
@@ -92,17 +92,7 @@ export const IntroScreen = () => {
                   key="phrases-stage"
                   className="flex flex-col items-center w-full"
                 >
-                  <div className="relative grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8 lg:gap-12 w-full">
-                    {/* Procedural Connection Path */}
-                    <div className="hidden md:block absolute top-[2rem] left-[15%] right-[15%] h-[1px] bg-white/5">
-                      <motion.div 
-                        initial={{ width: "0%" }}
-                        animate={{ width: "100%" }}
-                        transition={{ duration: 2.5, ease: "easeInOut" }}
-                        className="h-full bg-gradient-to-r from-primary/0 via-primary/40 to-primary/0"
-                      />
-                    </div>
-
+                  <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-4 lg:gap-8 w-full">
                     {phrases.map((item, i) => (
                       <motion.div
                         key={item.text}
@@ -110,32 +100,30 @@ export const IntroScreen = () => {
                           opacity: 0, 
                           scale: 1.2,
                           filter: "blur(20px)",
-                          letterSpacing: "-0.05em"
                         }}
                         animate={{ 
                           opacity: 1, 
                           scale: 1,
                           filter: "blur(0px)",
-                          letterSpacing: "0.02em"
                         }}
                         transition={{ 
                           delay: i * 0.4, 
                           duration: 1.2, 
                           ease: [0.16, 1, 0.3, 1] 
                         }}
-                        className="relative z-10 flex flex-col items-center"
+                        className="relative z-10 flex flex-col items-center justify-center"
                       >
-                        {/* Status Hub */}
-                        <div className="mb-6 flex flex-col items-center gap-3">
+                        {/* Status Hub - Minimalist indicator */}
+                        <div className="mb-8 flex flex-col items-center">
                            <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ delay: (i * 0.4) + 0.5 }}
-                            className="w-3 h-3 rounded-full bg-primary shadow-[0_0_20px_rgba(16,185,129,1)] ring-8 ring-primary/5"
+                            className="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_20px_rgba(16,185,129,1)]"
                            />
                         </div>
 
-                        <span className="text-5xl md:text-7xl lg:text-[7.5rem] font-headline font-black text-white leading-none text-center">
+                        <span className="text-5xl md:text-6xl lg:text-8xl font-headline font-black text-white leading-none text-center tracking-tight">
                           {item.text}
                         </span>
                       </motion.div>
