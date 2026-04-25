@@ -5,7 +5,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 
-const skills = ["TypeScript", "Next.js 15", "React", "Node.js", "Three.js", "WebGL", "Framer Motion", "Cloud Architecture"];
+const skills = ["TypeScript", "Next.js", "React", "Node.js", "Python","Tailwind" ,"WebGL", "Vercel", "Cloud Architecture"];
 
 export const About = () => {
   return (
@@ -21,7 +21,7 @@ export const About = () => {
           <div className="absolute -left-32 -top-32 w-[600px] h-[600px] bg-primary/5 blur-[150px] rounded-full -z-10" />
           
           <div className="space-y-10">
-            <span className="text-primary tracking-[0.8em] uppercase text-[10px] font-black block">The Visionary Path</span>
+            <span className="text-primary tracking-[0.8em] uppercase text-[12px] font-black block">The Visionary Path</span>
             <h2 className="text-6xl md:text-[6rem] font-headline font-black mb-8 tracking-tighter leading-[0.85]">
               CRAFTING <br /><span className="text-primary italic">DIGITAL</span> <br /> REALITIES.
             </h2>
@@ -41,7 +41,7 @@ export const About = () => {
               ].map((stat, i) => (
                 <div key={i}>
                   <div className="text-5xl font-headline font-bold text-white tabular-nums">{stat.value}</div>
-                  <div className="text-[10px] uppercase tracking-[0.5em] text-primary font-black mt-3">{stat.label}</div>
+                  <div className="text-[12px] uppercase tracking-[0.5em] text-primary font-black mt-3">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -56,7 +56,7 @@ export const About = () => {
           className="lg:pl-12 space-y-24"
         >
           <div>
-            <h3 className="text-[10px] uppercase tracking-[1em] font-black mb-12 text-white/30">CORE ARSENAL</h3>
+            <h3 className="text-[12px] uppercase tracking-[1em] font-black mb-12 text-white/30">CORE ARSENAL</h3>
             <div className="flex flex-wrap gap-3">
               {skills.map((skill, index) => (
                 <motion.div
@@ -64,7 +64,7 @@ export const About = () => {
                   whileHover={{ scale: 1.05, y: -5 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <Badge className="px-8 py-4 rounded-full text-[10px] uppercase font-black tracking-[0.3em] glass border-white/5 hover:bg-primary hover:text-black transition-all cursor-default shadow-xl">
+                  <Badge className="px-8 py-4 rounded-full text-[12px] uppercase font-black tracking-[0.3em] glass border-white/5 hover:bg-primary hover:text-black transition-all cursor-default shadow-xl">
                     {skill}
                   </Badge>
                 </motion.div>
@@ -73,7 +73,7 @@ export const About = () => {
           </div>
 
           <div className="space-y-16">
-             <h3 className="text-[10px] uppercase tracking-[1em] font-black text-white/30">THE METHODOLOGY</h3>
+             <h3 className="text-[12px] uppercase tracking-[1em] font-black text-white/30">THE METHODOLOGY</h3>
              <div className="space-y-12">
                 {[
                   { title: "Sytem Scalability", desc: "Building foundations that grow with the user base, using modern cloud patterns.", icon: "01" },

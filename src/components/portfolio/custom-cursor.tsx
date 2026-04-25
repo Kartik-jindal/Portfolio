@@ -58,8 +58,8 @@ export const CustomCursor = () => {
       borderRadius: "100%",
     },
     pointer: {
-      height: 64,
-      width: 64,
+      height: 40,
+      width: 40,
       backgroundColor: "white",
       mixBlendMode: "difference" as any,
       borderRadius: "100%",

@@ -24,17 +24,17 @@ export const Navbar = () => {
 
   return (
     <header className="fixed top-0 left-0 w-full z-[100] pointer-events-none">
-      <div className="max-w-7xl mx-auto px-6 py-8 md:py-12 flex justify-between items-center pointer-events-auto">
+      <div className="max-w-[1700px] mx-auto px-8 py-8 md:py-8 flex justify-between items-center pointer-events-auto">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-2xl md:text-3xl font-headline font-black tracking-tighter cursor-pointer group"
+          className="text-2xl md:text-3xl font-headline  font-black tracking-tighter cursor-pointer group"
         >
           K<span className="text-primary italic group-hover:translate-x-1 inline-block transition-transform">J.</span>
         </motion.div>
 
         {/* Desktop Nav - Floating Dock */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-6">
           <motion.nav 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -44,7 +44,7 @@ export const Navbar = () => {
               <a
                 key={item.label}
                 href={item.href}
-                className="px-6 py-2 text-[10px] uppercase tracking-[0.5em] font-black text-muted-foreground hover:text-primary transition-colors hover:bg-primary/5 rounded-full"
+                className="px-6 py-2 text-[14px] uppercase tracking-[0.5em] font-black text-muted-foreground hover:text-primary transition-colors hover:bg-primary/5 rounded-full"
               >
                 {item.label}
               </a>
@@ -54,7 +54,7 @@ export const Navbar = () => {
           <motion.button
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex items-center gap-2 px-8 py-3 rounded-full bg-white text-black text-[10px] uppercase font-black tracking-widest hover:bg-primary transition-colors group"
+            className="flex items-center gap-2 px-8 py-4 rounded-full bg-white text-black text-[14px] uppercase font-black tracking-widest hover:bg-primary transition-colors group"
           >
             Resume <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </motion.button>
@@ -93,7 +93,7 @@ export const Navbar = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
                   onClick={() => setIsMenuOpen(false)}
-                  className="text-6xl font-headline font-bold text-white hover:text-primary transition-colors italic tracking-tighter"
+                  className="text-7xl font-headline font-bold text-white hover:text-primary transition-colors italic tracking-tighter"
                 >
                   {item.label}
                 </motion.a>

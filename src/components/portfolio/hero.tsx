@@ -30,7 +30,7 @@ export const Hero = () => {
 
       <motion.div 
         style={{ y, opacity }}
-        className="relative z-10 max-w-7xl w-full mx-auto flex flex-col items-center text-center"
+        className="relative z-10 max-w-7xl w-full mx-auto my-6 flex flex-col items-center text-center"
       >
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -38,27 +38,27 @@ export const Hero = () => {
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
           className="mb-8"
         >
-          <span className="flex items-center gap-2 text-primary tracking-[0.6em] uppercase text-[10px] font-black bg-primary/5 px-8 py-3 rounded-full border border-primary/20 backdrop-blur-xl">
+          <span className="flex items-center gap-2 text-primary tracking-[0.6em] uppercase text-[12px] font-black bg-primary/5 px-8 py-3 rounded-full border border-primary/20 backdrop-blur-xl">
             <Sparkles className="w-3 h-3" />
             Full Stack Architect
           </span>
         </motion.div>
 
-        <div className="relative mb-12">
+        <div className="relative mb-16">
           <motion.h1
             initial={{ opacity: 0, y: 80 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="text-[12vw] md:text-[9rem] font-headline font-black leading-[0.8] tracking-tighter text-gradient px-4"
+            className="text-[16vw] md:text-[9rem] my-4 font-headline font-black leading-[1.4] tracking-light text-gradient px-4"
           >
-            KARTIK <br /> <span className="text-outline italic">JINDAL</span>
+            KARTIK <span className="text-outline italic">JINDAL</span>
           </motion.h1>
           
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: "60%" }}
             transition={{ duration: 2, delay: 0.6, ease: "circOut" }}
-            className="h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent mt-8 mx-auto"
+            className="h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent mt-12 mx-auto"
           />
         </div>
 
