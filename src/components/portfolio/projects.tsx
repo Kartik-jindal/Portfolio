@@ -27,6 +27,25 @@ const flagshipProjects = [
     image: "https://picsum.photos/seed/aura/1600/1000",
     color: "rgba(255, 255, 255, 0.03)",
     accent: "#ffffff"
+  },{
+    id: "03",
+    title: "Nova Orbital",
+    role: "System Architect",
+    desc: "A mission-critical dashboard for real-time satellite telemetry. Leverages WebGL for planetary visualization and high-throughput data streams.",
+    tech: ["Next.js 15", "Three.js", "Rust"],
+    image: "https://picsum.photos/seed/nova/1600/1000",
+    color: "rgba(16, 185, 129, 0.05)",
+    accent: "#10B981"
+  },
+  {
+    id: "04",
+    title: "Aura Atelier",
+    role: "Creative Director",
+    desc: "Immersive e-commerce experience for a luxury Parisian fashion house. Features 3D product interaction and cinematic storytelling.",
+    tech: ["React", "GLSL", "GSAP"],
+    image: "https://picsum.photos/seed/aura/1600/1000",
+    color: "rgba(255, 255, 255, 0.03)",
+    accent: "#ffffff"
   }
 ];
 
