@@ -1,19 +1,18 @@
-
 "use client";
 
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Github, Twitter, Linkedin, Instagram, ExternalLink, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export const Contact = () => {
   return (
-    <footer id="contact" className="relative pt-32 pb-12 px-6 md:pt-64 overflow-hidden bg-transparent">
+    <section id="contact" className="relative pt-32 pb-32 px-6 md:pt-64 overflow-hidden bg-transparent">
       {/* Local Background Atmosphere - Subtle spotlight */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(16,185,129,0.08),transparent_70%)] pointer-events-none" />
       
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="flex flex-col items-center text-center mb-32 md:mb-48">
+        <div className="flex flex-col items-center text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -47,79 +46,7 @@ export const Contact = () => {
             </div>
           </motion.div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-12 border-t border-white/5 pt-24 pb-12">
-          <div className="col-span-1 lg:col-span-2 space-y-8">
-            <div className="space-y-4">
-              <h3 className="text-4xl md:text-5xl font-headline font-bold italic tracking-tighter">Kartik Jindal.</h3>
-              <p className="text-muted-foreground/60 max-w-sm text-xl font-light leading-relaxed font-body">
-                Fusing architectural precision with digital soul to build the next generation of web experiences.
-              </p>
-            </div>
-            
-            <div className="flex gap-4">
-              {[
-                { icon: Github, href: "#" },
-                { icon: Twitter, href: "#" },
-                { icon: Linkedin, href: "#" },
-                { icon: Instagram, href: "#" }
-              ].map((social, i) => (
-                <motion.a 
-                  key={i} 
-                  href={social.href}
-                  whileHover={{ y: -5, scale: 1.1, rotate: 5 }}
-                  className="w-14 h-14 rounded-2xl glass border-white/5 flex items-center justify-center text-white/40 hover:text-primary hover:border-primary/20 transition-all duration-300"
-                >
-                  <social.icon className="w-5 h-5" />
-                </motion.a>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-8">
-            <h4 className="text-md uppercase tracking-[0.6em] font-black text-white/20">Navigation</h4>
-            <ul className="space-y-4 font-body">
-              {['Home', 'Selected Work', 'About Story', 'Journal'].map((item) => (
-                <li key={item}>
-                  <a href="#" className="text-muted-foreground/80 hover:text-primary transition-all flex items-center gap-2 group text-xl">
-                    {item}
-                    <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="space-y-8">
-            <h4 className="text-md uppercase tracking-[0.6em] font-black text-white/20">Say Hello</h4>
-            <div className="space-y-6">
-              <a href="mailto:hello@kartikjindal.com" className="block group">
-                <span className="text-sm uppercase tracking-widest text-primary font-black mb-1 block">General Enquiries</span>
-                <span className="text-2xl md:text-3xl lg:text-4xl text-white font-headline border-b border-white/10 group-hover:border-primary transition-colors">
-                  hello@kartikjindal.com
-                </span>
-              </a>
-              <div className="pt-4">
-                <a href="#" className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.3em] font-black text-white/40 hover:text-white transition-colors py-3 px-6 rounded-full border border-white/5 glass">
-                  Download Portfolio PDF
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-24 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-xs tracking-[0.4em] font-black text-white/10 uppercase">
-          <div className="flex items-center gap-8">
-            <span>&copy; 2026 Kartik Jindal</span>
-            <span className="hidden md:block w-1 h-1 rounded-full bg-white/10" />
-            <span className="hidden md:block">EST. 2025</span>
-          </div>
-          <div className="flex gap-12">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-          </div>
-        </div>
       </div>
-    </footer>
+    </section>
   );
 };

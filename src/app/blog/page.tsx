@@ -1,10 +1,10 @@
-
 "use client";
 
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Navbar } from '@/components/portfolio/navbar';
 import { Contact } from '@/components/portfolio/contact';
+import { Footer } from '@/components/portfolio/footer';
 import { ArrowRight } from 'lucide-react';
 
 const posts = [
@@ -80,6 +80,7 @@ export default function BlogPage() {
         </div>
       </section>
       <Contact />
+      <Footer />
     </main>
   );
 }
