@@ -18,6 +18,7 @@ export const About = () => {
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
           className="relative lg:sticky lg:top-32"
         >
+          {/* Subtle Ambient Glow */}
           <div className="absolute -left-32 -top-32 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-primary/5 blur-[100px] md:blur-[150px] rounded-full -z-10 animate-pulse-slow" />
           
           <div className="space-y-6 md:space-y-10 text-center lg:text-left">
@@ -61,7 +62,7 @@ export const About = () => {
           <div>
             <h3 className="text-[10px] md:text-[12px] uppercase tracking-[0.5em] md:tracking-[1em] font-black mb-8 md:mb-12 text-white/30 text-center lg:text-left">CORE ARSENAL</h3>
             <div className="flex flex-wrap justify-center lg:justify-start gap-3">
-              {skills.map((skill, index) => (
+              {skills.map((skill) => (
                 <motion.div
                   key={skill}
                   whileHover={{ scale: 1.05, y: -5 }}
