@@ -3,7 +3,6 @@
 
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Hero3D } from './hero-3d';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
 
@@ -20,11 +19,7 @@ export const Hero = () => {
 
   return (
     <section ref={targetRef} className="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-24 px-6">
-      <motion.div style={{ opacity, scale }} className="fixed inset-0 z-0 pointer-events-none">
-        <Hero3D />
-      </motion.div>
-
-      <div className="absolute inset-0 bg-grain z-[1]" />
+      {/* Background Atmosphere - Local Gradient for Hero depth */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background z-[2]" />
 
       <motion.div 

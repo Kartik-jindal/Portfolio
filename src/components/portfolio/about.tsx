@@ -9,7 +9,7 @@ const skills = ["TypeScript", "Next.js", "React", "Node.js", "Python","Tailwind"
 
 export const About = () => {
   return (
-    <section id="about" className="py-32 md:py-48 px-6 relative overflow-hidden bg-background">
+    <section id="about" className="py-32 md:py-48 px-6 relative overflow-hidden bg-transparent">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 md:gap-24 items-start">
         <motion.div
           initial={{ opacity: 0, x: -50 }}

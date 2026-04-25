@@ -28,7 +28,7 @@ const testimonials = [
 
 export const Testimonials = () => {
   return (
-    <section className="py-32 px-6 overflow-hidden bg-background/50">
+    <section className="py-32 px-6 overflow-hidden bg-transparent">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-20">
           <span className="text-primary uppercase tracking-widest text-xs font-bold block mb-4">Social Proof</span>

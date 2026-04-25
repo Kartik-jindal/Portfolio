@@ -4,14 +4,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Github, Twitter, Linkedin, Mail, ArrowRight, Instagram, ExternalLink } from 'lucide-react';
+import { Github, Twitter, Linkedin, Instagram, ExternalLink, ArrowRight } from 'lucide-react';
 
 export const Contact = () => {
   return (
-    <footer id="contact" className="relative pt-32 pb-12 px-6 md:pt-64 overflow-hidden bg-black">
-      {/* Background Atmosphere */}
+    <footer id="contact" className="relative pt-32 pb-12 px-6 md:pt-64 overflow-hidden bg-transparent">
+      {/* Local Background Atmosphere - Subtle spotlight */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(16,185,129,0.08),transparent_70%)] pointer-events-none" />
-      <div className="absolute inset-0 bg-grain opacity-[0.02] pointer-events-none" />
       
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="flex flex-col items-center text-center mb-32 md:mb-48">
@@ -78,7 +77,7 @@ export const Contact = () => {
           </div>
 
           <div className="space-y-8">
-            <h4 className="text-xs uppercase tracking-[0.6em] font-black text-white/20">Navigation</h4>
+            <h4 className="text-md uppercase tracking-[0.6em] font-black text-white/20">Navigation</h4>
             <ul className="space-y-4 font-body">
               {['Home', 'Selected Work', 'About Story', 'Journal'].map((item) => (
                 <li key={item}>
@@ -92,7 +91,7 @@ export const Contact = () => {
           </div>
 
           <div className="space-y-8">
-            <h4 className="text-xs uppercase tracking-[0.6em] font-black text-white/20">Say Hello</h4>
+            <h4 className="text-md uppercase tracking-[0.6em] font-black text-white/20">Say Hello</h4>
             <div className="space-y-6">
               <a href="mailto:hello@kartikjindal.com" className="block group">
                 <span className="text-sm uppercase tracking-widest text-primary font-black mb-1 block">General Enquiries</span>
@@ -111,9 +110,9 @@ export const Contact = () => {
 
         <div className="mt-24 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-xs tracking-[0.4em] font-black text-white/10 uppercase">
           <div className="flex items-center gap-8">
-            <span>&copy; 2024 Kartik Jindal</span>
+            <span>&copy; 2026 Kartik Jindal</span>
             <span className="hidden md:block w-1 h-1 rounded-full bg-white/10" />
-            <span className="hidden md:block">EST. 2018</span>
+            <span className="hidden md:block">EST. 2025</span>
           </div>
           <div className="flex gap-12">
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
