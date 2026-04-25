@@ -4,116 +4,131 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
-import { Layers, Zap, Cpu, Code2, Globe, Sparkles } from 'lucide-react';
+import { Code2, Zap, Globe, Sparkles, Cpu } from 'lucide-react';
 
-const skills = ["TypeScript", "Next.js", "React", "Node.js", "Python", "Tailwind", "WebGL", "Cloud Arch"];
+const skills = ["TypeScript", "Next.js", "React", "Node.js", "Python", "Tailwind", "WebGL", "Cloud Architecture"];
+
+const pillars = [
+  {
+    icon: Code2,
+    title: "Engineering",
+    desc: "Building robust, scalable systems with architectural precision."
+  },
+  {
+    icon: Zap,
+    title: "Performance",
+    desc: "Optimizing for low-latency and high-fidelity user experiences."
+  },
+  {
+    icon: Globe,
+    title: "Strategy",
+    desc: "Bridging the gap between technical vision and business goals."
+  }
+];
 
 export const About = () => {
   return (
-    <section id="about" className="py-32 md:py-56 px-6 relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-20 w-[400px] h-[400px] bg-accent/5 blur-[100px] rounded-full pointer-events-none" />
-
+    <section id="about" className="py-24 md:py-48 px-6 relative overflow-hidden">
+      {/* Subtle Background Elements */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+      
       <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-12 gap-8 items-stretch">
+        <div className="grid lg:grid-cols-12 gap-16 items-start">
           
-          {/* Main Title Card - Spans 8 cols */}
+          {/* Left Column: Narrative */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-8 glass p-10 md:p-16 rounded-[2.5rem] flex flex-col justify-center border-white/5 relative group overflow-hidden"
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-7 space-y-12"
           >
-            <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-100 transition-opacity duration-700">
-               <Sparkles className="w-8 h-8 text-primary" />
+            <div className="space-y-6">
+              <span className="text-primary tracking-[0.6em] uppercase text-[10px] font-black block">The Philosophy</span>
+              <h2 className="text-5xl md:text-7xl font-headline font-black leading-[1.1] tracking-tighter">
+                Fusing <span className="text-outline italic">Logic</span> with <br />
+                <span className="text-primary italic">Artistry.</span>
+              </h2>
             </div>
-            
-            <span className="text-primary tracking-[0.6em] uppercase text-[10px] font-black mb-8 block">The Architect</span>
-            <h2 className="text-5xl md:text-7xl lg:text-8xl font-headline font-black mb-10 tracking-tighter leading-[0.9]">
-              FUSING <span className="text-outline italic">LOGIC</span> WITH <br />
-              <span className="text-primary italic">ARTISTRY.</span>
-            </h2>
-            <p className="text-xl md:text-2xl text-muted-foreground/90 font-body font-light leading-relaxed max-w-2xl">
-              I specialize in building digital ecosystems that are as high-performance as they are emotionally resonant. My work lives at the intersection of rigorous engineering and cinematic motion.
-            </p>
-          </motion.div>
 
-          {/* Stats Box - Spans 4 cols */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className="lg:col-span-4 glass-accent p-10 rounded-[2.5rem] flex flex-col justify-between border-primary/10"
-          >
-            <div className="space-y-12">
-              <div className="group">
-                <div className="text-6xl font-headline font-bold text-white mb-2 tabular-nums group-hover:text-primary transition-colors">100%</div>
-                <div className="text-[10px] uppercase tracking-[0.4em] text-primary font-black">Architecture Integrity</div>
-              </div>
-              <div className="group">
-                <div className="text-6xl font-headline font-bold text-white mb-2 tabular-nums group-hover:text-primary transition-colors">6.2k+</div>
-                <div className="text-[10px] uppercase tracking-[0.4em] text-primary font-black">Engineering Hours</div>
-              </div>
+            <div className="space-y-8 max-w-2xl">
+              <p className="text-xl md:text-2xl text-muted-foreground/90 font-body font-light leading-relaxed">
+                I am a Full Stack Architect dedicated to building digital landscapes that are as high-performance as they are emotionally resonant. 
+              </p>
+              <p className="text-lg text-muted-foreground/70 font-body leading-relaxed">
+                With over six years of experience in the engineering trenches, I've learned that the best products aren't just built with code—they're crafted with a deep understanding of human interaction and technical scalability. My approach is rooted in precision, curiosity, and a relentless drive for excellence.
+              </p>
             </div>
-            <div className="pt-8 border-t border-white/5 mt-8">
-              <p className="text-sm text-muted-foreground/60 italic font-light">"Precision is the foundation of digital legacy."</p>
-            </div>
-          </motion.div>
 
-          {/* Tech Stack Bento - Spans 5 cols */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="lg:col-span-5 glass p-10 rounded-[2.5rem] border-white/5"
-          >
-            <div className="flex items-center gap-4 mb-10">
-              <div className="p-3 bg-white/5 rounded-2xl">
-                <Cpu className="w-5 h-5 text-primary" />
-              </div>
-              <h3 className="text-xs uppercase tracking-[0.5em] font-black text-white/40">Core Arsenal</h3>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              {skills.map((skill) => (
-                <Badge key={skill} className="px-6 py-3 rounded-xl text-[10px] uppercase font-black tracking-widest glass border-white/5 hover:bg-primary hover:text-black transition-all cursor-default">
-                  {skill}
-                </Badge>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Experience/Services Bento - Spans 7 cols */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="lg:col-span-7 glass p-10 rounded-[2.5rem] border-white/5 overflow-hidden relative"
-          >
-            <div className="grid md:grid-cols-3 gap-8 relative z-10">
-              {[
-                { icon: Code2, title: "Systems", desc: "Low-latency cloud architecture." },
-                { icon: Zap, title: "Motion", desc: "Fluid, high-fidelity interactions." },
-                { icon: Globe, title: "Scalability", desc: "Built for enterprise volume." }
-              ].map((item, i) => (
-                <div key={i} className="space-y-4 group">
-                  <div className="p-4 bg-white/5 rounded-2xl w-fit group-hover:bg-primary/20 transition-colors">
-                    <item.icon className="w-6 h-6 text-primary" />
+            {/* Simple Pillars Grid */}
+            <div className="grid sm:grid-cols-3 gap-8 pt-8">
+              {pillars.map((pillar, i) => (
+                <div key={i} className="space-y-4">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <pillar.icon className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <div className="text-white font-black text-[11px] uppercase tracking-widest mb-2">{item.title}</div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+                    <h3 className="text-white font-bold text-sm uppercase tracking-widest mb-2">{pillar.title}</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{pillar.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
-            {/* Subtle Abstract SVG Background for this card */}
-            <div className="absolute -bottom-10 -right-10 opacity-5 pointer-events-none">
-              <Layers className="w-64 h-64 text-white" />
+          </motion.div>
+
+          {/* Right Column: Skills & Focus */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+            className="lg:col-span-5 space-y-12 lg:pl-12"
+          >
+            <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-10 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-30 transition-opacity">
+                <Sparkles className="w-12 h-12 text-primary" />
+              </div>
+
+              <div className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white/5 rounded-2xl">
+                    <Cpu className="w-5 h-5 text-primary" />
+                  </div>
+                  <h3 className="text-xs uppercase tracking-[0.5em] font-black text-white/40">Core Arsenal</h3>
+                </div>
+                
+                <div className="flex flex-wrap gap-2">
+                  {skills.map((skill) => (
+                    <Badge 
+                      key={skill} 
+                      variant="outline"
+                      className="px-5 py-2.5 rounded-xl text-[10px] uppercase font-black tracking-widest border-white/10 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-default"
+                    >
+                      {skill}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-10 border-t border-white/5">
+                <div className="flex items-center gap-8">
+                  <div>
+                    <div className="text-4xl font-headline font-bold text-white mb-1">6k+</div>
+                    <div className="text-[9px] uppercase tracking-[0.3em] text-primary font-black">Coding Hours</div>
+                  </div>
+                  <div className="w-px h-10 bg-white/5" />
+                  <div>
+                    <div className="text-4xl font-headline font-bold text-white mb-1">50+</div>
+                    <div className="text-[9px] uppercase tracking-[0.3em] text-primary font-black">Projects Shipped</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-10 border border-white/5 rounded-[2.5rem] bg-gradient-to-br from-primary/5 to-transparent">
+              <p className="text-sm italic text-muted-foreground/60 leading-relaxed font-light">
+                "Digital architecture is the bridge between human imagination and machine execution. I strive to make that bridge invisible and beautiful."
+              </p>
             </div>
           </motion.div>
 
