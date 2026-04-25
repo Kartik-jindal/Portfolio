@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useRef } from 'react';
@@ -17,40 +18,70 @@ export const Hero3D = () => {
 
     // Camera
     const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    camera.position.z = 5;
+    camera.position.z = 8;
 
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     mountRef.current.appendChild(renderer.domElement);
 
-    // Objects
-    const geometry = new THREE.IcosahedronGeometry(2.5, 2);
-    const material = new THREE.MeshPhongMaterial({
-      color: 0x10B981, // Emerald Green
-      wireframe: true,
-      emissive: 0x064E3B,
-      shininess: 50,
+    // Complex Geometry (Torus Knot)
+    const geometry = new THREE.TorusKnotGeometry(2.8, 0.8, 128, 32);
+    const material = new THREE.MeshPhysicalMaterial({
+      color: 0x10B981,
+      metalness: 0.9,
+      roughness: 0.1,
+      transmission: 0.5,
+      thickness: 2,
       transparent: true,
-      opacity: 0.3
+      opacity: 0.6,
+      wireframe: true,
     });
-    const sphere = new THREE.Mesh(geometry, material);
-    scene.add(sphere);
+    
+    const torusKnot = new THREE.Mesh(geometry, material);
+    scene.add(torusKnot);
+
+    // Floating Particles
+    const particlesCount = 2000;
+    const posArray = new Float32Array(particlesCount * 3);
+    for(let i=0; i < particlesCount * 3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 20;
+    }
+    const particlesGeometry = new THREE.BufferGeometry();
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const particlesMaterial = new THREE.PointsMaterial({
+      size: 0.005,
+      color: 0x10B981,
+      transparent: true,
+      opacity: 0.5
+    });
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
 
     // Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
     scene.add(ambientLight);
 
-    const pointLight = new THREE.PointLight(0x10B981, 3);
+    const pointLight = new THREE.PointLight(0x10B981, 10);
     pointLight.position.set(5, 5, 5);
     scene.add(pointLight);
 
+    const blueLight = new THREE.PointLight(0x00f2ff, 5);
+    blueLight.position.set(-5, -5, 2);
+    scene.add(blueLight);
+
     // Animation
+    const clock = new THREE.Clock();
     const animate = () => {
+      const elapsedTime = clock.getElapsedTime();
+      
       requestAnimationFrame(animate);
-      sphere.rotation.x += 0.002;
-      sphere.rotation.y += 0.003;
+      torusKnot.rotation.x = elapsedTime * 0.2;
+      torusKnot.rotation.y = elapsedTime * 0.3;
+      
+      particlesMesh.rotation.y = elapsedTime * 0.05;
+      
       renderer.render(scene, camera);
     };
 
@@ -71,8 +102,11 @@ export const Hero3D = () => {
     return () => {
       window.removeEventListener('resize', handleResize);
       mountRef.current?.removeChild(renderer.domElement);
+      geometry.dispose();
+      material.dispose();
+      renderer.dispose();
     };
   }, []);
 
-  return <div ref={mountRef} className="w-full h-full opacity-40" />;
+  return <div ref={mountRef} className="w-full h-full opacity-60" />;
 };

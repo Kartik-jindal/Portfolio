@@ -10,55 +10,56 @@ export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    const handleScroll = () => setIsScrolled(window.scrollY > 100);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const navItems = [
-    { label: "Work", href: "#work" },
-    { label: "About", href: "#about" },
-    { label: "Journey", href: "#experience" },
+    { label: "Selected Work", href: "#work" },
+    { label: "The Vision", href: "#about" },
+    { label: "The Path", href: "#experience" },
     { label: "Contact", href: "#contact" },
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 ${isScrolled ? 'py-4' : 'py-8'}`}>
-      <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+    <header className="fixed top-0 left-0 w-full z-[100] pointer-events-none">
+      <div className="max-w-7xl mx-auto px-6 py-10 flex justify-between items-center pointer-events-auto">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-2xl font-headline font-black tracking-tighter"
+          className="text-3xl font-headline font-black tracking-tighter cursor-pointer"
         >
-          K<span className="text-accent italic">J.</span>
+          K<span className="text-primary italic">J.</span>
         </motion.div>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-10">
+        {/* Desktop Nav - Floating Dock Style */}
+        <motion.nav 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`hidden md:flex items-center gap-1 px-2 py-2 rounded-full transition-all duration-700 glass ${isScrolled ? 'opacity-100' : 'opacity-0 translate-y-[-20px]'}`}
+        >
           {navItems.map((item, i) => (
-            <motion.a
+            <a
               key={item.label}
               href={item.href}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className="text-xs uppercase tracking-[0.3em] font-bold text-muted-foreground hover:text-accent transition-colors"
+              className="px-6 py-2 text-[10px] uppercase tracking-[0.4em] font-black text-muted-foreground hover:text-white transition-colors hover:bg-white/5 rounded-full"
             >
               {item.label}
-            </motion.a>
+            </a>
           ))}
-          <motion.button
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="glass px-6 py-2.5 rounded-full text-xs uppercase tracking-widest font-black hover:bg-accent hover:text-accent-foreground transition-all"
-          >
+          <div className="w-px h-4 bg-white/10 mx-2" />
+          <button className="px-6 py-2 text-[10px] uppercase tracking-[0.4em] font-black text-primary hover:text-white transition-colors">
             Resume
-          </motion.button>
-        </div>
+          </button>
+        </motion.nav>
 
         {/* Mobile Toggle */}
-        <button className="md:hidden text-white" onClick={() => setIsMenuOpen(true)}>
-          <Menu className="w-8 h-8" />
+        <button 
+          className="md:hidden w-12 h-12 flex items-center justify-center glass rounded-full" 
+          onClick={() => setIsMenuOpen(true)}
+        >
+          <Menu className="w-6 h-6" />
         </button>
       </div>
 
@@ -66,31 +67,30 @@ export const Navbar = () => {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, x: '100%' }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-0 bg-background z-[110] flex flex-col items-center justify-center gap-12"
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.1 }}
+            className="fixed inset-0 bg-background/95 backdrop-blur-3xl z-[110] flex flex-col items-center justify-center gap-12 pointer-events-auto"
           >
-            <button className="absolute top-8 right-8 text-white" onClick={() => setIsMenuOpen(false)}>
-              <X className="w-10 h-10" />
+            <button className="absolute top-10 right-10 w-16 h-16 flex items-center justify-center glass rounded-full" onClick={() => setIsMenuOpen(false)}>
+              <X className="w-8 h-8" />
             </button>
-            {navItems.map((item) => (
-              <a
+            {navItems.map((item, i) => (
+              <motion.a
                 key={item.label}
                 href={item.href}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
                 onClick={() => setIsMenuOpen(false)}
-                className="text-4xl font-headline font-bold text-white hover:text-accent transition-colors italic"
+                className="text-5xl font-headline font-bold text-white hover:text-primary transition-colors italic tracking-tighter"
               >
                 {item.label}
-              </a>
+              </motion.a>
             ))}
-            <button className="bg-accent text-accent-foreground px-12 py-4 rounded-full text-lg font-bold">
-              Resume Preview
-            </button>
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </header>
   );
 };

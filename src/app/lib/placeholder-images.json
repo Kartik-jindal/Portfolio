@@ -1,0 +1,23 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "nova",
+      "description": "Futuristic space analytics dashboard",
+      "imageUrl": "https://picsum.photos/seed/nova/1200/800",
+      "imageHint": "futuristic dashboard"
+    },
+    {
+      "id": "aura",
+      "description": "Luxury fashion e-commerce",
+      "imageUrl": "https://picsum.photos/seed/aura/1200/800",
+      "imageHint": "luxury fashion"
+    },
+    {
+      "id": "hero-bg",
+      "description": "Abstract dark background",
+      "imageUrl": "https://picsum.photos/seed/dark/1920/1080",
+      "imageHint": "abstract dark"
+    }
+  ]
+}
