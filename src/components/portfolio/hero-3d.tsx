@@ -25,7 +25,8 @@ export const Hero3D = () => {
     // ========================================
     // 1. WHITISH STAR FIELD (Background)
     // ========================================
-    const starCount = 2500;
+    // Reduced from 2500 to 1000 for a more refined look
+    const starCount = 1000;
     const starPositions = new Float32Array(starCount * 3);
     const starColors = new Float32Array(starCount * 3);
     const starSizes = new Float32Array(starCount);
@@ -45,7 +46,7 @@ export const Hero3D = () => {
       starColors[i * 3 + 1] = 0.82 + warmth * 0.18;
       starColors[i * 3 + 2] = 0.9 + (1 - warmth) * 0.1;
 
-      starSizes[i] = Math.random() * 0.06 + 0.02;
+      starSizes[i] = Math.random() * 0.05 + 0.015;
     }
 
     const starGeometry = new THREE.BufferGeometry();
@@ -54,12 +55,12 @@ export const Hero3D = () => {
     starGeometry.setAttribute('size', new THREE.BufferAttribute(starSizes, 1));
 
     const starMaterial = new THREE.PointsMaterial({
-      size: 0.05,
+      size: 0.04,
       vertexColors: true,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.6,
       color: 0xFFFFFF,
     });
 
@@ -93,7 +94,7 @@ export const Hero3D = () => {
         blending: THREE.AdditiveBlending,
         depthWrite: false,
         transparent: true,
-        opacity: 0.4,
+        opacity: 0.3,
       });
       const sprite = new THREE.Sprite(spriteMat);
       sprite.position.set(x, y, z);
@@ -102,7 +103,7 @@ export const Hero3D = () => {
     };
 
     const halos: THREE.Sprite[] = [];
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 10; i++) {
       const angle = Math.random() * Math.PI * 2;
       const radius = 2 + Math.random() * 4;
       const texture = i % 2 === 0 ? warmGlow : coolGlow;
@@ -120,7 +121,7 @@ export const Hero3D = () => {
     // ========================================
     // 3. NODE NETWORK (Foreground structure)
     // ========================================
-    const nodeCount = 50;
+    const nodeCount = 40;
     const nodePositions: THREE.Vector3[] = [];
     const nodeMeshes: THREE.Mesh[] = [];
     const nodeBaseY: number[] = [];
@@ -141,19 +142,19 @@ export const Hero3D = () => {
         blending: THREE.AdditiveBlending,
         depthWrite: false,
         transparent: true,
-        opacity: 0.6,
+        opacity: 0.5,
         color: 0x818CF8,
       });
       const sprite = new THREE.Sprite(spriteMat);
       sprite.position.copy(pos);
-      sprite.scale.set(0.5, 0.5, 1);
+      sprite.scale.set(0.4, 0.4, 1);
       scene.add(sprite);
 
-      const geo = new THREE.SphereGeometry(0.04, 16, 16);
+      const geo = new THREE.SphereGeometry(0.03, 16, 16);
       const mat = new THREE.MeshBasicMaterial({
         color: 0xFFFFFF,
         transparent: true,
-        opacity: 0.9,
+        opacity: 0.8,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
       });
@@ -180,13 +181,13 @@ export const Hero3D = () => {
       for (let i = 0; i < nodePositions.length; i++) {
         for (let j = i + 1; j < nodePositions.length; j++) {
           const dist = nodePositions[i].distanceTo(nodePositions[j]);
-          if (dist < 2.5) {
+          if (dist < 2.2) {
             const points = [nodePositions[i], nodePositions[j]];
             const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
             const lineMat = new THREE.LineBasicMaterial({
               color: 0xC8D4FF,
               transparent: true,
-              opacity: 0.12 * (1 - dist / 2.5),
+              opacity: 0.1 * (1 - dist / 2.2),
               blending: THREE.AdditiveBlending,
               depthWrite: false,
             });
@@ -204,7 +205,6 @@ export const Hero3D = () => {
     // 5. ENHANCED RINGS SYSTEM
     // ========================================
     
-    // Ring type 1: Smooth flowing stream rings
     const createStreamRing = (
       radiusX: number, 
       radiusY: number, 
@@ -235,7 +235,6 @@ export const Hero3D = () => {
       return new THREE.Mesh(tubeGeo, tubeMat);
     };
 
-    // Ring type 2: Dashed/dotted rings
     const createDashedRing = (
       radiusX: number,
       radiusY: number,
@@ -261,7 +260,7 @@ export const Hero3D = () => {
         }
         
         const curve = new THREE.CatmullRomCurve3(points);
-        const tubeGeo = new THREE.TubeGeometry(curve, 6, 0.015, 6, false);
+        const tubeGeo = new THREE.TubeGeometry(curve, 6, 0.012, 6, false);
         const tubeMat = new THREE.MeshBasicMaterial({
           color,
           transparent: true,
@@ -274,7 +273,6 @@ export const Hero3D = () => {
       return group;
     };
 
-    // Ring type 3: Double parallel rings
     const createDoubleRing = (
       radiusX: number,
       radiusY: number,
@@ -285,7 +283,7 @@ export const Hero3D = () => {
     ) => {
       const group = new THREE.Group();
       [-separation, separation].forEach((offset) => {
-        const ringGeo = new THREE.TorusGeometry(1, 0.012, 16, 100);
+        const ringGeo = new THREE.TorusGeometry(1, 0.01, 16, 100);
         const ringMat = new THREE.MeshBasicMaterial({
           color,
           transparent: true,
@@ -302,67 +300,39 @@ export const Hero3D = () => {
       return group;
     };
 
-    // Create all rings
     const rings: { mesh: THREE.Object3D; data: any }[] = [];
 
-    // Stream rings (elliptical flowing)
     rings.push({
-      mesh: createStreamRing(4.8, 1.7, 0.3, 0x8899DD, 0.25, 0.012),
-      data: { type: 'stream', speed: 0.003, axis: 'z' }
+      mesh: createStreamRing(4.8, 1.7, 0.3, 0x8899DD, 0.2, 0.01),
+      data: { type: 'stream', speed: 0.002, axis: 'z' }
     });
     rings.push({
-      mesh: createStreamRing(4.2, 1.5, -0.4, 0x99AADD, 0.18, 0.01),
-      data: { type: 'stream', speed: -0.004, axis: 'x' }
-    });
-    rings.push({
-      mesh: createStreamRing(3.6, 1.3, 1.0, 0xAABBEE, 0.15, 0.008),
-      data: { type: 'stream', speed: 0.0035, axis: 'y' }
+      mesh: createStreamRing(3.6, 1.3, 1.0, 0xAABBEE, 0.12, 0.008),
+      data: { type: 'stream', speed: 0.0025, axis: 'y' }
     });
 
-    // Dashed rings (orbital paths)
-    const dashedRing1 = createDashedRing(5.2, 1.9, -0.8, 0xCCDDFF, 0.2, 12);
+    const dashedRing1 = createDashedRing(5.2, 1.9, -0.8, 0xCCDDFF, 0.15, 10);
     rings.push({
       mesh: dashedRing1,
-      data: { type: 'dashed', speed: 0.002, axis: 'y' }
+      data: { type: 'dashed', speed: 0.0015, axis: 'y' }
     });
     
-    const dashedRing2 = createDashedRing(3.2, 1.1, 1.5, 0xDDE4FF, 0.15, 8);
     rings.push({
-      mesh: dashedRing2,
-      data: { type: 'dashed', speed: -0.003, axis: 'z' }
+      mesh: createDoubleRing(4.5, 1.6, -1.2, 0x8899CC, 0.12, 0.12),
+      data: { type: 'double', speed: 0.0015, axis: 'x' }
     });
 
-    // Double rings (close parallel)
-    rings.push({
-      mesh: createDoubleRing(4.5, 1.6, -1.2, 0x8899CC, 0.15, 0.15),
-      data: { type: 'double', speed: 0.002, axis: 'x' }
-    });
-    rings.push({
-      mesh: createDoubleRing(3.9, 1.4, 1.8, 0x99AACC, 0.12, 0.12),
-      data: { type: 'double', speed: -0.003, axis: 'y' }
-    });
-
-    // Add all rings to scene
     rings.forEach(r => scene.add(r.mesh));
 
-    // ========================================
-    // 6. LIGHTING
-    // ========================================
     const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.4);
     scene.add(ambientLight);
 
-    // ========================================
-    // 7. MOUSE INTERACTION
-    // ========================================
     const handleMouseMove = (event: MouseEvent) => {
       mouseRef.current.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouseRef.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
     };
     window.addEventListener('mousemove', handleMouseMove);
 
-    // ========================================
-    // 8. ANIMATION LOOP
-    // ========================================
     const clock = new THREE.Clock();
     let frameCount = 0;
     
@@ -371,14 +341,11 @@ export const Hero3D = () => {
       frameCount++;
       requestAnimationFrame(animate);
 
-      // Stars gently drift
-      stars.rotation.y += (mouseRef.current.x * 0.2 - stars.rotation.y) * 0.015;
-      stars.rotation.x += (mouseRef.current.y * 0.08 - stars.rotation.x) * 0.015;
+      stars.rotation.y += (mouseRef.current.x * 0.15 - stars.rotation.y) * 0.01;
+      stars.rotation.x += (mouseRef.current.y * 0.06 - stars.rotation.x) * 0.01;
 
-      // Star twinkling
-      starMaterial.opacity = 0.7 + Math.sin(time * 0.5) * 0.1;
+      starMaterial.opacity = 0.5 + Math.sin(time * 0.5) * 0.1;
 
-      // Halos pulse
       halos.forEach((halo, i) => {
         const pulse = 1 + Math.sin(time * 1.5 + i) * 0.2;
         halo.scale.set(
@@ -386,10 +353,9 @@ export const Hero3D = () => {
           (1.5 + Math.cos(time + i) * 0.3) * pulse,
           1
         );
-        halo.material.opacity = 0.2 + Math.sin(time * 2 + i) * 0.1;
+        halo.material.opacity = 0.15 + Math.sin(time * 2 + i) * 0.05;
       });
 
-      // Node animation
       nodeMeshes.forEach((mesh, i) => {
         const floatY = Math.sin(time * 0.7 + i * 0.5) * 0.35;
         const floatX = Math.cos(time * 0.5 + i * 0.3) * 0.2;
@@ -400,50 +366,44 @@ export const Hero3D = () => {
         if (mesh.userData.sprite) {
           mesh.userData.sprite.position.copy(mesh.position);
           const pulse = 0.5 + Math.sin(time * 2 + i * 0.3) * 0.15;
-          mesh.userData.sprite.scale.set(0.4 * (1 + pulse), 0.4 * (1 + pulse), 1);
+          mesh.userData.sprite.scale.set(0.35 * (1 + pulse), 0.35 * (1 + pulse), 1);
         }
 
         nodePositions[i].y = mesh.position.y;
         nodePositions[i].x = mesh.position.x;
       });
 
-      // Update connections every 2 seconds
       if (frameCount % 120 === 0) {
         updateConnections();
       }
 
-      // Enhanced ring animations
       rings.forEach(({ mesh, data }) => {
         const speed = data.speed;
         const axis = data.axis as string;
         
-        // Base rotation
         if (axis === 'x') mesh.rotation.x += speed;
         if (axis === 'y') mesh.rotation.y += speed;
         if (axis === 'z') mesh.rotation.z += speed;
         
-        // Subtle wobble for stream rings
         if (data.type === 'stream') {
-          mesh.rotation.z += Math.sin(time * 2) * 0.001;
-          mesh.position.y += Math.sin(time * 1.5 + mesh.position.x) * 0.001;
+          mesh.rotation.z += Math.sin(time * 2) * 0.0005;
+          mesh.position.y += Math.sin(time * 1.5 + mesh.position.x) * 0.0005;
         }
         
-        // Pulse opacity for dashed rings
         if (data.type === 'dashed') {
           mesh.children.forEach((child: THREE.Mesh) => {
             if (child.material instanceof THREE.MeshBasicMaterial) {
               child.material.opacity = data.speed > 0 
-                ? 0.15 + Math.sin(time * 3) * 0.05
-                : 0.12 + Math.cos(time * 2.5) * 0.05;
+                ? 0.1 + Math.sin(time * 3) * 0.04
+                : 0.08 + Math.cos(time * 2.5) * 0.04;
             }
           });
         }
         
-        // Mouse influence on closer rings
         const dist = Math.abs(mesh.position.z);
         if (dist < 2) {
-          mesh.rotation.y += mouseRef.current.x * 0.005;
-          mesh.rotation.x += mouseRef.current.y * 0.003;
+          mesh.rotation.y += mouseRef.current.x * 0.003;
+          mesh.rotation.x += mouseRef.current.y * 0.002;
         }
       });
 
@@ -451,9 +411,6 @@ export const Hero3D = () => {
     };
     animate();
 
-    // ========================================
-    // 9. RESIZE HANDLER
-    // ========================================
     const handleResize = () => {
       if (!mountRef.current) return;
       const w = mountRef.current.clientWidth;
@@ -464,9 +421,6 @@ export const Hero3D = () => {
     };
     window.addEventListener('resize', handleResize);
 
-    // ========================================
-    // 10. CLEANUP
-    // ========================================
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
@@ -481,5 +435,5 @@ export const Hero3D = () => {
     };
   }, []);
 
-  return <div ref={mountRef} className="w-full h-full opacity-70" />;
+  return <div ref={mountRef} className="w-full h-full opacity-60" />;
 };
