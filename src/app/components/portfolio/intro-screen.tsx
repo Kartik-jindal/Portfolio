@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useState } from 'react';
@@ -103,10 +102,10 @@ export const IntroScreen = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="flex items-center gap-6"
+                    className="flex items-center gap-6 mb-4"
                   >
                     <span className="w-12 h-[1px] bg-white/10" />
-                    <span className="text-2xl md:text-3xl font-headline italic font-light text-white/40 tracking-[0.2em]">Let&apos;s</span>
+                    <span className="text-3xl md:text-4xl font-headline italic font-light text-white/40 tracking-[0.2em]">Let&apos;s</span>
                     <span className="w-12 h-[1px] bg-white/10" />
                   </motion.div>
 
@@ -124,8 +123,18 @@ export const IntroScreen = () => {
                     {phrases.map((item, i) => (
                       <motion.div
                         key={item.text}
-                        initial={{ opacity: 0, scale: 1.5, filter: "blur(20px)" }}
-                        animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                        initial={{ 
+                          opacity: 0, 
+                          scale: 1.5, 
+                          filter: "blur(20px)",
+                          z: -100
+                        }}
+                        animate={{ 
+                          opacity: 1, 
+                          scale: 1, 
+                          filter: "blur(0px)",
+                          z: 0
+                        }}
                         transition={{ 
                           delay: i * 0.4, 
                           duration: 1.2, 
