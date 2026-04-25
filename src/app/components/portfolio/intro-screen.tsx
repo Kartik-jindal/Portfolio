@@ -33,9 +33,9 @@ export const IntroScreen = () => {
   if (!isVisible) return null;
 
   const phrases = [
-    { text: "DESIGN", step: "01", status: "SYNCING_NODE", detail: "ARCHITECTURAL_VOID" },
-    { text: "BUILD", step: "02", status: "ACTIVE_STREAM", detail: "STRUCTURAL_SYNTAX" },
-    { text: "DEPLOY", step: "03", status: "READY_FOR_LAUNCH", detail: "PRODUCTION_ORBIT" }
+    { text: "DESIGN", step: "01" },
+    { text: "BUILD", step: "02" },
+    { text: "DEPLOY", step: "03" }
   ];
 
   return (
@@ -81,11 +81,6 @@ export const IntroScreen = () => {
                   transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
                   className="flex flex-col items-center gap-6"
                 >
-                  <span className="text-primary tracking-[1em] uppercase text-[10px] md:text-xs font-black mb-2 flex items-center gap-4">
-                    <span className="w-12 h-px bg-primary/30" />
-                    INITIATING_SYSTEM
-                    <span className="w-12 h-px bg-primary/30" />
-                  </span>
                   <h1 className="text-8xl md:text-[10rem] font-headline font-black italic tracking-tighter text-gradient leading-none">
                     Welcome.
                   </h1>
@@ -157,17 +152,6 @@ export const IntroScreen = () => {
                         <span className="text-5xl md:text-7xl lg:text-8xl font-headline font-black text-white tracking-[0.05em] mb-4">
                           {item.text}
                         </span>
-
-                        {/* System Metadata */}
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: (i * 0.4) + 0.7 }}
-                          className="flex flex-col items-center gap-2"
-                        >
-                          <div className="text-[9px] uppercase tracking-[0.5em] font-black text-white/40">{item.status}</div>
-                          <div className="text-[8px] font-mono text-primary/40 tracking-[0.2em]">{item.detail}</div>
-                        </motion.div>
                       </motion.div>
                     ))}
                   </div>
@@ -178,21 +162,14 @@ export const IntroScreen = () => {
 
           {/* Persistent Progress Footer */}
           <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-full max-w-lg px-10">
-            <div className="flex justify-between items-end mb-4 font-mono">
-              <div className="flex flex-col gap-1">
-                <span className="text-[8px] uppercase tracking-[0.3em] text-white/30">Optimizing Kernel</span>
-                <span className="text-[10px] text-primary font-bold">STABLE_V2.0</span>
-              </div>
-              <div className="flex flex-col items-end gap-1">
-                <span className="text-[8px] uppercase tracking-[0.3em] text-white/30">Pipeline</span>
-                <motion.span
-                  animate={{ opacity: [0.3, 1, 0.3] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                  className="text-[10px] text-white font-bold"
-                >
-                  LOADING...
-                </motion.span>
-              </div>
+            <div className="flex justify-center items-end mb-4 font-mono">
+              <motion.span
+                animate={{ opacity: [0.3, 1, 0.3] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+                className="text-[10px] text-white/50 font-bold tracking-[0.3em]"
+              >
+                LOADING...
+              </motion.span>
             </div>
             <div className="h-[1px] w-full bg-white/5 relative overflow-hidden">
               <motion.div 
