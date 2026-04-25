@@ -13,15 +13,15 @@ export const IntroScreen = () => {
       setStage(1);
     }, 2000);
 
-    // Stage 2: Morphing Reveal (Starts at 4.5s)
+    // Stage 2: Morphing Reveal (Starts at 5s)
     const timer2 = setTimeout(() => {
       setStage(2);
-    }, 4500);
+    }, 5000);
 
-    // Completely remove after animation finishes (5.5s)
+    // Completely remove after animation finishes (6s total)
     const timer3 = setTimeout(() => {
       setIsVisible(false);
-    }, 5500);
+    }, 6000);
 
     return () => {
       clearTimeout(timer1);
@@ -32,6 +32,12 @@ export const IntroScreen = () => {
 
   if (!isVisible) return null;
 
+  const phrases = [
+    { text: "DESIGN", step: "01", status: "SYNCING_NODE", detail: "ARCHITECTURAL_VOID" },
+    { text: "BUILD", step: "02", status: "ACTIVE_STREAM", detail: "STRUCTURAL_SYNTAX" },
+    { text: "DEPLOY", step: "03", status: "READY_FOR_LAUNCH", detail: "PRODUCTION_ORBIT" }
+  ];
+
   return (
     <AnimatePresence>
       {stage < 2 && (
@@ -41,9 +47,9 @@ export const IntroScreen = () => {
           exit={{ 
             y: "-100%", 
             transition: { 
-              duration: 1.2, 
-              ease: [0.85, 0, 0.15, 1], // Cinematic power ease
-              delay: 0.2
+              duration: 1, 
+              ease: [0.85, 0, 0.15, 1],
+              delay: 0.1
             } 
           }}
           className="fixed inset-0 z-[9999] bg-background flex items-center justify-center overflow-hidden"
@@ -56,15 +62,15 @@ export const IntroScreen = () => {
             className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.08),transparent_70%)]" 
           />
           
-          {/* Scanning Effect */}
+          {/* Vertical Scanning Effect */}
           <motion.div 
-            className="absolute inset-0 w-full h-[2px] bg-primary/20 z-10"
+            className="absolute inset-0 w-full h-[1px] bg-primary/20 z-10"
             initial={{ top: "-10%" }}
             animate={{ top: "110%" }}
-            transition={{ duration: 5, ease: "linear" }}
+            transition={{ duration: 6, ease: "linear" }}
           />
 
-          <div className="relative z-20 text-center">
+          <div className="relative z-20 w-full max-w-7xl mx-auto px-10">
             <AnimatePresence mode="wait">
               {stage === 0 && (
                 <motion.div
@@ -77,7 +83,7 @@ export const IntroScreen = () => {
                 >
                   <span className="text-primary tracking-[1em] uppercase text-[10px] md:text-xs font-black mb-2 flex items-center gap-4">
                     <span className="w-12 h-px bg-primary/30" />
-                    Initiating Portfolio
+                    INITIATING_SYSTEM
                     <span className="w-12 h-px bg-primary/30" />
                   </span>
                   <h1 className="text-8xl md:text-[10rem] font-headline font-black italic tracking-tighter text-gradient leading-none">
@@ -89,65 +95,111 @@ export const IntroScreen = () => {
               {stage === 1 && (
                 <motion.div
                   key="phrases-stage"
-                  className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-20"
+                  className="flex flex-col items-center w-full"
                 >
-                  {["DESIGN", "BUILD", "DEPLOY"].map((text, i) => (
-                    <motion.div
-                      key={text}
-                      initial={{ 
-                        opacity: 0, 
-                        scale: 1.2, 
-                        letterSpacing: "-0.5em", 
-                        filter: "blur(20px)" 
-                      }}
-                      animate={{ 
-                        opacity: 1, 
-                        scale: 1, 
-                        letterSpacing: "0.2em", 
-                        filter: "blur(0px)" 
-                      }}
-                      transition={{ 
-                        delay: i * 0.4, 
-                        duration: 1.2, 
-                        ease: [0.16, 1, 0.3, 1] 
-                      }}
-                      className="relative group"
-                    >
-                      <span className="text-5xl md:text-7xl lg:text-8xl font-headline font-black text-white/90 group-hover:text-primary transition-all duration-700">
-                        {text}
-                      </span>
-                      {i < 2 && (
-                        <motion.div 
-                          initial={{ scale: 0, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ delay: (i + 1) * 0.5, duration: 0.8 }}
-                          className="hidden md:block absolute -right-12 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary/40 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
-                        />
-                      )}
-                    </motion.div>
-                  ))}
+                  {/* Transition Header */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="flex flex-col items-center gap-4 mb-20"
+                  >
+                    <span className="text-primary font-black text-[10px] tracking-[0.8em] uppercase">The Vision</span>
+                    <div className="flex items-center gap-6">
+                      <span className="w-16 h-[1px] bg-white/5" />
+                      <span className="text-4xl md:text-5xl font-headline italic font-light text-white/40 tracking-[0.15em]">Our Aim</span>
+                      <span className="w-16 h-[1px] bg-white/5" />
+                    </div>
+                  </motion.div>
+
+                  <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0 w-full">
+                    {/* Procedural Connection Path */}
+                    <div className="hidden md:block absolute top-[4.5rem] left-[15%] right-[15%] h-[1px] bg-white/5">
+                      <motion.div 
+                        initial={{ width: "0%" }}
+                        animate={{ width: "100%" }}
+                        transition={{ duration: 2.5, ease: "easeInOut" }}
+                        className="h-full bg-gradient-to-r from-primary/0 via-primary/40 to-primary/0"
+                      />
+                    </div>
+
+                    {phrases.map((item, i) => (
+                      <motion.div
+                        key={item.text}
+                        initial={{ 
+                          opacity: 0, 
+                          y: 40,
+                          filter: "blur(15px)"
+                        }}
+                        animate={{ 
+                          opacity: 1, 
+                          y: 0,
+                          filter: "blur(0px)"
+                        }}
+                        transition={{ 
+                          delay: i * 0.4, 
+                          duration: 1, 
+                          ease: [0.16, 1, 0.3, 1] 
+                        }}
+                        className="relative z-10 flex flex-col items-center"
+                      >
+                        {/* Status Hub */}
+                        <div className="mb-12 flex flex-col items-center gap-3">
+                           <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: (i * 0.4) + 0.5 }}
+                            className="w-3 h-3 rounded-full bg-primary shadow-[0_0_20px_rgba(16,185,129,1)] ring-8 ring-primary/5"
+                           />
+                           <span className="text-primary font-black text-[9px] tracking-[0.4em] font-mono mt-2">STEP_{item.step}</span>
+                        </div>
+
+                        <span className="text-5xl md:text-7xl lg:text-8xl font-headline font-black text-white tracking-[0.05em] mb-4">
+                          {item.text}
+                        </span>
+
+                        {/* System Metadata */}
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: (i * 0.4) + 0.7 }}
+                          className="flex flex-col items-center gap-2"
+                        >
+                          <div className="text-[9px] uppercase tracking-[0.5em] font-black text-white/40">{item.status}</div>
+                          <div className="text-[8px] font-mono text-primary/40 tracking-[0.2em]">{item.detail}</div>
+                        </motion.div>
+                      </motion.div>
+                    ))}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
 
-          {/* Persistent Progress Visualization */}
-          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-full max-w-md px-10">
-            <div className="flex justify-between items-center mb-4 text-[10px] uppercase tracking-[0.5em] font-black text-white/30">
-              <span>Establishing Link</span>
-              <motion.span
-                animate={{ opacity: [0.3, 1, 0.3] }}
-                transition={{ duration: 1, repeat: Infinity }}
-              >
-                100%
-              </motion.span>
+          {/* Persistent Progress Footer */}
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-full max-w-lg px-10">
+            <div className="flex justify-between items-end mb-4 font-mono">
+              <div className="flex flex-col gap-1">
+                <span className="text-[8px] uppercase tracking-[0.3em] text-white/30">Optimizing Kernel</span>
+                <span className="text-[10px] text-primary font-bold">STABLE_V2.0</span>
+              </div>
+              <div className="flex flex-col items-end gap-1">
+                <span className="text-[8px] uppercase tracking-[0.3em] text-white/30">Pipeline</span>
+                <motion.span
+                  animate={{ opacity: [0.3, 1, 0.3] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="text-[10px] text-white font-bold"
+                >
+                  LOADING...
+                </motion.span>
+              </div>
             </div>
             <div className="h-[1px] w-full bg-white/5 relative overflow-hidden">
               <motion.div 
-                className="absolute inset-0 bg-primary/50 shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+                className="absolute inset-0 bg-primary/40 shadow-[0_0_15px_rgba(16,185,129,0.4)]"
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}
-                transition={{ duration: 4.5, ease: "easeInOut" }}
+                transition={{ duration: 5, ease: "easeInOut" }}
               />
             </div>
           </div>
