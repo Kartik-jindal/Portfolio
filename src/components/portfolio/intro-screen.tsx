@@ -70,7 +70,7 @@ export const IntroScreen = () => {
             transition={{ duration: 6, ease: "linear" }}
           />
 
-          <div className="relative z-20 w-full max-w-7xl mx-auto px-10">
+          <div className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-10">
             <AnimatePresence mode="wait">
               {stage === 0 && (
                 <motion.div
@@ -81,7 +81,7 @@ export const IntroScreen = () => {
                   transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
                   className="flex flex-col items-center gap-6"
                 >
-                  <h1 className="text-8xl md:text-[10rem] font-headline font-black italic tracking-tighter text-gradient leading-none">
+                  <h1 className="text-7xl md:text-[10rem] font-headline font-black italic tracking-tighter text-gradient leading-none">
                     Welcome.
                   </h1>
                 </motion.div>
@@ -92,7 +92,7 @@ export const IntroScreen = () => {
                   key="phrases-stage"
                   className="flex flex-col items-center w-full"
                 >
-                  <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0 w-full">
+                  <div className="relative grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8 lg:gap-12 w-full">
                     {/* Procedural Connection Path */}
                     <div className="hidden md:block absolute top-[2rem] left-[15%] right-[15%] h-[1px] bg-white/5">
                       <motion.div 
@@ -116,7 +116,7 @@ export const IntroScreen = () => {
                           opacity: 1, 
                           scale: 1,
                           filter: "blur(0px)",
-                          letterSpacing: "0.05em"
+                          letterSpacing: "0.02em"
                         }}
                         transition={{ 
                           delay: i * 0.4, 
@@ -126,7 +126,7 @@ export const IntroScreen = () => {
                         className="relative z-10 flex flex-col items-center"
                       >
                         {/* Status Hub */}
-                        <div className="mb-8 flex flex-col items-center gap-3">
+                        <div className="mb-6 flex flex-col items-center gap-3">
                            <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
@@ -135,7 +135,7 @@ export const IntroScreen = () => {
                            />
                         </div>
 
-                        <span className="text-6xl md:text-8xl lg:text-[9rem] font-headline font-black text-white leading-none">
+                        <span className="text-5xl md:text-7xl lg:text-[7.5rem] font-headline font-black text-white leading-none text-center">
                           {item.text}
                         </span>
                       </motion.div>
