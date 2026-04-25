@@ -102,11 +102,14 @@ export const IntroScreen = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
-                    className="flex items-center gap-6 mb-20"
+                    className="flex flex-col items-center gap-4 mb-20"
                   >
-                    <span className="w-16 h-[1px] bg-white/5" />
-                    <span className="text-4xl md:text-5xl font-headline italic font-light text-white/30 tracking-[0.2em]">Let&apos;s</span>
-                    <span className="w-16 h-[1px] bg-white/5" />
+                    <span className="text-primary font-black text-[10px] tracking-[0.8em] uppercase">The Vision</span>
+                    <div className="flex items-center gap-6">
+                      <span className="w-16 h-[1px] bg-white/5" />
+                      <span className="text-4xl md:text-5xl font-headline italic font-light text-white/40 tracking-[0.15em]">Our Aim</span>
+                      <span className="w-16 h-[1px] bg-white/5" />
+                    </div>
                   </motion.div>
 
                   <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0 w-full">
