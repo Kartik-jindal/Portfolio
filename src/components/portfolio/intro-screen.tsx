@@ -94,23 +94,33 @@ export const IntroScreen = () => {
                   {["DESIGN", "BUILD", "DEPLOY"].map((text, i) => (
                     <motion.div
                       key={text}
-                      initial={{ opacity: 0, y: 40, filter: "blur(15px)" }}
-                      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                      initial={{ 
+                        opacity: 0, 
+                        scale: 1.2, 
+                        letterSpacing: "-0.5em", 
+                        filter: "blur(20px)" 
+                      }}
+                      animate={{ 
+                        opacity: 1, 
+                        scale: 1, 
+                        letterSpacing: "0.2em", 
+                        filter: "blur(0px)" 
+                      }}
                       transition={{ 
-                        delay: i * 0.3, 
-                        duration: 0.8, 
+                        delay: i * 0.4, 
+                        duration: 1.2, 
                         ease: [0.16, 1, 0.3, 1] 
                       }}
                       className="relative group"
                     >
-                      <span className="text-5xl md:text-7xl lg:text-8xl font-headline font-black tracking-[0.2em] text-white/90 group-hover:text-primary transition-colors duration-500">
+                      <span className="text-5xl md:text-7xl lg:text-8xl font-headline font-black text-white/90 group-hover:text-primary transition-all duration-700">
                         {text}
                       </span>
                       {i < 2 && (
                         <motion.div 
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ delay: (i + 1) * 0.4 }}
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: (i + 1) * 0.5, duration: 0.8 }}
                           className="hidden md:block absolute -right-12 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary/40 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
                         />
                       )}
