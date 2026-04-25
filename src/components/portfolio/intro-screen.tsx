@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useState } from 'react';
@@ -81,7 +82,7 @@ export const IntroScreen = () => {
                   transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
                   className="flex flex-col items-center gap-6"
                 >
-                  <h1 className="text-7xl md:text-[10rem] font-headline font-black italic tracking-tighter text-gradient leading-none">
+                  <h1 className="text-6xl sm:text-8xl md:text-[10rem] font-headline font-black italic tracking-tighter text-gradient leading-none text-center">
                     Welcome.
                   </h1>
                 </motion.div>
@@ -92,7 +93,7 @@ export const IntroScreen = () => {
                   key="phrases-stage"
                   className="flex flex-col items-center w-full"
                 >
-                  <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-4 lg:gap-8 w-full">
+                  <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4 lg:gap-8 w-full max-w-6xl">
                     {phrases.map((item, i) => (
                       <motion.div
                         key={item.text}
@@ -111,19 +112,19 @@ export const IntroScreen = () => {
                           duration: 1.2, 
                           ease: [0.16, 1, 0.3, 1] 
                         }}
-                        className="relative z-10 flex flex-col items-center justify-center"
+                        className="relative z-10 flex flex-col items-center justify-center py-4"
                       >
                         {/* Status Hub - Minimalist indicator */}
-                        <div className="mb-8 flex flex-col items-center">
+                        <div className="mb-4 md:mb-8 flex flex-col items-center">
                            <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ delay: (i * 0.4) + 0.5 }}
-                            className="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_20px_rgba(16,185,129,1)]"
+                            className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-primary shadow-[0_0_15px_md:0_0_20px_rgba(16,185,129,1)]"
                            />
                         </div>
 
-                        <span className="text-5xl md:text-6xl lg:text-8xl font-headline font-black text-white leading-none text-center tracking-tight">
+                        <span className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-headline font-black text-white leading-none text-center tracking-tight px-2">
                           {item.text}
                         </span>
                       </motion.div>
@@ -135,12 +136,12 @@ export const IntroScreen = () => {
           </div>
 
           {/* Persistent Progress Footer */}
-          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-full max-w-lg px-10">
+          <div className="absolute bottom-12 md:bottom-20 left-1/2 -translate-x-1/2 w-full max-w-sm md:max-w-lg px-8">
             <div className="flex justify-center items-end mb-4 font-mono">
               <motion.span
                 animate={{ opacity: [0.3, 1, 0.3] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
-                className="text-[10px] text-white/50 font-bold tracking-[0.3em]"
+                className="text-[9px] md:text-[10px] text-white/50 font-bold tracking-[0.3em]"
               >
                 LOADING...
               </motion.span>
