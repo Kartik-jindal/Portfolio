@@ -17,27 +17,31 @@ export const Contact = () => {
             viewport={{ once: true }}
             className="mb-12"
           >
-            <div className="inline-block px-4 py-2 rounded-full glass border-white/10 text-sm font-bold text-accent mb-8">
+            <div className="inline-block px-4 py-2 rounded-full glass border-white/10 text-sm font-bold text-accent mb-8 relative">
+              <span className="absolute -left-1.5 -top-1.5 w-3 h-3 bg-accent rounded-full animate-ping opacity-20" />
               Available for New Projects
             </div>
-            <h2 className="text-6xl md:text-8xl lg:text-9xl font-headline font-black mb-12 tracking-tighter">
+            <h2 className="text-6xl md:text-8xl lg:text-9xl font-headline font-black mb-12 tracking-tighter animate-float">
               Let's build <br /> <span className="text-primary italic">something great</span>.
             </h2>
-            <Button size="lg" className="rounded-full px-12 py-10 text-2xl font-bold bg-white text-black hover:bg-accent hover:text-accent-foreground transition-all duration-500 group">
-              Start a Conversation <ArrowRight className="ml-4 w-8 h-8 group-hover:translate-x-2 transition-transform" />
+            <Button size="lg" className="rounded-full px-12 py-10 text-2xl font-bold bg-white text-black hover:bg-accent hover:text-accent-foreground transition-all duration-500 group relative overflow-hidden">
+              <span className="relative z-10 flex items-center">
+                Start a Conversation <ArrowRight className="ml-4 w-8 h-8 group-hover:translate-x-2 transition-transform" />
+              </span>
+              <div className="absolute inset-0 bg-accent translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
             </Button>
           </motion.div>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 border-t border-white/10 pt-24">
           <div className="col-span-1 md:col-span-2">
-            <h3 className="text-2xl font-headline font-bold mb-6 italic">Kartik Jindal</h3>
+            <h3 className="text-2xl font-headline font-bold mb-6 italic hover:text-primary transition-colors cursor-default">Kartik Jindal</h3>
             <p className="text-muted-foreground max-w-sm mb-8 leading-relaxed">
               Based in the digital ether, delivering premium engineering and design globally.
             </p>
             <div className="flex gap-4">
               {[Github, Twitter, Linkedin, Instagram].map((Icon, i) => (
-                <a key={i} href="#" className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-all duration-300">
+                <a key={i} href="#" className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground hover:scale-110 hover:rotate-6 transition-all duration-300">
                   <Icon className="w-5 h-5" />
                 </a>
               ))}
@@ -47,20 +51,20 @@ export const Contact = () => {
           <div>
             <h4 className="text-xs uppercase tracking-widest font-bold text-primary mb-6">Explore</h4>
             <ul className="space-y-4 text-muted-foreground">
-              <li><a href="#" className="hover:text-accent transition-colors">Home</a></li>
-              <li><a href="#work" className="hover:text-accent transition-colors">Selected Work</a></li>
-              <li><a href="#about" className="hover:text-accent transition-colors">About Story</a></li>
-              <li><a href="/blog" className="hover:text-accent transition-colors">Blog Archives</a></li>
+              <li><a href="#" className="hover:text-accent hover:translate-x-1 inline-block transition-all">Home</a></li>
+              <li><a href="#work" className="hover:text-accent hover:translate-x-1 inline-block transition-all">Selected Work</a></li>
+              <li><a href="#about" className="hover:text-accent hover:translate-x-1 inline-block transition-all">About Story</a></li>
+              <li><a href="/blog" className="hover:text-accent hover:translate-x-1 inline-block transition-all">Blog Archives</a></li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-xs uppercase tracking-widest font-bold text-primary mb-6">Contact</h4>
             <ul className="space-y-4 text-muted-foreground">
-              <li><a href="mailto:hello@kartikjindal.com" className="flex items-center gap-2 hover:text-accent transition-colors">
-                <Mail className="w-4 h-4" /> hello@kartikjindal.com
+              <li><a href="mailto:hello@kartikjindal.com" className="flex items-center gap-2 hover:text-accent transition-all group">
+                <Mail className="w-4 h-4 group-hover:scale-110" /> hello@kartikjindal.com
               </a></li>
-              <li><a href="#" className="hover:text-accent transition-colors underline decoration-accent/30 underline-offset-8">Download CV</a></li>
+              <li><a href="#" className="hover:text-accent transition-all underline decoration-accent/30 underline-offset-8">Download CV</a></li>
             </ul>
           </div>
         </div>

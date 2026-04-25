@@ -34,7 +34,6 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   
-  // 3D Tilt State for subtle movement
   const x = useSpring(0, { stiffness: 60, damping: 20 });
   const y = useSpring(0, { stiffness: 60, damping: 20 });
 
@@ -44,7 +43,7 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
     const height = rect.height;
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
-    const xPct = (mouseX / width - 0.5) * 10; // Reduced for subtler parallax
+    const xPct = (mouseX / width - 0.5) * 10;
     const yPct = (mouseY / height - 0.5) * -10;
     x.set(xPct);
     y.set(yPct);
@@ -73,7 +72,6 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
     >
       <div className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-12 lg:gap-24 max-w-[1800px] mx-auto px-6 items-center w-full`}>
         
-        {/* Interactive Visual Element - Expanded Size */}
         <div 
           className="lg:w-[65%] w-full group relative"
           onMouseMove={handleMouse}
@@ -81,7 +79,7 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
           onMouseLeave={handleMouseLeave}
           data-cursor="view"
         >
-          <div className={`absolute -inset-12 bg-gradient-to-br ${project.color} blur-[120px] opacity-10 group-hover:opacity-30 transition-opacity duration-1000`} />
+          <div className={`absolute -inset-12 bg-gradient-to-br ${project.color} blur-[120px] opacity-10 group-hover:opacity-30 transition-opacity duration-1000 animate-pulse-slow`} />
           
           <motion.div 
             style={{ rotateX: y, rotateY: x, perspective: 2000 }}
@@ -116,8 +114,9 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
                       transition={{ delay: 0.1 }}
                       className="flex gap-6"
                     >
-                      <Button className="rounded-full w-20 h-20 bg-white text-black p-0 hover:scale-110 transition-all duration-500 shadow-xl">
-                        <Play className="fill-current w-6 h-6" />
+                      <Button className="rounded-full w-20 h-20 bg-white text-black p-0 hover:scale-110 transition-all duration-500 shadow-xl relative overflow-hidden group/play">
+                        <Play className="fill-current w-6 h-6 relative z-10" />
+                        <div className="absolute inset-0 bg-primary/20 scale-0 group-hover/play:scale-100 transition-transform duration-500 rounded-full" />
                       </Button>
                       <Button variant="outline" className="rounded-full px-10 py-8 border-white/20 text-white font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all duration-500">
                         Case Study
@@ -127,12 +126,12 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
                 )}
               </AnimatePresence>
 
-              {/* Top-right badge on hover */}
               <motion.div 
-                animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : 20 }}
+                animate={{ opacity: isHovered ? 1 : 0.8, x: isHovered ? 0 : 0 }}
                 className="absolute top-8 right-8 pointer-events-none"
               >
-                <div className="glass px-6 py-3 rounded-full border-white/10 text-[10px] font-black uppercase tracking-widest text-primary">
+                <div className="glass px-6 py-3 rounded-full border-white/10 text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-3">
+                  <span className="w-1.5 h-1.5 bg-primary rounded-full animate-ping" />
                   Live System
                 </div>
               </motion.div>
@@ -140,11 +139,10 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
           </motion.div>
         </div>
 
-        {/* Content Element - Refined Width */}
         <div className="lg:w-[35%] w-full space-y-10 lg:py-12">
           <div className="space-y-6">
             <div className="flex items-center gap-4">
-               <div className="w-12 h-px bg-primary/40" />
+               <div className="w-12 h-px bg-primary/40 animate-pulse" />
                <span className="text-primary font-black tracking-[0.8em] text-[10px] uppercase">{project.role}</span>
             </div>
             
@@ -164,7 +162,7 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
           <div className="flex flex-wrap gap-4">
              {project.tech.map((t, i) => (
                <div key={t} className="flex items-center gap-3 group/item">
-                  <div className="w-8 h-8 rounded-xl glass border-white/5 flex items-center justify-center text-primary group-hover/item:bg-primary group-hover/item:text-black transition-all duration-500">
+                  <div className="w-8 h-8 rounded-xl glass border-white/5 flex items-center justify-center text-primary group-hover/item:bg-primary group-hover/item:text-black transition-all duration-500 group-hover/item:rotate-12">
                      {i % 2 === 0 ? <Code2 className="w-4 h-4" /> : <Layout className="w-4 h-4" />}
                   </div>
                   <span className="text-[11px] uppercase font-bold tracking-[0.2em] text-white/50 group-hover/item:text-white transition-colors">{t}</span>
@@ -180,7 +178,7 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
             >
               Full Archive <ArrowUpRight className="w-6 h-6 group-hover:-translate-y-1.5 group-hover:translate-x-1.5 transition-transform duration-500" />
             </motion.a>
-            <a href="#" className="text-white/20 hover:text-white transition-all duration-500 hover:scale-110">
+            <a href="#" className="text-white/20 hover:text-white transition-all duration-500 hover:scale-125">
               <Github className="w-6 h-6" />
             </a>
           </div>
@@ -200,13 +198,16 @@ export const Projects = () => {
           viewport={{ once: true }}
           className="space-y-8"
         >
-          <span className="text-primary uppercase tracking-[1.2em] text-[12px] font-black block">Featured Productions</span>
+          <span className="text-primary uppercase tracking-[1.2em] text-[12px] font-black block relative">
+            Featured Productions
+            <span className="absolute -left-8 top-1/2 w-4 h-px bg-primary/40 animate-pulse" />
+          </span>
           <h2 className="text-7xl md:text-[10rem] font-headline font-black tracking-tighter leading-none">THE <br /> <span className="text-outline italic">CATALOG</span></h2>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pt-8">
             <p className="max-w-xl text-muted-foreground/60 text-xl font-light leading-relaxed">
               Synthesizing complex engineering requirements into seamless, high-fidelity digital interfaces.
             </p>
-            <div className="text-xs font-black tracking-widest uppercase text-white/20 border-l border-white/10 pl-8">
+            <div className="text-xs font-black tracking-widest uppercase text-white/20 border-l border-white/10 pl-8 h-fit">
               Selected Works <br /> 2022 — 2024
             </div>
           </div>
@@ -219,7 +220,6 @@ export const Projects = () => {
         ))}
       </div>
 
-      {/* Background decoration */}
       <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/[0.03] -z-10" />
     </section>
   );

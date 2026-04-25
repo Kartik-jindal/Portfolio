@@ -20,7 +20,6 @@ export const Hero = () => {
 
   return (
     <section ref={targetRef} className="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-24 px-6">
-      {/* 3D Background */}
       <motion.div style={{ opacity, scale }} className="fixed inset-0 z-0 pointer-events-none">
         <Hero3D />
       </motion.div>
@@ -36,15 +35,15 @@ export const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-8"
+          className="mb-6 mt-8"
         >
-          <span className="flex items-center gap-2 text-primary tracking-[0.6em] uppercase text-[12px] font-black bg-primary/5 px-8 py-3 rounded-full border border-primary/20 backdrop-blur-xl">
-            <Sparkles className="w-3 h-3" />
+          <span className="flex items-center gap-2 text-primary tracking-[0.6em] uppercase text-[12px] font-black bg-primary/5 px-8 py-3 rounded-full border border-primary/20 backdrop-blur-xl animate-pulse-slow">
+            <Sparkles className="w-3 h-3 text-primary animate-spin-slow" />
             Full Stack Architect
           </span>
         </motion.div>
 
-        <div className="relative mb-16">
+        <div className="relative mb-16 animate-float">
           <motion.h1
             initial={{ opacity: 0, y: 80 }}
             animate={{ opacity: 1, y: 0 }}
@@ -78,8 +77,9 @@ export const Hero = () => {
           transition={{ duration: 1.2, delay: 1.3, ease: "backOut" }}
           className="flex flex-col sm:flex-row gap-4"
         >
-          <Button size="lg" className="rounded-full px-12 py-8 text-lg font-black bg-primary text-primary-foreground hover:bg-accent transition-all duration-500 hover:scale-105 shadow-[0_0_40px_rgba(16,185,129,0.3)]">
-            Explore Work
+          <Button size="lg" className="rounded-full px-12 py-8 text-lg font-black bg-primary text-primary-foreground hover:bg-accent transition-all duration-500 hover:scale-105 shadow-[0_0_40px_rgba(16,185,129,0.3)] group relative overflow-hidden">
+            <span className="relative z-10">Explore Work</span>
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
           </Button>
           <Button variant="outline" size="lg" className="rounded-full px-12 py-8 text-lg font-black border-white/10 hover:bg-white/5 transition-all duration-500 backdrop-blur-md">
             The Vision
