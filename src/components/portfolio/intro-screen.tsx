@@ -13,7 +13,7 @@ export const IntroScreen = () => {
       setStage(1);
     }, 2000);
 
-    // Stage 2: Morphing Reveal (Starts at 5s)
+    // Stage 2: Reveal Home (Starts at 5s)
     const timer2 = setTimeout(() => {
       setStage(2);
     }, 5000);
@@ -92,24 +92,9 @@ export const IntroScreen = () => {
                   key="phrases-stage"
                   className="flex flex-col items-center w-full"
                 >
-                  {/* Transition Header */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}
-                    className="flex flex-col items-center gap-4 mb-20"
-                  >
-                    <span className="text-primary font-black text-[10px] tracking-[0.8em] uppercase">The Vision</span>
-                    <div className="flex items-center gap-6">
-                      <span className="w-16 h-[1px] bg-white/5" />
-                      <span className="text-4xl md:text-5xl font-headline italic font-light text-white/40 tracking-[0.15em]">Our Aim</span>
-                      <span className="w-16 h-[1px] bg-white/5" />
-                    </div>
-                  </motion.div>
-
                   <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0 w-full">
                     {/* Procedural Connection Path */}
-                    <div className="hidden md:block absolute top-[4.5rem] left-[15%] right-[15%] h-[1px] bg-white/5">
+                    <div className="hidden md:block absolute top-[2rem] left-[15%] right-[15%] h-[1px] bg-white/5">
                       <motion.div 
                         initial={{ width: "0%" }}
                         animate={{ width: "100%" }}
@@ -123,33 +108,34 @@ export const IntroScreen = () => {
                         key={item.text}
                         initial={{ 
                           opacity: 0, 
-                          y: 40,
-                          filter: "blur(15px)"
+                          scale: 1.2,
+                          filter: "blur(20px)",
+                          letterSpacing: "-0.05em"
                         }}
                         animate={{ 
                           opacity: 1, 
-                          y: 0,
-                          filter: "blur(0px)"
+                          scale: 1,
+                          filter: "blur(0px)",
+                          letterSpacing: "0.05em"
                         }}
                         transition={{ 
                           delay: i * 0.4, 
-                          duration: 1, 
+                          duration: 1.2, 
                           ease: [0.16, 1, 0.3, 1] 
                         }}
                         className="relative z-10 flex flex-col items-center"
                       >
                         {/* Status Hub */}
-                        <div className="mb-12 flex flex-col items-center gap-3">
+                        <div className="mb-8 flex flex-col items-center gap-3">
                            <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ delay: (i * 0.4) + 0.5 }}
                             className="w-3 h-3 rounded-full bg-primary shadow-[0_0_20px_rgba(16,185,129,1)] ring-8 ring-primary/5"
                            />
-                           <span className="text-primary font-black text-[9px] tracking-[0.4em] font-mono mt-2">STEP_{item.step}</span>
                         </div>
 
-                        <span className="text-5xl md:text-7xl lg:text-8xl font-headline font-black text-white tracking-[0.05em] mb-4">
+                        <span className="text-6xl md:text-8xl lg:text-[9rem] font-headline font-black text-white leading-none">
                           {item.text}
                         </span>
                       </motion.div>
@@ -162,21 +148,14 @@ export const IntroScreen = () => {
 
           {/* Persistent Progress Footer */}
           <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-full max-w-lg px-10">
-            <div className="flex justify-between items-end mb-4 font-mono">
-              <div className="flex flex-col gap-1">
-                <span className="text-[8px] uppercase tracking-[0.3em] text-white/30">Optimizing Kernel</span>
-                <span className="text-[10px] text-primary font-bold">STABLE_V2.0</span>
-              </div>
-              <div className="flex flex-col items-end gap-1">
-                <span className="text-[8px] uppercase tracking-[0.3em] text-white/30">Pipeline</span>
-                <motion.span
-                  animate={{ opacity: [0.3, 1, 0.3] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                  className="text-[10px] text-white font-bold"
-                >
-                  LOADING...
-                </motion.span>
-              </div>
+            <div className="flex justify-center items-end mb-4 font-mono">
+              <motion.span
+                animate={{ opacity: [0.3, 1, 0.3] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+                className="text-[10px] text-white/50 font-bold tracking-[0.3em]"
+              >
+                LOADING...
+              </motion.span>
             </div>
             <div className="h-[1px] w-full bg-white/5 relative overflow-hidden">
               <motion.div 
