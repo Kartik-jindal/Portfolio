@@ -18,10 +18,10 @@ export const IntroScreen = () => {
       setStage(2);
     }, 5000);
 
-    // Completely remove after animation finishes (6s total)
+    // Completely remove after animation finishes (9s total lifecycle)
     const timer3 = setTimeout(() => {
       setIsVisible(false);
-    }, 8000);
+    }, 9000);
 
     return () => {
       clearTimeout(timer1);
@@ -33,9 +33,9 @@ export const IntroScreen = () => {
   if (!isVisible) return null;
 
   const phrases = [
-    { text: "DESIGN", step: "01", status: "SYNCING_NODE", detail: "ARCHITECTURAL_VOID" },
-    { text: "BUILD", step: "02", status: "ACTIVE_STREAM", detail: "STRUCTURAL_SYNTAX" },
-    { text: "DEPLOY", step: "03", status: "READY_FOR_LAUNCH", detail: "PRODUCTION_ORBIT" }
+    { text: "DESIGN", step: "01" },
+    { text: "BUILD", step: "02" },
+    { text: "DEPLOY", step: "03" }
   ];
 
   return (
@@ -154,20 +154,9 @@ export const IntroScreen = () => {
                            <span className="text-primary font-black text-[9px] tracking-[0.4em] font-mono mt-2">STEP_{item.step}</span>
                         </div>
 
-                        <span className="text-5xl md:text-7xl lg:text-8xl font-headline font-black text-white tracking-[0.05em] mb-4">
+                        <span className="text-5xl md:text-7xl lg:text-8xl font-headline font-black text-white tracking-[0.05em]">
                           {item.text}
                         </span>
-
-                        {/* System Metadata */}
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: (i * 0.4) + 0.7 }}
-                          className="flex flex-col items-center gap-2"
-                        >
-                          <div className="text-[9px] uppercase tracking-[0.5em] font-black text-white/40">{item.status}</div>
-                          <div className="text-[8px] font-mono text-primary/40 tracking-[0.2em]">{item.detail}</div>
-                        </motion.div>
                       </motion.div>
                     ))}
                   </div>
