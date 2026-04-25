@@ -38,7 +38,7 @@ export const Contact = () => {
             <div className="flex justify-center">
               <Button 
                 size="lg" 
-                className="rounded-full px-12 py-10 md:px-16 md:py-12 text-xl md:text-2xl font-black bg-white text-black hover:bg-primary hover:text-primary-foreground transition-all duration-700 group relative overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.1)]"
+                className="rounded-full px-12 py-10 md:px-16 md:py-12 text-xl md:text-3xl font-black bg-white text-black hover:bg-primary hover:text-primary-foreground transition-all duration-700 group relative overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.1)]"
               >
                 <span className="relative z-10 flex items-center gap-4">
                   Start a Project <ArrowRight className="w-6 h-6 md:w-8 md:h-8 group-hover:translate-x-2 transition-transform" />
@@ -52,8 +52,8 @@ export const Contact = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-12 border-t border-white/5 pt-24 pb-12">
           <div className="col-span-1 lg:col-span-2 space-y-8">
             <div className="space-y-4">
-              <h3 className="text-3xl font-headline font-bold italic tracking-tighter">Kartik Jindal.</h3>
-              <p className="text-muted-foreground/60 max-w-sm text-lg font-light leading-relaxed font-body">
+              <h3 className="text-4xl md:text-5xl font-headline font-bold italic tracking-tighter">Kartik Jindal.</h3>
+              <p className="text-muted-foreground/60 max-w-sm text-xl font-light leading-relaxed font-body">
                 Fusing architectural precision with digital soul to build the next generation of web experiences.
               </p>
             </div>
@@ -78,11 +78,11 @@ export const Contact = () => {
           </div>
 
           <div className="space-y-8">
-            <h4 className="text-[10px] uppercase tracking-[0.6em] font-black text-white/20">Navigation</h4>
+            <h4 className="text-xs uppercase tracking-[0.6em] font-black text-white/20">Navigation</h4>
             <ul className="space-y-4 font-body">
               {['Home', 'Selected Work', 'About Story', 'Journal'].map((item) => (
                 <li key={item}>
-                  <a href="#" className="text-muted-foreground/80 hover:text-primary transition-all flex items-center gap-2 group text-lg">
+                  <a href="#" className="text-muted-foreground/80 hover:text-primary transition-all flex items-center gap-2 group text-xl">
                     {item}
                     <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </a>
@@ -92,11 +92,11 @@ export const Contact = () => {
           </div>
 
           <div className="space-y-8">
-            <h4 className="text-[10px] uppercase tracking-[0.6em] font-black text-white/20">Say Hello</h4>
+            <h4 className="text-xs uppercase tracking-[0.6em] font-black text-white/20">Say Hello</h4>
             <div className="space-y-6">
               <a href="mailto:hello@kartikjindal.com" className="block group">
-                <span className="text-xs uppercase tracking-widest text-primary font-black mb-1 block">General Enquiries</span>
-                <span className="text-xl md:text-2xl text-white font-headline border-b border-white/10 group-hover:border-primary transition-colors">
+                <span className="text-sm uppercase tracking-widest text-primary font-black mb-1 block">General Enquiries</span>
+                <span className="text-2xl md:text-3xl lg:text-4xl text-white font-headline border-b border-white/10 group-hover:border-primary transition-colors">
                   hello@kartikjindal.com
                 </span>
               </a>
@@ -109,7 +109,7 @@ export const Contact = () => {
           </div>
         </div>
 
-        <div className="mt-24 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] tracking-[0.4em] font-black text-white/10 uppercase">
+        <div className="mt-24 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-xs tracking-[0.4em] font-black text-white/10 uppercase">
           <div className="flex items-center gap-8">
             <span>&copy; 2024 Kartik Jindal</span>
             <span className="hidden md:block w-1 h-1 rounded-full bg-white/10" />
