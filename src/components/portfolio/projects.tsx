@@ -1,8 +1,7 @@
-
 "use client";
 
 import React, { useRef, useState } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence, useSpring } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Github, ArrowUpRight, Play, Layout, Code2 } from 'lucide-react';
 import Image from 'next/image';
@@ -34,6 +33,28 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   
+  // 3D Tilt State
+  const x = useSpring(0, { stiffness: 100, damping: 30 });
+  const y = useSpring(0, { stiffness: 100, damping: 30 });
+
+  function handleMouse(event: React.MouseEvent<HTMLDivElement>) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+    const xPct = (mouseX / width - 0.5) * 20;
+    const yPct = (mouseY / height - 0.5) * -20;
+    x.set(xPct);
+    y.set(yPct);
+  }
+
+  function handleMouseLeave() {
+    setIsHovered(false);
+    x.set(0);
+    y.set(0);
+  }
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"]
@@ -41,7 +62,7 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
 
   const scale = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.95, 1, 1, 0.95]);
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1.05, 1]);
+  const imageScale = useTransform(scrollYProgress, [0, 1], [1.1, 1]);
 
   return (
     <motion.div
@@ -53,16 +74,17 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
         
         {/* Interactive Visual Element */}
         <div 
-          className="flex-1 w-full group relative cursor-pointer"
+          className="flex-1 w-full group relative"
+          onMouseMove={handleMouse}
           onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          onMouseLeave={handleMouseLeave}
+          data-cursor="view"
         >
-          <div className={`absolute -inset-10 bg-gradient-to-br ${project.color} blur-[100px] opacity-10 group-hover:opacity-20 transition-opacity duration-1000`} />
+          <div className={`absolute -inset-10 bg-gradient-to-br ${project.color} blur-[100px] opacity-10 group-hover:opacity-25 transition-opacity duration-1000`} />
           
           <motion.div 
-            whileHover={{ y: -5, rotateX: 1, rotateY: index % 2 === 0 ? 1 : -1 }}
-            transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className="relative glass p-2 md:p-3 rounded-[2rem] shadow-2xl overflow-hidden"
+            style={{ rotateX: y, rotateY: x, perspective: 1000 }}
+            className="relative glass p-2 md:p-3 rounded-[2rem] shadow-2xl overflow-hidden transition-shadow duration-500 group-hover:shadow-primary/10"
           >
             <div className="relative aspect-[16/10] overflow-hidden rounded-[1.5rem]">
               <motion.div style={{ scale: imageScale }} className="absolute inset-0">
@@ -70,8 +92,7 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
                   src={project.image}
                   alt={project.title}
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  data-ai-hint="luxury interface"
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
               </motion.div>
               
@@ -81,15 +102,15 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center gap-6"
+                    className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center gap-6"
                   >
                     <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }}>
                       <Button className="rounded-full w-16 h-16 bg-white text-black p-0 hover:scale-110 transition-transform">
                         <Play className="fill-current w-5 h-5" />
                       </Button>
                     </motion.div>
-                    <Button variant="outline" className="rounded-full px-8 py-6 border-white/20 text-white font-bold hover:bg-white hover:text-black">
-                      View Live
+                    <Button variant="outline" className="rounded-full px-8 py-6 border-white/20 text-white font-bold hover:bg-white hover:text-black transition-all">
+                      Case Study
                     </Button>
                   </motion.div>
                 )}

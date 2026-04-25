@@ -1,46 +1,107 @@
-
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { motion, useSpring } from 'framer-motion';
+import { motion, useSpring, useMotionValue } from 'framer-motion';
 
 export const CustomCursor = () => {
   const [mounted, setMounted] = useState(false);
-  const cursorX = useSpring(0, { damping: 20, stiffness: 200 });
-  const cursorY = useSpring(0, { damping: 20, stiffness: 200 });
-  const [isPointer, setIsPointer] = useState(false);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  // Smooth springs for the outer cursor
+  const springConfig = { damping: 25, stiffness: 150 };
+  const cursorX = useSpring(mouseX, springConfig);
+  const cursorY = useSpring(mouseY, springConfig);
+
+  const [cursorVariant, setCursorVariant] = useState("default");
+  const [cursorText, setCursorText] = useState("");
 
   useEffect(() => {
     setMounted(true);
     const moveCursor = (e: MouseEvent) => {
-      cursorX.set(e.clientX - 16);
-      cursorY.set(e.clientY - 16);
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
 
       const target = e.target as HTMLElement;
-      setIsPointer(
-        window.getComputedStyle(target).cursor === 'pointer' ||
-        target.tagName.toLowerCase() === 'button' ||
-        target.tagName.toLowerCase() === 'a'
-      );
+      if (!target) return;
+
+      const isPointer = window.getComputedStyle(target).cursor === 'pointer' || 
+                        target.closest('a') || 
+                        target.closest('button');
+      
+      const customCursorLabel = target.closest('[data-cursor]')?.getAttribute('data-cursor');
+
+      if (customCursorLabel) {
+        setCursorVariant("custom");
+        setCursorText(customCursorLabel);
+      } else if (isPointer) {
+        setCursorVariant("pointer");
+        setCursorText("");
+      } else {
+        setCursorVariant("default");
+        setCursorText("");
+      }
     };
 
     window.addEventListener('mousemove', moveCursor);
     return () => window.removeEventListener('mousemove', moveCursor);
-  }, [cursorX, cursorY]);
+  }, [mouseX, mouseY]);
 
   if (!mounted) return null;
 
+  const variants = {
+    default: {
+      height: 16,
+      width: 16,
+      backgroundColor: "white",
+      mixBlendMode: "difference" as any,
+      borderRadius: "100%",
+    },
+    pointer: {
+      height: 64,
+      width: 64,
+      backgroundColor: "white",
+      mixBlendMode: "difference" as any,
+      borderRadius: "100%",
+    },
+    custom: {
+      height: 80,
+      width: 80,
+      backgroundColor: "white",
+      mixBlendMode: "difference" as any,
+      borderRadius: "100%",
+    }
+  };
+
   return (
-    <motion.div
-      className="custom-cursor w-8 h-8 rounded-full border border-accent flex items-center justify-center pointer-events-none hidden lg:flex"
-      style={{
-        x: cursorX,
-        y: cursorY,
-        scale: isPointer ? 1.5 : 1,
-        backgroundColor: isPointer ? 'rgba(86, 203, 222, 0.2)' : 'transparent',
-      }}
-    >
-      <div className="w-1 h-1 bg-accent rounded-full" />
-    </motion.div>
+    <>
+      <motion.div
+        className="fixed top-0 left-0 pointer-events-none z-[9999] hidden lg:flex items-center justify-center overflow-hidden"
+        animate={cursorVariant}
+        variants={variants}
+        style={{
+          x: cursorX,
+          y: cursorY,
+          translateX: "-50%",
+          translateY: "-50%",
+        }}
+        transition={{ type: "spring", stiffness: 250, damping: 25 }}
+      >
+        {cursorVariant === "custom" && (
+          <span className="text-[10px] font-black uppercase tracking-tighter text-black">
+            {cursorText}
+          </span>
+        )}
+      </motion.div>
+      <motion.div 
+        className="fixed top-0 left-0 w-1.5 h-1.5 bg-primary rounded-full pointer-events-none z-[10000] hidden lg:block"
+        style={{
+          x: mouseX,
+          y: mouseY,
+          translateX: "-50%",
+          translateY: "-50%",
+        }}
+      />
+    </>
   );
 };
