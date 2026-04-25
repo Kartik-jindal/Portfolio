@@ -21,7 +21,7 @@ export const IntroScreen = () => {
     // Completely remove after animation finishes (6s total)
     const timer3 = setTimeout(() => {
       setIsVisible(false);
-    }, 6000);
+    }, 8000);
 
     return () => {
       clearTimeout(timer1);
