@@ -42,7 +42,7 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
     const rect = event.currentTarget.getBoundingClientRect();
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
-    const xPct = (mouseX / rect.width - 0.5) * 5; // Reduced intensity for elegance
+    const xPct = (mouseX / rect.width - 0.5) * 5; 
     const yPct = (mouseY / rect.height - 0.5) * -5;
     x.set(xPct);
     y.set(yPct);
@@ -116,8 +116,8 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ duration: 0.4 }}
                     >
-                      <Button className="rounded-full px-8 py-6 bg-white text-black hover:bg-primary hover:text-white transition-all font-black uppercase tracking-[0.2em] text-[10px] shadow-2xl group/btn">
-                        View Production <ArrowRight className="w-3 h-3 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                      <Button className="rounded-full px-10 py-7 bg-white text-black hover:bg-primary hover:text-white transition-all font-black uppercase tracking-[0.2em] text-[12px] shadow-2xl group/btn">
+                        View Production <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
                       </Button>
                     </motion.div>
                   </motion.div>
@@ -128,40 +128,40 @@ const ProjectCard = ({ project, index }: { project: any, index: number }) => {
         </div>
 
         {/* Minimalist Text Info */}
-        <div className="lg:w-[40%] w-full space-y-8">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-               <span className="text-primary font-black tracking-[0.5em] text-[10px] uppercase">{project.role}</span>
-               <div className="h-px w-8 bg-white/10" />
+        <div className="lg:w-[40%] w-full space-y-10">
+          <div className="space-y-6">
+            <div className="flex items-center gap-4">
+               <span className="text-primary font-black tracking-[0.5em] text-[12px] uppercase">{project.role}</span>
+               <div className="h-px w-10 bg-white/10" />
             </div>
             
-            <h3 className="text-5xl md:text-6xl font-headline font-bold tracking-tighter text-white">
+            <h3 className="text-6xl md:text-7xl font-headline font-bold tracking-tighter text-white leading-[1.1]">
               {project.title}
             </h3>
           </div>
           
-          <p className="text-lg text-muted-foreground font-body font-light leading-relaxed max-w-md">
+          <p className="text-xl md:text-2xl text-muted-foreground font-body font-light leading-relaxed max-w-xl">
             {project.desc}
           </p>
 
           <div className="flex flex-wrap gap-4 pt-2">
              {project.tech.map((t) => (
-               <div key={t} className="px-4 py-2 glass border-white/5 rounded-full text-[10px] uppercase font-bold tracking-widest text-white/40">
+               <div key={t} className="px-5 py-2.5 glass border-white/5 rounded-full text-[11px] md:text-[12px] uppercase font-bold tracking-widest text-white/50">
                  {t}
                </div>
              ))}
           </div>
 
-          <div className="pt-6 flex items-center gap-10">
+          <div className="pt-8 flex items-center gap-12">
             <motion.a 
               href="#" 
               whileHover={{ x: 10 }}
-              className="flex items-center gap-4 text-white text-sm font-black uppercase tracking-[0.3em] group transition-colors hover:text-primary"
+              className="flex items-center gap-4 text-white text-base md:text-lg font-black uppercase tracking-[0.3em] group transition-colors hover:text-primary"
             >
-              Case Study <ArrowUpRight className="w-4 h-4 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
+              Case Study <ArrowUpRight className="w-5 h-5 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
             </motion.a>
             <a href="#" className="text-white/20 hover:text-white transition-all duration-300">
-              <Github className="w-5 h-5" />
+              <Github className="w-6 h-6" />
             </a>
           </div>
         </div>
@@ -180,11 +180,11 @@ export const Projects = () => {
           viewport={{ once: true }}
           className="max-w-3xl"
         >
-          <span className="text-primary uppercase tracking-[1em] text-[10px] font-black block mb-6">Archive</span>
-          <h2 className="text-7xl md:text-9xl font-headline font-black tracking-tighter leading-none mb-10">
+          <span className="text-primary uppercase tracking-[1em] text-[12px] font-black block mb-8">Archive</span>
+          <h2 className="text-7xl md:text-9xl font-headline font-black tracking-tighter leading-none mb-12">
             SELECTED <br /> <span className="text-outline italic">WORKS.</span>
           </h2>
-          <p className="text-muted-foreground/60 text-lg md:text-xl font-light leading-relaxed max-w-xl font-body">
+          <p className="text-muted-foreground/60 text-xl md:text-2xl font-light leading-relaxed max-w-2xl font-body">
             A curated collection of high-performance digital products where architectural precision meets emotive design.
           </p>
         </motion.div>
