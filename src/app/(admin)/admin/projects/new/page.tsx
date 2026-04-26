@@ -2,9 +2,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { db, storage } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/config';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box } from 'lucide-react';
@@ -66,11 +66,18 @@ export default function NewProjectPage() {
     if (!file) return;
     setUploading(true);
     try {
-      const fileRef = ref(storage, `projects/${Date.now()}_${file.name}`);
-      await uploadBytes(fileRef, file);
-      const url = await getDownloadURL(fileRef);
-      setFormData({ ...formData, image: url });
-      toast({ title: 'Success', description: 'Image uploaded' });
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
+      uploadFormData.append('path', 'projects');
+      
+      const result = await uploadToS3(uploadFormData);
+      
+      if (result.success && result.url) {
+        setFormData({ ...formData, image: result.url });
+        toast({ title: 'Success', description: 'Asset synced to S3' });
+      } else {
+        throw new Error(result.error);
+      }
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Upload Failed', description: error.message });
     } finally {
@@ -208,7 +215,7 @@ export default function NewProjectPage() {
 
         <div className="lg:col-span-4 space-y-10">
           <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
-            <h3 className="text-[10px] uppercase font-black tracking-widest text-white/40">Media & Assets</h3>
+            <h3 className="text-[10px] uppercase font-black tracking-widest text-white/40">Media & Assets (S3)</h3>
             <div className="space-y-4">
                <div className="relative aspect-video rounded-xl overflow-hidden bg-white/5 border border-white/5">
                  {formData.image ? (
@@ -220,7 +227,7 @@ export default function NewProjectPage() {
                  )}
                  <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
                     <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileUpload} />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white">{uploading ? 'Syncing...' : 'Upload Cover'}</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white">{uploading ? 'Syncing...' : 'Upload to S3'}</span>
                  </div>
                </div>
                <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" placeholder="Direct Image URL" />

@@ -2,9 +2,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { db, storage } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { motion } from 'framer-motion';
 import { Save, Globe, Share2, Shield, Eye, FileUp, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -53,20 +53,26 @@ export default function SettingsAdminPage() {
 
     setUploading(field);
     try {
-      const fileRef = ref(storage, `${path}/${Date.now()}_${file.name}`);
-      await uploadBytes(fileRef, file);
-      const url = await getDownloadURL(fileRef);
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
+      uploadFormData.append('path', path);
       
-      const updatedSettings = { ...settings };
-      const keys = field.split('.');
-      let current = updatedSettings;
-      for (let i = 0; i < keys.length - 1; i++) {
-        current = current[keys[i]];
+      const result = await uploadToS3(uploadFormData);
+      
+      if (result.success && result.url) {
+        const updatedSettings = { ...settings };
+        const keys = field.split('.');
+        let current = updatedSettings;
+        for (let i = 0; i < keys.length - 1; i++) {
+          current = current[keys[i]];
+        }
+        current[keys[keys.length - 1]] = result.url;
+        
+        setSettings(updatedSettings);
+        toast({ title: 'Upload Successful', description: 'Asset synced to S3 and linked.' });
+      } else {
+        throw new Error(result.error);
       }
-      current[keys[keys.length - 1]] = url;
-      
-      setSettings(updatedSettings);
-      toast({ title: 'Upload Successful', description: 'Asset linked to configuration.' });
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Upload Failed', description: error.message });
     } finally {
@@ -108,7 +114,7 @@ export default function SettingsAdminPage() {
         <TabsList className="bg-white/5 border border-white/5 p-1 rounded-2xl h-14 overflow-x-auto custom-scrollbar">
           <TabsTrigger value="seo" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[10px] font-black uppercase tracking-widest px-8 h-full">SEO & Meta</TabsTrigger>
           <TabsTrigger value="socials" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[10px] font-black uppercase tracking-widest px-8 h-full">Social Bridge</TabsTrigger>
-          <TabsTrigger value="resume" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[10px] font-black uppercase tracking-widest px-8 h-full">Assets</TabsTrigger>
+          <TabsTrigger value="resume" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[10px] font-black uppercase tracking-widest px-8 h-full">Assets (S3)</TabsTrigger>
           <TabsTrigger value="visibility" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[10px] font-black uppercase tracking-widest px-8 h-full">Interface</TabsTrigger>
         </TabsList>
 
@@ -144,7 +150,7 @@ export default function SettingsAdminPage() {
                 />
               </div>
               <div className="space-y-4">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Open Graph Image (1200x630)</Label>
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Open Graph Image (S3)</Label>
                 <div className="flex gap-4">
                   <Input 
                     value={settings?.seo?.ogImage} 
@@ -193,7 +199,7 @@ export default function SettingsAdminPage() {
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
              <div className="flex items-center gap-4 text-primary">
               <FileUp className="w-6 h-6" />
-              <h3 className="text-lg font-headline font-black italic tracking-tight">Asset Management</h3>
+              <h3 className="text-lg font-headline font-black italic tracking-tight">Asset Management (S3)</h3>
             </div>
             <div className="space-y-4">
               <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Resume PDF</Label>
@@ -211,11 +217,11 @@ export default function SettingsAdminPage() {
                     onChange={(e) => handleFileUpload(e, 'resumes', 'resume.fileUrl')}
                   />
                   <Button variant="outline" className="h-14 rounded-xl border-white/10 px-6 font-black uppercase tracking-widest text-[10px]">
-                    {uploading === 'resume.fileUrl' ? 'Syncing...' : 'Upload PDF'}
+                    {uploading === 'resume.fileUrl' ? 'Syncing...' : 'Upload PDF to S3'}
                   </Button>
                 </div>
               </div>
-              <p className="text-[10px] text-white/20 uppercase font-black tracking-widest">Provide a direct link or upload a fresh PDF to your secure storage bucket.</p>
+              <p className="text-[10px] text-white/20 uppercase font-black tracking-widest">Files are securely stored in your AWS S3 bucket and linked back to Firestore.</p>
             </div>
           </div>
         </TabsContent>

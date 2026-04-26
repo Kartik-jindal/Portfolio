@@ -1,74 +1,77 @@
+
 # Architectural Management System: Backend Guide
 
-This document provides a technical overview and setup guide for the Firebase-backed infrastructure integrated into your cinematic portfolio.
+This document provides a technical overview and setup guide for the Hybrid Infrastructure (Firebase + AWS) integrated into your cinematic portfolio.
 
 ## 1. Core Services
 
-We utilize **Firebase** (Google's Cloud Platform) to power the portfolio's dynamic capabilities:
-- **Authentication**: Secure access to the Admin Dashboard via Google Sign-In and Email/Password.
+We utilize a multi-cloud strategy to power the portfolio's dynamic capabilities:
+- **Firebase Authentication**: Secure access to the Admin Dashboard via Google Sign-In and Email/Password.
 - **Cloud Firestore**: A NoSQL database storing your projects, journal entries, career timeline, and site settings.
-- **Firebase Storage**: Secure hosting for project imagery and your resume PDF.
+- **AWS S3**: High-performance storage for project imagery, blog assets, and your resume PDF.
 
 ---
 
-## 2. Environment Variables (.env.local) [✅ COMPLETED]
+## 2. Environment Variables (.env.local)
 
-The connection between your frontend and Firebase has been established.
+The following variables must be configured for the Command Center to operate.
 
-| Key | Status |
-|-----|--------|
-| `NEXT_PUBLIC_FIREBASE_API_KEY` | ✅ Linked |
-| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | ✅ Linked |
-| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | ✅ Linked |
-| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | ✅ Linked |
-| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | ✅ Linked |
-| `NEXT_PUBLIC_FIREBASE_APP_ID` | ✅ Linked |
+### Firebase Credentials
+| Key | Purpose |
+|-----|---------|
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | Public Firebase API access |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Auth redirect domain |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Firestore/Auth Project ID |
+
+### AWS S3 Credentials (Server-Side)
+| Key | Purpose |
+|-----|---------|
+| `AWS_REGION` | e.g. `us-east-1` |
+| `AWS_ACCESS_KEY_ID` | IAM User Access Key |
+| `AWS_SECRET_ACCESS_KEY` | IAM User Secret Key |
+| `AWS_S3_BUCKET_NAME` | Your unique S3 Bucket name |
 
 ---
 
-## 3. Initial Setup & Admin Access [✅ COMPLETED]
+## 3. AWS S3 Setup Guide
 
-The administrative layer is now fully operational.
+To ensure your images render correctly on the frontend:
 
-1. ✅ **Create Firebase Project**: [Completed]
-2. ✅ **Enable Services**: [Completed] Auth (Email/Password), Firestore, and Storage enabled.
-3. ✅ **Create Your User**: [Completed] User `kartikjindal2003@gmail.com` created and verified.
-4. ✅ **Sign-In**: [Completed] Owner account successfully bootstrapped with `SUPER_ADMIN` status on first login.
+1. **Create Bucket**: Enable "Block Public Access" (Off) if you want direct URL access, or configure a Bucket Policy.
+2. **Bucket Policy**:
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Sid": "PublicRead",
+         "Effect": "Allow",
+         "Principal": "*",
+         "Action": "s3:GetObject",
+         "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME/*"
+       }
+     ]
+   }
+   ```
+3. **IAM User**: Create a user with `AmazonS3FullAccess` (or specific `PutObject` permissions) and generate the Access/Secret keys.
 
 ---
 
 ## 4. Operational Workflow
 
 ### Project Management
-- **Flagship Builds**: These appear in the "Selected Works" section on the homepage.
-- **Experiments**: These appear in the "Technical Lab" on the `/work` page.
-- **Draft Mode**: Set status to `draft` to hide projects from the public eye while editing.
+- **Flagship Builds**: Appear in "Selected Works".
+- **S3 Assets**: Images uploaded via the CMS are stored in `s3://bucket/projects/`.
 
 ### The Journal (Blog)
-- Supports **Markdown** content.
-- Ensure your `slug` is URL-friendly (e.g., `modern-architecture-trends`).
-- The system automatically generates SEO metadata and adds published posts to the `sitemap.xml`.
-
-### Contact Leads
-- Submissions from the public contact form appear in the **Leads** inbox.
-- A **Honeypot** field is active to trap bot spam silently.
-- Leads capture metadata (User Agent/Platform) to help identify high-quality inquiries.
+- **Slug Generation**: Slugs are automatically generated from titles.
+- **S3 Assets**: Header images are stored in `s3://bucket/blog/`.
 
 ### Global Settings
-- Manage your **SEO Meta Tags** (Title, Description, Keywords) centrally.
-- Upload your **Resume PDF** directly to Firebase Storage; the site will update the download link automatically.
-- Use **Interface Toggles** to show or hide entire sections (like Testimonials or Experience) without editing code.
+- **Resume Management**: Uploaded PDFs are stored in `s3://bucket/resumes/`.
 
 ---
 
-## 5. Security Summary
+## 5. Deployment (Vercel)
 
-- **Public Access**: Read-only for `published` content.
-- **Admin Access**: Authenticated `write` access restricted to users with the `ADMIN` or `SUPER_ADMIN` role.
-- **Portals**: The custom cursor and cinematic overlays utilize high-z-index portals to ensure interactions remain consistent across all site layers.
-
----
-
-## 6. Deployment (Vercel)
-
-When deploying to Vercel, ensure all variables from `.env.local` are added to the **Project Settings -> Environment Variables** section. The build will automatically optimize your images and generate a static sitemap based on your live Firestore data.
+When deploying, ensure all AWS and Firebase variables are added to the **Project Settings -> Environment Variables** section. The application uses Next.js Server Actions for S3 uploads, which automatically securely scales within the Vercel environment.
