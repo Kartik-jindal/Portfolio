@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { SeoHud } from '@/components/admin/seo-hud';
@@ -43,7 +44,7 @@ export default function EditBlogPostPage() {
           setFormData({ 
             id: docSnap.id, 
             ...data,
-            seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true }
+            seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' }
           });
         } else {
           router.push('/admin/blog');
@@ -55,7 +56,7 @@ export default function EditBlogPostPage() {
       }
     };
     fetchPost();
-  }, [id]);
+  }, [id, router]);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
@@ -165,6 +166,10 @@ export default function EditBlogPostPage() {
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Abstract Summary</Label>
                 <Textarea value={formData.summary} onChange={e => setFormData({ ...formData, summary: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[100px]" />
               </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Article Body (HTML/Markdown)</Label>
+                <Textarea value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[400px] font-mono text-xs" />
+              </div>
             </div>
           </div>
 
@@ -174,20 +179,32 @@ export default function EditBlogPostPage() {
               <h3 className="text-lg font-headline font-black italic tracking-tight">Search Optimization</h3>
             </div>
             <div className="space-y-6">
-              <div className="space-y-2">
-                <div className="flex justify-between items-end px-1">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title Override</Label>
-                  <span className={`text-[9px] font-mono ${formData.seo.title.length > 60 ? 'text-red-500' : 'text-white/20'}`}>
-                    {formData.seo.title.length} / 60
-                  </span>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-end px-1">
+                    <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title Override</Label>
+                    <span className={`text-[9px] font-mono ${formData.seo.title.length > 60 ? 'text-red-500' : 'text-white/20'}`}>
+                      {formData.seo.title.length} / 60
+                    </span>
+                  </div>
+                  <Input 
+                    value={formData.seo.title} 
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
+                    className="bg-white/5 border-white/5 rounded-xl h-14" 
+                    placeholder="Auto-suggested from title..."
+                  />
                 </div>
-                <Input 
-                  value={formData.seo.title} 
-                  onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
-                  className="bg-white/5 border-white/5 rounded-xl h-14" 
-                  placeholder="Auto-suggested from title..."
-                />
+                <div className="space-y-2">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Keywords (Comma Separated)</Label>
+                  <Input 
+                    value={formData.seo.keywords} 
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, keywords: e.target.value } })} 
+                    className="bg-white/5 border-white/5 rounded-xl h-14" 
+                    placeholder="e.g. AI, Architecture, Engineering"
+                  />
+                </div>
               </div>
+
               <div className="space-y-2">
                 <div className="flex justify-between items-end px-1">
                   <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
@@ -201,6 +218,28 @@ export default function EditBlogPostPage() {
                   className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" 
                   placeholder="Auto-suggested from summary..."
                 />
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 pt-4 border-t border-white/5">
+                <div className="space-y-2">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Canonical URL</Label>
+                  <Input 
+                    value={formData.seo.canonicalUrl} 
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, canonicalUrl: e.target.value } })} 
+                    className="bg-white/5 border-white/5 rounded-xl h-14" 
+                    placeholder="https://..."
+                  />
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 h-14 mt-6">
+                  <div className="space-y-0.5">
+                    <Label className="text-[10px] uppercase font-black tracking-widest text-white">Indexable</Label>
+                    <p className="text-[8px] text-white/20 uppercase font-black">Allow bots to crawl</p>
+                  </div>
+                  <Switch 
+                    checked={formData.seo.indexable} 
+                    onCheckedChange={v => setFormData({ ...formData, seo: { ...formData.seo, indexable: v } })}
+                  />
+                </div>
               </div>
             </div>
           </div>

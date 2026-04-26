@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { SeoHud } from '@/components/admin/seo-hud';
@@ -45,7 +46,7 @@ export default function EditProjectPage() {
           setFormData({ 
             id: docSnap.id, 
             ...data,
-            seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true }
+            seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' }
           });
         } else {
           router.push('/admin/projects');
@@ -57,7 +58,7 @@ export default function EditProjectPage() {
       }
     };
     fetchProject();
-  }, [id]);
+  }, [id, router]);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
@@ -114,13 +115,6 @@ export default function EditProjectPage() {
     if (newTech && !formData.tech.includes(newTech)) {
       setFormData({ ...formData, tech: [...formData.tech, newTech] });
       setNewTech('');
-    }
-  };
-
-  const addChallenge = () => {
-    if (newChallenge) {
-      setFormData({ ...formData, challenges: [...formData.challenges, newChallenge] });
-      setNewChallenge('');
     }
   };
 
@@ -218,19 +212,30 @@ export default function EditProjectPage() {
             </div>
             
             <div className="space-y-6">
-              <div className="space-y-2">
-                <div className="flex justify-between items-end px-1">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title Override</Label>
-                  <span className={`text-[9px] font-mono ${formData.seo.title.length > 60 ? 'text-red-500' : 'text-white/20'}`}>
-                    {formData.seo.title.length} / 60
-                  </span>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-end px-1">
+                    <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title Override</Label>
+                    <span className={`text-[9px] font-mono ${formData.seo.title.length > 60 ? 'text-red-500' : 'text-white/20'}`}>
+                      {formData.seo.title.length} / 60
+                    </span>
+                  </div>
+                  <Input 
+                    value={formData.seo.title} 
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
+                    className="bg-white/5 border-white/5 rounded-xl h-14" 
+                    placeholder="Auto-suggested from project name..."
+                  />
                 </div>
-                <Input 
-                  value={formData.seo.title} 
-                  onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
-                  className="bg-white/5 border-white/5 rounded-xl h-14" 
-                  placeholder="Auto-suggested from project name..."
-                />
+                <div className="space-y-2">
+                   <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Keywords (CSV)</Label>
+                   <Input 
+                    value={formData.seo.keywords} 
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, keywords: e.target.value } })} 
+                    className="bg-white/5 border-white/5 rounded-xl h-14" 
+                    placeholder="e.g. UX, Engineering, Fintech"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -247,15 +252,27 @@ export default function EditProjectPage() {
                   placeholder="Auto-suggested from short description..."
                 />
               </div>
-              
-              <div className="space-y-2">
-                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Keywords (Comma Separated)</Label>
-                 <Input 
-                  value={formData.seo.keywords} 
-                  onChange={e => setFormData({ ...formData, seo: { ...formData.seo, keywords: e.target.value } })} 
-                  className="bg-white/5 border-white/5 rounded-xl h-14" 
-                  placeholder="e.g. UX, Engineering, Fintech"
-                />
+
+              <div className="grid md:grid-cols-2 gap-6 pt-4 border-t border-white/5">
+                <div className="space-y-2">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Canonical URL</Label>
+                  <Input 
+                    value={formData.seo.canonicalUrl} 
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, canonicalUrl: e.target.value } })} 
+                    className="bg-white/5 border-white/5 rounded-xl h-14" 
+                    placeholder="https://..."
+                  />
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 h-14 mt-6">
+                  <div className="space-y-0.5">
+                    <Label className="text-[10px] uppercase font-black tracking-widest text-white">Indexable</Label>
+                    <p className="text-[8px] text-white/20 uppercase font-black">Allow bots to crawl</p>
+                  </div>
+                  <Switch 
+                    checked={formData.seo.indexable} 
+                    onCheckedChange={v => setFormData({ ...formData, seo: { ...formData.seo, indexable: v } })}
+                  />
+                </div>
               </div>
             </div>
           </div>

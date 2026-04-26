@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -13,8 +12,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { SeoHud } from '@/components/admin/seo-hud';
 
 export default function NewBlogPostPage() {
   const [loading, setLoading] = useState(false);
@@ -31,7 +32,7 @@ export default function NewBlogPostPage() {
     image: '',
     imageHint: '',
     status: 'draft',
-    seo: { title: '', description: '' }
+    seo: { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' }
   });
 
   const router = useRouter();
@@ -172,9 +173,74 @@ export default function NewBlogPostPage() {
               </div>
             </div>
           </div>
+
+          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
+            <div className="flex items-center gap-4 text-primary">
+              <Globe className="w-6 h-6" />
+              <h3 className="text-lg font-headline font-black italic tracking-tight">Search Optimization</h3>
+            </div>
+            <div className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title</Label>
+                  <Input 
+                    value={formData.seo.title} 
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
+                    className="bg-white/5 border-white/5 rounded-xl h-14" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Keywords (CSV)</Label>
+                  <Input 
+                    value={formData.seo.keywords} 
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, keywords: e.target.value } })} 
+                    className="bg-white/5 border-white/5 rounded-xl h-14" 
+                    placeholder="UX, Tech, React"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Description</Label>
+                <Textarea 
+                  value={formData.seo.description} 
+                  onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })} 
+                  className="bg-white/5 border-white/5 rounded-xl h-24" 
+                />
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 pt-4 border-t border-white/5">
+                <div className="space-y-2">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Canonical URL</Label>
+                  <Input 
+                    value={formData.seo.canonicalUrl} 
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, canonicalUrl: e.target.value } })} 
+                    className="bg-white/5 border-white/5 rounded-xl h-14" 
+                  />
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 h-14 mt-6">
+                  <div className="space-y-0.5">
+                    <Label className="text-[10px] uppercase font-black tracking-widest text-white">Indexable</Label>
+                    <p className="text-[8px] text-white/20 uppercase font-black">Allow bots to crawl</p>
+                  </div>
+                  <Switch 
+                    checked={formData.seo.indexable} 
+                    onCheckedChange={v => setFormData({ ...formData, seo: { ...formData.seo, indexable: v } })}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="lg:col-span-4 space-y-10">
+          <SeoHud 
+            title={formData.seo.title}
+            description={formData.seo.description}
+            keywords={formData.seo.keywords}
+            ogImage={formData.image}
+          />
+
           <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
             <h3 className="text-[10px] uppercase font-black tracking-widest text-white/40">Visual Context (S3)</h3>
             <div className="space-y-4">
@@ -193,23 +259,6 @@ export default function NewBlogPostPage() {
                </div>
                <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" placeholder="Direct Image URL" />
                <Input value={formData.imageHint} onChange={e => setFormData({ ...formData, imageHint: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" placeholder="AI image hint" />
-            </div>
-          </div>
-
-          <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
-            <div className="flex items-center gap-4 text-primary">
-              <Globe className="w-4 h-4" />
-              <h3 className="text-[10px] font-black uppercase tracking-widest">Metadata</h3>
-            </div>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title</Label>
-                <Input value={formData.seo.title} onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} className="bg-white/5 border-white/5 rounded-xl h-12" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Description</Label>
-                <Textarea value={formData.seo.description} onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })} className="bg-white/5 border-white/5 rounded-xl h-24" />
-              </div>
             </div>
           </div>
 

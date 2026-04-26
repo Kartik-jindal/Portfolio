@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { SeoHud } from '@/components/admin/seo-hud';
@@ -37,7 +38,7 @@ export default function NewProjectPage() {
     challenges: [] as string[],
     status: 'draft',
     order: 0,
-    seo: { title: '', description: '', keywords: '', ogImage: '', indexable: true }
+    seo: { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' }
   });
 
   const [newTech, setNewTech] = useState('');
@@ -110,13 +111,6 @@ export default function NewProjectPage() {
     }
   };
 
-  const addChallenge = () => {
-    if (newChallenge) {
-      setFormData({ ...formData, challenges: [...formData.challenges, newChallenge] });
-      setNewChallenge('');
-    }
-  };
-
   return (
     <div className="space-y-10 pb-20">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -186,14 +180,25 @@ export default function NewProjectPage() {
               <h3 className="text-lg font-headline font-black italic tracking-tight">Search Optimization</h3>
             </div>
             <div className="space-y-6">
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title Override</Label>
-                <Input 
-                  value={formData.seo.title} 
-                  onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
-                  className="bg-white/5 border-white/5 rounded-xl h-14" 
-                  placeholder="Leave blank for automatic title..."
-                />
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title Override</Label>
+                  <Input 
+                    value={formData.seo.title} 
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
+                    className="bg-white/5 border-white/5 rounded-xl h-14" 
+                    placeholder="Auto-suggested from project name..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Keywords (CSV)</Label>
+                  <Input 
+                    value={formData.seo.keywords} 
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, keywords: e.target.value } })} 
+                    className="bg-white/5 border-white/5 rounded-xl h-14" 
+                    placeholder="UX, React, FinTech"
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
@@ -201,8 +206,30 @@ export default function NewProjectPage() {
                   value={formData.seo.description} 
                   onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })} 
                   className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" 
-                  placeholder="Leave blank for automatic summary..."
+                  placeholder="Auto-suggested from short description..."
                 />
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 pt-4 border-t border-white/5">
+                <div className="space-y-2">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Canonical URL</Label>
+                  <Input 
+                    value={formData.seo.canonicalUrl} 
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, canonicalUrl: e.target.value } })} 
+                    className="bg-white/5 border-white/5 rounded-xl h-14" 
+                    placeholder="https://..."
+                  />
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 h-14 mt-6">
+                  <div className="space-y-0.5">
+                    <Label className="text-[10px] uppercase font-black tracking-widest text-white">Indexable</Label>
+                    <p className="text-[8px] text-white/20 uppercase font-black">Allow bots to crawl</p>
+                  </div>
+                  <Switch 
+                    checked={formData.seo.indexable} 
+                    onCheckedChange={v => setFormData({ ...formData, seo: { ...formData.seo, indexable: v } })}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -213,7 +240,7 @@ export default function NewProjectPage() {
             title={formData.seo.title}
             description={formData.seo.description}
             keywords={formData.seo.keywords}
-            ogImage={formData.seo.ogImage || formData.image}
+            ogImage={formData.image}
           />
           
           <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
