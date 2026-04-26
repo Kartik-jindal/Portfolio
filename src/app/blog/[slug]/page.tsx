@@ -5,12 +5,12 @@ import React, { useEffect, useState } from 'react';
 import { motion, useScroll, useSpring } from 'framer-motion';
 import { Navbar } from '@/components/portfolio/navbar';
 import { Footer } from '@/components/portfolio/footer';
-import { ArrowLeft, Calendar, Clock, Share2, Tag, ChevronRight, Bookmark, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Share2, Tag, ChevronRight, Bookmark, MessageSquare, Quote } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 
-// Mock post lookup
+// Mock post lookup with structured content
 const blogData: Record<string, any> = {
   "future-of-web-interactivity": {
     title: "The Future of Web Interactivity with WebGL",
@@ -19,11 +19,18 @@ const blogData: Record<string, any> = {
     category: "Technical",
     image: "https://picsum.photos/seed/webgl/1600/900",
     imageHint: "webgl graphics",
+    summary: "An exploration into how GPU-accelerated graphics are redefining user engagement in modern web architecture.",
     content: `
-      <p>The web is evolving from static pages to living, breathing environments. At the heart of this transformation is WebGL—the technology that brings hardware-accelerated 3D graphics directly to the browser.</p>
+      <p>The web is evolving from static pages to living, breathing environments. At the heart of this transformation is WebGL—the technology that brings hardware-accelerated 3D graphics directly to the browser. We are moving away from traditional layouts into a world where spatial awareness and real-time feedback define the user experience.</p>
       
       <h3>The Shift to Spatial Web</h3>
-      <p>We are no longer limited by the traditional 2D box model. As developers, we now have the power to create immersive narratives where users don't just consume content—they inhabit it. From high-fidelity product configurators to data visualizations that span virtual galaxies, the possibilities are infinite.</p>
+      <p>We are no longer limited by the traditional 2D box model. As developers, we now have the power to create immersive narratives where users don't just consume content—they inhabit it. This shift requires a new mental model for design:</p>
+      
+      <ul>
+        <li><strong>Depth Perception:</strong> Using Z-axis layering to create hierarchy.</li>
+        <li><strong>Real-time Physics:</strong> Making digital objects react with weight and momentum.</li>
+        <li><strong>Dynamic Lighting:</strong> Setting the emotional tone through computed light sources.</li>
+      </ul>
 
       <blockquote>
         "Digital architecture is the bridge between human imagination and machine execution. WebGL is the paint that makes that bridge beautiful."
@@ -32,7 +39,7 @@ const blogData: Record<string, any> = {
       <h3>Performance and Accessibility</h3>
       <p>One of the biggest hurdles has always been performance. However, with the rise of WebGPU and more efficient GLSL shaders, we can now render millions of polygons at 60fps on mobile devices. The barrier to entry for high-end web experiences has never been lower.</p>
       
-      <p>In this article, we'll explore how to leverage custom shaders and GPU instances to build websites that feel like high-budget cinema.</p>
+      <p>In this article, we've explored how to leverage custom shaders and GPU instances to build websites that feel like high-budget cinema. The future isn't just fast; it's visually breathtaking.</p>
     `
   },
   "minimalism-in-ui-design": {
@@ -42,14 +49,27 @@ const blogData: Record<string, any> = {
     category: "Design",
     image: "https://picsum.photos/seed/minimal/1600/900",
     imageHint: "minimalist design",
+    summary: "A deep dive into the psychological impact of whitespace and reduced cognitive load in premium design.",
     content: `
-      <p>True minimalism isn't just about white space; it's about the intentional removal of the unnecessary. In an age of information overload, simplicity is the ultimate luxury.</p>
+      <p>True minimalism isn't just about white space; it's about the intentional removal of the unnecessary. In an age of information overload, simplicity is the ultimate luxury. It demands more from the designer because every remaining element must be perfect.</p>
       
       <h3>Cognitive Load and User Peace</h3>
       <p>Every element on a screen demands attention. By reducing the number of choices and visual distractions, we allow the user's mind to rest. This leads to higher engagement and a more meaningful interaction with the core message.</p>
+
+      <blockquote>
+        "Minimalism is not a lack of something. It is simply the perfect amount of something."
+      </blockquote>
       
       <h3>The "Silent" UI</h3>
-      <p>Modern premium designs are moving toward a 'silent' interface. Typography becomes the main character, and motion provides the personality. We explore how leading luxury brands are using whitespace as a functional tool rather than just an aesthetic choice.</p>
+      <p>Modern premium designs are moving toward a 'silent' interface. Typography becomes the main character, and motion provides the personality. We explore how leading luxury brands use these principles:</p>
+      
+      <ul>
+        <li><strong>Intentionality:</strong> Every pixel serves a functional or emotional purpose.</li>
+        <li><strong>Hierarchy through Space:</strong> Using gaps to tell the user what's important.</li>
+        <li><strong>Subtle Feedback:</strong> Interaction that whispers rather than screams.</li>
+      </ul>
+      
+      <p>When you remove the noise, the signal becomes undeniable. That is the power of a minimalist approach.</p>
     `
   },
   "scaling-nextjs-enterprise": {
@@ -59,12 +79,24 @@ const blogData: Record<string, any> = {
     category: "Engineering",
     image: "https://picsum.photos/seed/scaling/1600/900",
     imageHint: "enterprise code",
+    summary: "Best practices for maintaining performance and developer experience in large-scale React codebases.",
     content: `
-      <p>Next.js has become the de facto standard for building production-ready React applications. But how do you handle thousands of routes and millions of concurrent users?</p>
+      <p>Next.js has become the de facto standard for building production-ready React applications. But how do you handle thousands of routes and millions of concurrent users while maintaining a developer experience that doesn't slow down?</p>
       
       <h3>Architectural Precision</h3>
-      <p>Scaling starts with a clean architecture. We discuss the transition from simple Page Router patterns to the more robust App Router, leveraging Server Components for optimized data fetching and smaller client bundles.</p>
-      
+      <p>Scaling starts with a clean architecture. We discuss the transition from simple Page Router patterns to the more robust App Router, leveraging Server Components for optimized data fetching and smaller client bundles. This isn't just a technical change; it's a paradigm shift in how we think about the server-client boundary.</p>
+
+      <h3>Core Pillars of Scale</h3>
+      <ul>
+        <li><strong>Infrastructure as Code:</strong> Ensuring environments are reproducible and stable.</li>
+        <li><strong>Modular Patterns:</strong> Breaking the monolith into manageable, testable domains.</li>
+        <li><strong>Observability:</strong> If you can't measure it, you can't scale it effectively.</li>
+      </ul>
+
+      <blockquote>
+        "Performance at scale is the result of a thousand small decisions made with extreme clarity."
+      </blockquote>
+
       <h3>Caching Strategies</h3>
       <p>The secret to speed at scale is aggressive caching. From Incremental Static Regeneration (ISR) to edge middleware optimization, we dive deep into how to make your enterprise app feel instantaneous across the globe.</p>
     `
@@ -158,53 +190,55 @@ export default function BlogDetailPage() {
 
         {/* Cinematic Featured Image */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
           className="max-w-[1400px] mx-auto px-6 mb-24"
         >
-          <div className="relative aspect-[21/9] rounded-[3rem] overflow-hidden border border-white/5 shadow-2xl group">
+          <div className="relative aspect-[21/9] rounded-[2.5rem] md:rounded-[4rem] overflow-hidden border border-white/5 shadow-2xl group">
             <Image 
               src={post.image} 
               alt={post.title} 
               fill 
-              className="object-cover transition-transform duration-[3s] group-hover:scale-110"
+              className="object-cover transition-transform duration-[4s] group-hover:scale-105"
               priority
               data-ai-hint={post.imageHint}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent" />
             
-            {/* Architectural Accent */}
-            <div className="absolute bottom-10 left-10 flex items-center gap-6">
-              <div className="w-12 h-12 rounded-full glass border-white/10 flex items-center justify-center text-white/50 backdrop-blur-xl">
+            {/* Action Bar Overlay */}
+            <div className="absolute bottom-8 left-8 md:bottom-12 md:left-12 flex items-center gap-4">
+              <button className="w-12 h-12 rounded-full glass border-white/10 flex items-center justify-center text-white/50 hover:text-primary hover:border-primary/40 backdrop-blur-xl transition-all">
                 <Bookmark className="w-4 h-4" />
-              </div>
-              <div className="w-12 h-12 rounded-full glass border-white/10 flex items-center justify-center text-white/50 backdrop-blur-xl">
-                <MessageSquare className="w-4 h-4" />
-              </div>
+              </button>
+              <button className="w-12 h-12 rounded-full glass border-white/10 flex items-center justify-center text-white/50 hover:text-primary hover:border-primary/40 backdrop-blur-xl transition-all">
+                <Share2 className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </motion.div>
 
         {/* Content Body Grid */}
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-12 gap-16">
+        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-12 gap-16 lg:gap-24">
           {/* Main Content Area */}
-          <div className="lg:col-span-8 lg:pr-12">
+          <div className="lg:col-span-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
               className="prose prose-invert prose-lg md:prose-xl max-w-none font-body font-light text-white/70 leading-relaxed
                 prose-headings:font-headline prose-headings:font-bold prose-headings:text-white prose-headings:tracking-tight
-                prose-h3:text-3xl md:text-4xl prose-h3:mt-12 prose-h3:mb-6 prose-h3:italic
-                prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-8 prose-blockquote:px-10 prose-blockquote:rounded-3xl prose-blockquote:italic prose-blockquote:text-white prose-blockquote:not-italic prose-blockquote:text-2xl prose-blockquote:my-12
+                prose-h3:text-3xl md:text-4xl prose-h3:mt-16 prose-h3:mb-8 prose-h3:italic
+                prose-blockquote:border-l-0 prose-blockquote:bg-white/[0.03] prose-blockquote:py-12 prose-blockquote:px-12 prose-blockquote:rounded-[2.5rem] prose-blockquote:italic prose-blockquote:text-white prose-blockquote:not-italic prose-blockquote:text-2xl md:text-3xl prose-blockquote:my-16 prose-blockquote:relative prose-blockquote:border prose-blockquote:border-white/5
                 prose-strong:text-white prose-strong:font-bold
-                prose-p:mb-6 prose-p:leading-[1.7]"
+                prose-p:mb-8 prose-p:leading-[1.8]
+                prose-ul:my-8 prose-ul:list-none prose-ul:pl-0
+                prose-li:relative prose-li:pl-8 prose-li:mb-4 prose-li:before:content-[''] prose-li:before:absolute prose-li:before:left-0 prose-li:before:top-[0.8em] prose-li:before:w-2 prose-li:before:h-2 prose-li:before:bg-primary prose-li:before:rounded-full"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
 
             {/* Post Footer Actions */}
-            <footer className="mt-20 pt-12 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-10">
+            <footer className="mt-24 pt-12 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-10">
               <div className="flex items-center gap-8">
                 <span className="text-[10px] uppercase font-black tracking-[0.4em] text-white/20">Spread Insight</span>
                 <div className="flex gap-4">
@@ -229,24 +263,24 @@ export default function BlogDetailPage() {
           </div>
 
           {/* Sidebar Meta Info */}
-          <aside className="lg:col-span-4 space-y-16">
+          <aside className="lg:col-span-4 space-y-12">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6 }}
-              className="glass p-10 rounded-[2.5rem] border-white/5 space-y-10"
+              className="glass p-10 rounded-[2.5rem] border-white/5 space-y-10 sticky top-32"
             >
               <div className="space-y-4">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Summary</h4>
+                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">The Abstract</h4>
                 <p className="text-sm text-white/60 leading-relaxed font-body">
-                  An architectural deep-dive into how we build for the modern web, focusing on performance, aesthetics, and user impact.
+                  {post.summary}
                 </p>
               </div>
 
               <div className="h-px bg-white/5" />
 
               <div className="space-y-6">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Tags</h4>
+                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Contextual Tags</h4>
                 <div className="flex flex-wrap gap-2">
                   {["System", "Architecture", "Design", "Future"].map(tag => (
                     <span key={tag} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[9px] font-bold text-white/40 uppercase tracking-widest hover:text-primary transition-colors cursor-pointer">
@@ -258,23 +292,27 @@ export default function BlogDetailPage() {
 
               <div className="h-px bg-white/5" />
 
-              <div className="space-y-4">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Author</h4>
+              <div className="space-y-6">
+                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Author Profile</h4>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent" />
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent p-[1px]">
+                    <div className="w-full h-full bg-background rounded-[calc(1rem-1px)] flex items-center justify-center">
+                       <span className="font-headline font-bold text-white italic">KJ.</span>
+                    </div>
+                  </div>
                   <div>
                     <span className="text-sm font-bold text-white block">Kartik Jindal</span>
-                    <span className="text-[9px] uppercase tracking-widest text-white/40">Lead Architect</span>
+                    <span className="text-[9px] uppercase tracking-widest text-white/40">Full Stack Architect</span>
                   </div>
                 </div>
               </div>
-            </motion.div>
 
-            <div className="p-10 border border-white/5 rounded-[2.5rem] bg-gradient-to-br from-primary/5 to-transparent">
-              <p className="text-base italic text-white/40 leading-relaxed font-light">
-                "Writing is just another form of architecture. It's about building a solid foundation of ideas."
-              </p>
-            </div>
+              <div className="pt-6">
+                <button className="w-full py-5 rounded-2xl border border-primary/20 bg-primary/5 text-primary text-[10px] font-black uppercase tracking-[0.3em] hover:bg-primary hover:text-black transition-all">
+                  Subscribe for Insights
+                </button>
+              </div>
+            </motion.div>
           </aside>
         </div>
       </article>
