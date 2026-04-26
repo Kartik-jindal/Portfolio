@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -15,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { SeoHud } from '@/components/admin/seo-hud';
 
 export default function EditBlogPostPage() {
   const { id } = useParams();
@@ -39,7 +39,12 @@ export default function EditBlogPostPage() {
       try {
         const docSnap = await getDoc(doc(db, 'blog', id as string));
         if (docSnap.exists()) {
-          setFormData({ id: docSnap.id, ...docSnap.data() });
+          const data = docSnap.data();
+          setFormData({ 
+            id: docSnap.id, 
+            ...data,
+            seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true }
+          });
         } else {
           router.push('/admin/blog');
         }
@@ -151,21 +156,6 @@ export default function EditBlogPostPage() {
                 />
               </div>
             </div>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Category</Label>
-                <Input value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Display Date</Label>
-                <Input value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Read Time</Label>
-                <Input value={formData.readTime} onChange={e => setFormData({ ...formData, readTime: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
-              </div>
-            </div>
           </div>
 
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
@@ -175,15 +165,55 @@ export default function EditBlogPostPage() {
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Abstract Summary</Label>
                 <Textarea value={formData.summary} onChange={e => setFormData({ ...formData, summary: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[100px]" />
               </div>
+            </div>
+          </div>
+
+          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
+            <div className="flex items-center gap-4 text-primary">
+              <Globe className="w-6 h-6" />
+              <h3 className="text-lg font-headline font-black italic tracking-tight">Search Optimization</h3>
+            </div>
+            <div className="space-y-6">
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Article Body (HTML/Markdown)</Label>
-                <Textarea value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[500px] font-mono text-xs" />
+                <div className="flex justify-between items-end px-1">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title Override</Label>
+                  <span className={`text-[9px] font-mono ${formData.seo.title.length > 60 ? 'text-red-500' : 'text-white/20'}`}>
+                    {formData.seo.title.length} / 60
+                  </span>
+                </div>
+                <Input 
+                  value={formData.seo.title} 
+                  onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
+                  className="bg-white/5 border-white/5 rounded-xl h-14" 
+                  placeholder="Auto-suggested from title..."
+                />
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between items-end px-1">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
+                  <span className={`text-[9px] font-mono ${formData.seo.description.length > 160 ? 'text-red-500' : 'text-white/20'}`}>
+                    {formData.seo.description.length} / 160
+                  </span>
+                </div>
+                <Textarea 
+                  value={formData.seo.description} 
+                  onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })} 
+                  className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" 
+                  placeholder="Auto-suggested from summary..."
+                />
               </div>
             </div>
           </div>
         </div>
 
         <div className="lg:col-span-4 space-y-10">
+          <SeoHud 
+            title={formData.seo.title}
+            description={formData.seo.description}
+            keywords={formData.seo.keywords}
+            ogImage={formData.seo.ogImage || formData.image}
+          />
+
           <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
             <h3 className="text-[10px] uppercase font-black tracking-widest text-white/40">Visual Context (S3)</h3>
             <div className="space-y-4">
@@ -201,24 +231,6 @@ export default function EditBlogPostPage() {
                  </div>
                </div>
                <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" />
-               <Input value={formData.imageHint} onChange={e => setFormData({ ...formData, imageHint: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" />
-            </div>
-          </div>
-
-          <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
-            <div className="flex items-center gap-4 text-primary">
-              <Globe className="w-4 h-4" />
-              <h3 className="text-[10px] font-black uppercase tracking-widest">Metadata</h3>
-            </div>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title</Label>
-                <Input value={formData.seo?.title} onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} className="bg-white/5 border-white/5 rounded-xl h-12" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Description</Label>
-                <Textarea value={formData.seo?.description} onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })} className="bg-white/5 border-white/5 rounded-xl h-24" />
-              </div>
             </div>
           </div>
 

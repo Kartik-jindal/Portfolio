@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -7,7 +6,7 @@ import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { SeoHud } from '@/components/admin/seo-hud';
 
 export default function EditProjectPage() {
   const { id } = useParams();
@@ -41,7 +41,12 @@ export default function EditProjectPage() {
       try {
         const docSnap = await getDoc(doc(db, 'projects', id as string));
         if (docSnap.exists()) {
-          setFormData({ id: docSnap.id, ...docSnap.data() });
+          const data = docSnap.data();
+          setFormData({ 
+            id: docSnap.id, 
+            ...data,
+            seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true }
+          });
         } else {
           router.push('/admin/projects');
         }
@@ -203,21 +208,67 @@ export default function EditProjectPage() {
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Case Study (Detailed)</Label>
                 <Textarea value={formData.longDesc} onChange={e => setFormData({ ...formData, longDesc: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[300px]" />
               </div>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Strategic Methodology</Label>
-                  <Textarea value={formData.methodology} onChange={e => setFormData({ ...formData, methodology: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[150px]" />
+            </div>
+          </div>
+
+          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
+            <div className="flex items-center gap-4 text-primary">
+              <Globe className="w-6 h-6" />
+              <h3 className="text-lg font-headline font-black italic tracking-tight">Search Optimization</h3>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <div className="flex justify-between items-end px-1">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title Override</Label>
+                  <span className={`text-[9px] font-mono ${formData.seo.title.length > 60 ? 'text-red-500' : 'text-white/20'}`}>
+                    {formData.seo.title.length} / 60
+                  </span>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Project Impact</Label>
-                  <Textarea value={formData.impact} onChange={e => setFormData({ ...formData, impact: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[150px]" />
+                <Input 
+                  value={formData.seo.title} 
+                  onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
+                  className="bg-white/5 border-white/5 rounded-xl h-14" 
+                  placeholder="Auto-suggested from project name..."
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-end px-1">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
+                  <span className={`text-[9px] font-mono ${formData.seo.description.length > 160 ? 'text-red-500' : 'text-white/20'}`}>
+                    {formData.seo.description.length} / 160
+                  </span>
                 </div>
+                <Textarea 
+                  value={formData.seo.description} 
+                  onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })} 
+                  className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" 
+                  placeholder="Auto-suggested from short description..."
+                />
+              </div>
+              
+              <div className="space-y-2">
+                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Keywords (Comma Separated)</Label>
+                 <Input 
+                  value={formData.seo.keywords} 
+                  onChange={e => setFormData({ ...formData, seo: { ...formData.seo, keywords: e.target.value } })} 
+                  className="bg-white/5 border-white/5 rounded-xl h-14" 
+                  placeholder="e.g. UX, Engineering, Fintech"
+                />
               </div>
             </div>
           </div>
         </div>
 
         <div className="lg:col-span-4 space-y-10">
+          <SeoHud 
+            title={formData.seo.title}
+            description={formData.seo.description}
+            keywords={formData.seo.keywords}
+            ogImage={formData.seo.ogImage || formData.image}
+          />
+
           <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
             <h3 className="text-[10px] uppercase font-black tracking-widest text-white/40">Media & Assets (S3)</h3>
             <div className="space-y-4">
@@ -236,17 +287,6 @@ export default function EditProjectPage() {
                </div>
                <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" />
             </div>
-
-            <div className="space-y-4 pt-4 border-t border-white/5">
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Live Build URL</Label>
-                <Input value={formData.liveUrl} onChange={e => setFormData({ ...formData, liveUrl: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Source Code URL</Label>
-                <Input value={formData.githubUrl} onChange={e => setFormData({ ...formData, githubUrl: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12" />
-              </div>
-            </div>
           </div>
 
           <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
@@ -264,22 +304,6 @@ export default function EditProjectPage() {
                   ))}
                 </div>
              </div>
-
-             <div className="space-y-4 pt-4 border-t border-white/5">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Engineering Challenges</Label>
-                <div className="flex gap-2">
-                  <Input value={newChallenge} onChange={e => setNewChallenge(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addChallenge())} className="bg-white/5 border-white/5 rounded-xl h-10 flex-1" />
-                  <Button onClick={addChallenge} variant="outline" className="h-10 w-10 rounded-xl border-white/10">+</Button>
-                </div>
-                <div className="space-y-2">
-                  {formData.challenges?.map((c: string, idx: number) => (
-                    <div key={idx} className="flex items-start justify-between gap-4 p-3 rounded-xl bg-white/5 border border-white/5 text-[10px] font-medium text-white/60 leading-relaxed">
-                      <span>{c}</span>
-                      <button onClick={() => setFormData({ ...formData, challenges: formData.challenges.filter((_: any, i: number) => i !== idx) })}><Trash2 className="w-3 h-3 text-destructive" /></button>
-                    </div>
-                  ))}
-                </div>
-             </div>
           </div>
 
           <div className="glass p-8 rounded-[2rem] border-white/5 space-y-6">
@@ -294,10 +318,6 @@ export default function EditProjectPage() {
                   <SelectItem value="published">Published</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Display Order</span>
-              <Input type="number" value={formData.order} onChange={e => setFormData({ ...formData, order: parseInt(e.target.value) })} className="w-20 bg-white/5 border-white/5 h-10 text-center rounded-xl" />
             </div>
           </div>
         </div>

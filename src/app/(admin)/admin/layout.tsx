@@ -19,7 +19,8 @@ import {
   User,
   Zap,
   Layers,
-  Mail
+  Mail,
+  Globe
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -70,6 +71,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { label: 'Contact Module', href: '/admin/contact', icon: Mail },
     { label: 'Journal', href: '/admin/blog', icon: FileText },
     { label: 'Layout Config', href: '/admin/interface', icon: Layers },
+    { label: 'SEO Command', href: '/admin/seo', icon: Globe },
     { label: 'Leads', href: '/admin/leads', icon: Users },
     { label: 'Settings', href: '/admin/settings', icon: Settings },
   ];
