@@ -9,7 +9,7 @@ import { Footer } from '@/components/portfolio/footer';
 import { ArrowRight, Calendar, Clock, Tag } from 'lucide-react';
 import Link from 'next/link';
 import { db } from '@/lib/firebase/config';
-import { collection, query, where, orderBy, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 
 export default function BlogPage() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -22,15 +22,24 @@ export default function BlogPage() {
         const configSnap = await getDoc(doc(db, 'site_config', 'global'));
         if (configSnap.exists()) setConfig(configSnap.data());
 
+        // Fetching without orderBy to avoid composite index requirements
         const q = query(
           collection(db, 'blog'),
-          where('status', '==', 'published'),
-          orderBy('createdAt', 'desc')
+          where('status', '==', 'published')
         );
         const snap = await getDocs(q);
-        setPosts(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        
+        // Sort in-memory: latest posts first
+        const sortedData = data.sort((a: any, b: any) => {
+          const timeA = a.createdAt?.toMillis?.() || 0;
+          const timeB = b.createdAt?.toMillis?.() || 0;
+          return timeB - timeA;
+        });
+
+        setPosts(sortedData);
       } catch (err) {
-        console.error(err);
+        console.error("Journal Fetch Error:", err);
       } finally {
         setLoading(false);
       }
