@@ -95,7 +95,7 @@ export const Navbar = ({ resumeUrl, navConfig }: NavbarProps) => {
                 <button
                   className="flex items-center gap-2 px-6 py-4 rounded-full bg-white/5 border border-white/10 text-white text-[12px] uppercase font-black tracking-widest hover:bg-white/10 transition-colors group backdrop-blur-md"
                 >
-                  CV <ArrowUpRight className="w-3 h-3" />
+                  Resume <ArrowUpRight className="w-3 h-3" />
                 </button>
               </a>
             )}
