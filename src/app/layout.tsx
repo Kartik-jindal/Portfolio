@@ -1,4 +1,3 @@
-
 import type {Metadata} from 'next';
 import './globals.css';
 import { CustomCursor } from '@/components/portfolio/custom-cursor';
@@ -24,6 +23,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased bg-background text-foreground min-h-screen relative">
         <IntroScreen />
+        <CustomCursor />
         
         {/* Global 3D Background */}
         <div className="fixed inset-0 z-0 pointer-events-none">
@@ -34,7 +34,6 @@ export default function RootLayout({
         <div className="fixed inset-0 bg-grain z-[1] pointer-events-none opacity-[0.03]" />
         
         <div className="relative z-10">
-          <CustomCursor />
           {children}
         </div>
       </body>
