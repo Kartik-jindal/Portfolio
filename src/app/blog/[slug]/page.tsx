@@ -91,13 +91,13 @@ export default function BlogDetailPage() {
 
       <article className="pt-32 pb-24">
         {/* Post Header */}
-        <header className="max-w-4xl mx-auto px-6 mb-16 space-y-12">
+        <header className="max-w-5xl mx-auto px-6 mb-16 space-y-12">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            <Link href="/blog" className="group flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors text-[10px] uppercase font-black tracking-[0.4em]">
-              <div className="w-8 h-px bg-white/10 group-hover:bg-primary group-hover:w-12 transition-all" />
+            <Link href="/blog" className="group flex items-center gap-4 text-white/50 hover:text-primary transition-colors text-xs uppercase font-black tracking-[0.4em]">
+              <div className="w-12 h-px bg-white/20 group-hover:bg-primary group-hover:w-16 transition-all" />
               Back to Journal
             </Link>
           </motion.div>
@@ -105,17 +105,15 @@ export default function BlogDetailPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-8"
+            className="space-y-10"
           >
-            <div className="flex items-center gap-6 text-xs uppercase font-black tracking-[0.3em] text-primary">
-              <span className="flex items-center gap-2"><Tag className="w-3 h-3" /> {post.category}</span>
-              <span className="w-1 h-1 rounded-full bg-white/20" />
-              <span className="flex items-center gap-2 text-muted-foreground"><Calendar className="w-3 h-3" /> {post.date}</span>
-              <span className="w-1 h-1 rounded-full bg-white/20" />
-              <span className="flex items-center gap-2 text-muted-foreground"><Clock className="w-3 h-3" /> {post.readTime}</span>
+            <div className="flex flex-wrap items-center gap-8 text-sm uppercase font-black tracking-[0.3em] text-primary">
+              <span className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full border border-primary/20"><Tag className="w-4 h-4" /> {post.category}</span>
+              <span className="flex items-center gap-2 text-white/60"><Calendar className="w-4 h-4" /> {post.date}</span>
+              <span className="flex items-center gap-2 text-white/60"><Clock className="w-4 h-4" /> {post.readTime}</span>
             </div>
 
-            <h1 className="text-5xl md:text-8xl font-headline font-black italic tracking-tighter leading-none text-white">
+            <h1 className="text-6xl md:text-9xl font-headline font-black italic tracking-tighter leading-[0.9] text-white">
               {post.title}
             </h1>
           </motion.div>
@@ -126,9 +124,9 @@ export default function BlogDetailPage() {
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, ease: "circOut" }}
-          className="max-w-6xl mx-auto px-6 mb-24"
+          className="max-w-7xl mx-auto px-6 mb-24"
         >
-          <div className="relative aspect-[21/9] rounded-[2.5rem] overflow-hidden border border-white/5">
+          <div className="relative aspect-[21/9] rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl">
             <Image 
               src={post.image} 
               alt={post.title} 
@@ -136,41 +134,42 @@ export default function BlogDetailPage() {
               className="object-cover"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
           </div>
         </motion.div>
 
         {/* Content Body */}
-        <div className="max-w-4xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="prose prose-invert prose-lg md:prose-xl max-w-none font-body font-light text-muted-foreground/90 leading-relaxed
+            className="prose prose-invert prose-xl md:prose-2xl max-w-none font-body font-light text-white/80 leading-relaxed
               prose-headings:font-headline prose-headings:font-bold prose-headings:text-white prose-headings:tracking-tight
-              prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-4 prose-blockquote:px-8 prose-blockquote:rounded-2xl prose-blockquote:italic prose-blockquote:text-white
+              prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-8 prose-blockquote:px-12 prose-blockquote:rounded-[2rem] prose-blockquote:italic prose-blockquote:text-white prose-blockquote:not-italic
               prose-strong:text-white prose-strong:font-bold
-              prose-h3:text-3xl prose-h3:mt-16 prose-h3:mb-8"
+              prose-h3:text-4xl md:text-5xl prose-h3:mt-24 prose-h3:mb-10
+              prose-p:mb-8"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
 
           {/* Post Footer */}
-          <footer className="mt-24 pt-12 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="flex items-center gap-4">
-              <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Share this insight</span>
-              <div className="flex gap-2">
+          <footer className="mt-32 pt-16 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-12">
+            <div className="flex items-center gap-6">
+              <span className="text-xs uppercase font-black tracking-[0.3em] text-white/40">Share this insight</span>
+              <div className="flex gap-4">
                 {[Share2, Tag].map((Icon, i) => (
-                  <button key={i} className="w-10 h-10 rounded-full border border-white/5 flex items-center justify-center hover:bg-white/5 transition-colors">
-                    <Icon className="w-4 h-4 text-white/50" />
+                  <button key={i} className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-primary/50 transition-all text-white/60 hover:text-primary">
+                    <Icon className="w-5 h-5" />
                   </button>
                 ))}
               </div>
             </div>
 
-            <Link href="/blog" className="flex items-center gap-4 group">
-              <span className="text-sm font-black uppercase tracking-widest text-white">Next Article</span>
-              <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-black group-hover:scale-110 transition-transform">
-                <ChevronRight className="w-6 h-6" />
+            <Link href="/blog" className="flex items-center gap-6 group">
+              <span className="text-lg font-black uppercase tracking-[0.3em] text-white group-hover:text-primary transition-colors">Next Article</span>
+              <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-black group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+                <ChevronRight className="w-8 h-8" />
               </div>
             </Link>
           </footer>

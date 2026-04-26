@@ -51,16 +51,16 @@ export default function BlogPage() {
             animate={{ opacity: 1, y: 0 }}
             className="mb-32"
           >
-            <span className="text-primary uppercase tracking-[0.6em] text-xs font-black block mb-6">Archive of Thoughts</span>
-            <h1 className="text-7xl md:text-[10rem] font-headline font-black mb-8 italic tracking-tighter leading-none">
+            <span className="text-primary uppercase tracking-[0.6em] text-sm font-black block mb-6">Archive of Thoughts</span>
+            <h1 className="text-7xl md:text-[11rem] font-headline font-black mb-8 italic tracking-tighter leading-none">
               The <span className="text-outline">Journal</span>.
             </h1>
-            <p className="text-xl md:text-3xl text-muted-foreground font-body font-light max-w-3xl leading-relaxed">
+            <p className="text-2xl md:text-4xl text-white font-body font-light max-w-4xl leading-relaxed">
               An exploration into the intersection of code, design, and digital architecture.
             </p>
           </motion.div>
 
-          <div className="grid gap-20">
+          <div className="grid gap-24">
             {posts.map((post, i) => (
               <motion.article
                 key={post.slug}
@@ -73,19 +73,19 @@ export default function BlogPage() {
                 <Link href={`/blog/${post.slug}`} className="block">
                   <div className="grid md:grid-cols-12 gap-12 items-center">
                     {/* Date/Category Sidebar */}
-                    <div className="md:col-span-3 space-y-4">
+                    <div className="md:col-span-3 space-y-6">
                       <div className="flex items-center gap-3 text-primary">
-                        <Tag className="w-3 h-3" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em]">{post.category}</span>
+                        <Tag className="w-4 h-4" />
+                        <span className="text-xs font-black uppercase tracking-[0.4em]">{post.category}</span>
                       </div>
-                      <div className="h-px w-12 bg-white/10 group-hover:w-20 group-hover:bg-primary transition-all duration-500" />
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-2 text-muted-foreground/50 text-xs">
-                          <Calendar className="w-3 h-3" />
+                      <div className="h-px w-12 bg-white/20 group-hover:w-24 group-hover:bg-primary transition-all duration-500" />
+                      <div className="flex flex-col gap-3">
+                        <div className="flex items-center gap-2 text-white/60 text-sm font-medium">
+                          <Calendar className="w-4 h-4" />
                           <span>{post.date}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-muted-foreground/50 text-xs">
-                          <Clock className="w-3 h-3" />
+                        <div className="flex items-center gap-2 text-white/60 text-sm font-medium">
+                          <Clock className="w-4 h-4" />
                           <span>{post.readTime}</span>
                         </div>
                       </div>
@@ -93,23 +93,23 @@ export default function BlogPage() {
 
                     {/* Content Section */}
                     <div className="md:col-span-7 space-y-6">
-                      <h2 className="text-4xl md:text-6xl font-headline font-bold text-white group-hover:text-primary transition-colors cursor-pointer leading-tight">
+                      <h2 className="text-5xl md:text-7xl font-headline font-bold text-white group-hover:text-primary transition-colors cursor-pointer leading-tight">
                         {post.title}
                       </h2>
-                      <p className="text-xl text-muted-foreground font-body font-light leading-relaxed">
+                      <p className="text-2xl text-white/70 font-body font-light leading-relaxed">
                         {post.excerpt}
                       </p>
                     </div>
 
                     {/* Action */}
                     <div className="md:col-span-2 flex justify-end">
-                      <div className="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center group-hover:border-primary group-hover:bg-primary group-hover:text-black transition-all duration-500">
-                        <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                      <div className="w-20 h-20 rounded-full border border-white/10 flex items-center justify-center group-hover:border-primary group-hover:bg-primary group-hover:text-black transition-all duration-500">
+                        <ArrowRight className="w-8 h-8 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
                   </div>
                 </Link>
-                <div className="absolute -bottom-10 left-0 right-0 h-px bg-white/5" />
+                <div className="absolute -bottom-12 left-0 right-0 h-px bg-white/5" />
               </motion.article>
             ))}
           </div>
