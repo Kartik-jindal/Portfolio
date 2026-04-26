@@ -7,15 +7,19 @@ import { auth, db } from '@/lib/firebase/config';
 import { 
   signInWithEmailAndPassword, 
   GoogleAuthProvider, 
-  signInWithPopup 
+  signInWithPopup,
+  User
 } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { LogIn, Mail, Lock, ShieldCheck } from 'lucide-react';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
+
+// Designated owner email for automatic bootstrapping
+const OWNER_EMAIL = 'kartikjindal2003@gmail.com';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
@@ -24,11 +28,32 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const checkAdminAccess = async (uid: string) => {
-    const userDoc = await getDoc(doc(db, 'users', uid));
-    if (userDoc.exists() && (userDoc.data().role === 'ADMIN' || userDoc.data().role === 'SUPER_ADMIN')) {
-      return true;
+  const checkAdminAccess = async (user: User) => {
+    const userRef = doc(db, 'users', user.uid);
+    const userDoc = await getDoc(userRef);
+    
+    if (userDoc.exists()) {
+      const role = userDoc.data().role;
+      return role === 'ADMIN' || role === 'SUPER_ADMIN';
+    } 
+    
+    // If user record doesn't exist but it's the owner email, bootstrap it now
+    if (user.email === OWNER_EMAIL) {
+      try {
+        await setDoc(userRef, {
+          email: user.email,
+          role: 'SUPER_ADMIN',
+          displayName: user.displayName || 'Admin',
+          photoURL: user.photoURL || '',
+          createdAt: serverTimestamp()
+        });
+        return true;
+      } catch (e) {
+        console.error("Bootstrap failed:", e);
+        return false;
+      }
     }
+    
     return false;
   };
 
@@ -37,8 +62,10 @@ export default function AdminLoginPage() {
     setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const isAdmin = await checkAdminAccess(userCredential.user.uid);
+      const isAdmin = await checkAdminAccess(userCredential.user);
+      
       if (isAdmin) {
+        toast({ title: 'Welcome Commander', description: 'Initializing administrative session...' });
         router.push('/admin');
       } else {
         await auth.signOut();
@@ -64,8 +91,10 @@ export default function AdminLoginPage() {
     const provider = new GoogleAuthProvider();
     try {
       const userCredential = await signInWithPopup(auth, provider);
-      const isAdmin = await checkAdminAccess(userCredential.user.uid);
+      const isAdmin = await checkAdminAccess(userCredential.user);
+      
       if (isAdmin) {
+        toast({ title: 'Identity Verified', description: 'Redirecting to command center...' });
         router.push('/admin');
       } else {
         await auth.signOut();
@@ -87,7 +116,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6 bg-transparent relative overflow-hidden">
+    <main className="min-h-screen flex items-center justify-center p-6 bg-[#050505] relative overflow-hidden">
       {/* Background Decor */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-full pointer-events-none opacity-20">
         <div className="absolute top-1/4 left-0 w-64 h-64 bg-primary blur-[100px] rounded-full" />
