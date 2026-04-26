@@ -74,7 +74,7 @@ export default function PostClient({ post, config }: { post: any, config: any })
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="max-w-6xl mx-auto px-6 mb-20"
+          className="max-w-7xl mx-auto px-6 mb-20"
         >
           <div className="relative aspect-[21/9] rounded-3xl overflow-hidden border border-white/5 shadow-2xl">
             <Image 
@@ -89,7 +89,7 @@ export default function PostClient({ post, config }: { post: any, config: any })
           </div>
         </motion.div>
 
-        <div className="max-w-6xl mx-auto px-6 grid lg:grid-cols-12 gap-12 lg:gap-20">
+        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-12 gap-12 lg:gap-20">
           <div className="lg:col-span-8 lg:col-start-1">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
