@@ -23,8 +23,9 @@ export const Footer = ({ config }: FooterProps) => {
   return (
     <footer className="relative py-12 px-6 border-t border-white/10 bg-transparent overflow-hidden">
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-12 pt-12 pb-12">
-          <div className="col-span-1 lg:col-span-2 space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 md:gap-12 pt-12 pb-12">
+          {/* Brand Bio */}
+          <div className="lg:col-span-5 space-y-8">
             <div className="space-y-6">
               <h3 className="text-4xl md:text-6xl font-headline font-bold italic tracking-tighter text-white">Kartik Jindal.</h3>
               <p className="text-muted-foreground max-w-md text-xl md:text-2xl font-light leading-relaxed font-body">
@@ -48,7 +49,8 @@ export const Footer = ({ config }: FooterProps) => {
             </div>
           </div>
 
-          <div className="space-y-8">
+          {/* Navigation */}
+          <div className="lg:col-span-3 space-y-8">
             <h4 className="text-md uppercase tracking-[0.6em] font-black text-white/70">Navigation</h4>
             <ul className="space-y-6 font-body">
               {[
@@ -67,12 +69,13 @@ export const Footer = ({ config }: FooterProps) => {
             </ul>
           </div>
 
-          <div className="space-y-8">
+          {/* Contact Leads */}
+          <div className="lg:col-span-4 space-y-8">
             <h4 className="text-md uppercase tracking-[0.6em] font-black text-white/70">Say Hello</h4>
             <div className="space-y-8">
               <a href={`mailto:${socials.email || 'hello@kartikjindal.com'}`} className="block group">
                 <span className="text-sm uppercase tracking-widest text-primary font-black mb-2 block">General Enquiries</span>
-                <span className="text-2xl md:text-3xl lg:text-4xl text-white font-headline border-b border-white/40 group-hover:border-primary transition-colors inline-block pb-1 break-all">
+                <span className="text-2xl md:text-3xl lg:text-4xl text-white font-headline border-b border-white/40 group-hover:border-primary transition-colors inline-block pb-1 break-words">
                   {socials.email || 'hello@kartikjindal.com'}
                 </span>
               </a>
