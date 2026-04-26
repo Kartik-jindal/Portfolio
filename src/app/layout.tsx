@@ -23,7 +23,6 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased bg-background text-foreground min-h-screen relative">
         <IntroScreen />
-        <CustomCursor />
         
         {/* Global 3D Background */}
         <div className="fixed inset-0 z-0 pointer-events-none">
@@ -36,6 +35,9 @@ export default function RootLayout({
         <div className="relative z-10">
           {children}
         </div>
+
+        {/* Custom Cursor rendered at the end to ensure it sits above all Portal content like Dialogs */}
+        <CustomCursor />
       </body>
     </html>
   );

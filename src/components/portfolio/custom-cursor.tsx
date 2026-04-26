@@ -27,7 +27,8 @@ export const CustomCursor = () => {
 
       const isPointer = window.getComputedStyle(target).cursor === 'pointer' || 
                         target.closest('a') || 
-                        target.closest('button');
+                        target.closest('button') ||
+                        target.closest('[role="button"]');
       
       const customCursorLabel = target.closest('[data-cursor]')?.getAttribute('data-cursor');
 
@@ -76,7 +77,7 @@ export const CustomCursor = () => {
   return (
     <>
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[100000] hidden lg:flex items-center justify-center overflow-hidden"
+        className="fixed top-0 left-0 pointer-events-none z-[999999] hidden lg:flex items-center justify-center overflow-hidden"
         animate={cursorVariant}
         variants={variants}
         style={{
@@ -94,7 +95,7 @@ export const CustomCursor = () => {
         )}
       </motion.div>
       <motion.div 
-        className="fixed top-0 left-0 w-1.5 h-1.5 bg-primary rounded-full pointer-events-none z-[100001] hidden lg:block"
+        className="fixed top-0 left-0 w-1.5 h-1.5 bg-primary rounded-full pointer-events-none z-[1000000] hidden lg:block"
         style={{
           x: mouseX,
           y: mouseY,
