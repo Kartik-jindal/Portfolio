@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ArrowUpRight } from 'lucide-react';
+import { Menu, X, ArrowUpRight, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { db } from '@/lib/firebase/config';
 import { doc, getDoc } from 'firebase/firestore';
@@ -46,6 +46,11 @@ export const Navbar = ({ resumeUrl, navConfig }: NavbarProps) => {
     { label: "Connect", href: "/#contact" },
   ];
 
+  const scrollToContact = () => {
+    setIsMenuOpen(false);
+    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <header className="fixed top-0 left-0 w-full z-[100] pointer-events-none">
       <div className="max-w-[1700px] mx-auto px-8 py-8 md:py-8 flex justify-between items-center pointer-events-auto">
@@ -60,34 +65,41 @@ export const Navbar = ({ resumeUrl, navConfig }: NavbarProps) => {
         </Link>
 
         {/* Desktop Nav - Floating Dock */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-4">
           <motion.nav 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`flex items-center gap-1 px-3 py-2 rounded-full transition-all duration-700 glass ${isScrolled ? 'bg-black/20 backdrop-blur-2xl' : 'bg-transparent'}`}
+            className={`flex items-center gap-1 px-3 py-2 rounded-full transition-all duration-700 glass ${isScrolled ? 'bg-black/40 backdrop-blur-2xl border-white/10' : 'bg-transparent'}`}
           >
             {navItems.map((item: any) => (
               <Link
                 key={item.label}
                 href={item.href}
-                className="px-6 py-2 text-[14px] uppercase tracking-[0.5em] font-black text-muted-foreground hover:text-primary transition-colors hover:bg-primary/5 rounded-full"
+                className="px-6 py-2 text-[12px] uppercase tracking-[0.4em] font-black text-white/50 hover:text-primary transition-colors hover:bg-primary/5 rounded-full"
               >
                 {item.label}
               </Link>
             ))}
           </motion.nav>
 
-          {resumeUrl && (
-            <a href={resumeUrl} target="_blank" rel="noopener noreferrer">
-              <motion.button
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-center gap-2 px-8 py-4 rounded-full bg-white text-black text-[14px] uppercase font-black tracking-widest hover:bg-primary transition-colors group"
+          <div className="flex items-center gap-3">
+             <button
+                onClick={scrollToContact}
+                className="flex items-center gap-2 px-6 py-4 rounded-full bg-primary text-black text-[12px] uppercase font-black tracking-widest hover:bg-accent transition-all group"
               >
-                Resume <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-              </motion.button>
-            </a>
-          )}
+                Start Project <Plus className="w-3.5 h-3.5 group-hover:rotate-90 transition-transform" />
+              </button>
+            
+            {resumeUrl && (
+              <a href={resumeUrl} target="_blank" rel="noopener noreferrer">
+                <button
+                  className="flex items-center gap-2 px-6 py-4 rounded-full bg-white/5 border border-white/10 text-white text-[12px] uppercase font-black tracking-widest hover:bg-white/10 transition-colors group backdrop-blur-md"
+                >
+                  CV <ArrowUpRight className="w-3 h-3" />
+                </button>
+              </a>
+            )}
+          </div>
         </div>
 
         {/* Mobile Toggle */}
@@ -125,12 +137,21 @@ export const Navbar = ({ resumeUrl, navConfig }: NavbarProps) => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className="text-7xl font-headline font-bold text-white hover:text-primary transition-colors italic tracking-tighter block text-center"
+                    className="text-6xl font-headline font-bold text-white hover:text-primary transition-colors italic tracking-tighter block text-center"
                   >
                     {item.label}
                   </motion.span>
                 </Link>
               ))}
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                onClick={scrollToContact}
+                className="mt-8 px-12 py-6 rounded-full bg-primary text-black font-black uppercase tracking-widest text-xl"
+              >
+                Start Project
+              </motion.button>
             </div>
           </motion.div>
         )}
