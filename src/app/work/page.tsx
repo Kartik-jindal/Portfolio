@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -110,7 +109,7 @@ export default function WorkPage() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
                 onClick={() => setSelectedProject(project)}
-                className="glass p-8 rounded-3xl border-white/5 hover:border-primary/30 transition-all duration-500 group relative flex flex-col justify-between min-h-[480px] cursor-pointer"
+                className="glass p-8 rounded-3xl border-white/5 hover:border-primary/30 transition-all duration-500 group relative flex flex-col justify-between min-h-[480px] cursor-none"
               >
                 <div className="space-y-6">
                   <div className="flex justify-between items-start">
@@ -153,7 +152,7 @@ export default function WorkPage() {
       </section>
 
       <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
-        <DialogContent className="max-w-6xl bg-background/98 backdrop-blur-3xl border-white/5 p-0 overflow-hidden rounded-[2.5rem] shadow-2xl outline-none z-[5000]">
+        <DialogContent className="max-w-6xl bg-background/98 backdrop-blur-3xl border-white/5 p-0 overflow-hidden rounded-[2.5rem] shadow-2xl outline-none z-[5000] cursor-none">
           <AnimatePresence>
             {selectedProject && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col h-[90vh] md:h-auto max-h-[90vh]">

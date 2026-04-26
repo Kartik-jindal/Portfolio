@@ -40,7 +40,8 @@
   }
   
   @media (min-width: 1024px) {
-    body, a, button, [role="button"] {
+    /* Broad cursor none to handle portals and overlays */
+    html, body, a, button, [role="button"], [role="dialog"], div {
       cursor: none !important;
     }
   }
