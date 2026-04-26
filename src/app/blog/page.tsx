@@ -1,5 +1,4 @@
-
-"use client";
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -23,7 +22,6 @@ export default function BlogPage() {
         const configSnap = await getDoc(doc(db, 'site_config', 'global'));
         if (configSnap.exists()) setConfig(configSnap.data());
 
-        // Fetching without orderBy to avoid composite index requirements
         const q = query(
           collection(db, 'blog'),
           where('status', '==', 'published')
@@ -31,7 +29,6 @@ export default function BlogPage() {
         const snap = await getDocs(q);
         const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         
-        // Sort in-memory: latest posts first
         const sortedData = data.sort((a: any, b: any) => {
           const timeA = typeof a.createdAt === 'number' ? a.createdAt : (a.createdAt?.toMillis?.() || 0);
           const timeB = typeof b.createdAt === 'number' ? b.createdAt : (b.createdAt?.toMillis?.() || 0);
@@ -92,7 +89,6 @@ export default function BlogPage() {
                   <Link href={`/blog/${post.slug || post.id}`} className="block relative z-10 p-8 md:p-12 rounded-[2rem] hover:bg-white/[0.02] border border-transparent hover:border-white/5 transition-all duration-500">
                     <div className="grid md:grid-cols-12 gap-10 items-center">
                       <div className="md:col-span-5 flex flex-col md:flex-row gap-10 items-center md:items-start">
-                        {/* Thumbnail Container */}
                         <div className="relative w-full md:w-48 lg:w-72 aspect-square rounded-2xl overflow-hidden bg-white/5 border border-white/5 shrink-0 group-hover:border-primary/30 transition-all duration-500 shadow-xl">
                            <Image 
                               src={post.image || `https://picsum.photos/seed/${post.id}/600/600`} 
@@ -105,9 +101,13 @@ export default function BlogPage() {
                         </div>
 
                         <div className="space-y-6 flex-1 w-full text-center md:text-left">
-                          <div className="flex items-center gap-3 text-primary justify-center md:justify-start">
-                            <Tag className="w-4 h-4" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.4em]">{post.category}</span>
+                          <div className="flex flex-wrap items-center gap-2 justify-center md:justify-start">
+                            {(post.categories || (post.category ? [post.category] : ['Engineering'])).map((cat: string) => (
+                              <div key={cat} className="flex items-center gap-2 text-primary">
+                                <Tag className="w-3 h-3" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em]">{cat}</span>
+                              </div>
+                            ))}
                           </div>
                           <div className="h-px w-8 bg-white/20 group-hover:w-16 group-hover:bg-primary transition-all duration-500 mx-auto md:mx-0" />
                           <div className="flex flex-col gap-3">

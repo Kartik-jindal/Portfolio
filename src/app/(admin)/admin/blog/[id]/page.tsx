@@ -6,7 +6,7 @@ import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,6 +22,7 @@ export default function EditBlogPostPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [newCategory, setNewCategory] = useState('');
   const [formData, setFormData] = useState<any>(null);
   const [isSlugManual, setIsSlugManual] = useState(false);
   const router = useRouter();
@@ -41,11 +42,21 @@ export default function EditBlogPostPage() {
         const docSnap = await getDoc(doc(db, 'blog', id as string));
         if (docSnap.exists()) {
           const data = docSnap.data();
+          
+          // Handle legacy single-category field
+          let categories = data.categories || [];
+          if (!data.categories && data.category) {
+            categories = [data.category];
+          }
+          if (categories.length === 0 && !data.category) {
+            categories = ['Engineering'];
+          }
+
           setFormData({ 
             id: docSnap.id, 
             title: data.title || '',
             slug: data.slug || '',
-            category: data.category || 'Engineering',
+            categories: categories,
             date: data.date || '',
             readTime: data.readTime || '',
             summary: data.summary || '',
@@ -74,6 +85,17 @@ export default function EditBlogPostPage() {
       title: val,
       slug: isSlugManual ? prev.slug : slugify(val)
     }));
+  };
+
+  const addCategory = () => {
+    if (newCategory && !formData.categories.includes(newCategory)) {
+      setFormData((prev: any) => ({ ...prev, categories: [...prev.categories, newCategory] }));
+      setNewCategory('');
+    }
+  };
+
+  const removeCategory = (cat: string) => {
+    setFormData((prev: any) => ({ ...prev, categories: prev.categories.filter((c: string) => c !== cat) }));
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,11 +189,7 @@ export default function EditBlogPostPage() {
               </div>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Category</Label>
-                <Input value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
-              </div>
+            <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Display Date</Label>
                 <Input value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
@@ -295,6 +313,23 @@ export default function EditBlogPostPage() {
                </div>
                <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" placeholder="Direct Image URL" />
                <Input value={formData.imageHint} onChange={e => setFormData({ ...formData, imageHint: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" placeholder="AI image hint" />
+            </div>
+          </div>
+
+          <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
+            <div className="space-y-4">
+              <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Category Arsenal</Label>
+              <div className="flex gap-2">
+                <Input value={newCategory} onChange={e => setNewCategory(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addCategory())} className="bg-white/5 border-white/5 rounded-xl h-10 flex-1" placeholder="Add category..." />
+                <Button onClick={addCategory} variant="outline" className="h-10 w-10 rounded-xl border-white/10">+</Button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {formData.categories?.map((cat: string) => (
+                  <span key={cat} className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary flex items-center gap-2">
+                    {cat} <button onClick={() => removeCategory(cat)}><Plus className="w-3 h-3 rotate-45" /></button>
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
 

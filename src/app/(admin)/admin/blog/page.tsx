@@ -44,10 +44,12 @@ export default function BlogAdminPage() {
     }
   };
 
-  const filteredPosts = posts.filter(p => 
-    p.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.category?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPosts = posts.filter(p => {
+    const searchLower = searchTerm.toLowerCase();
+    const titleMatch = p.title?.toLowerCase().includes(searchLower);
+    const categoryMatch = p.categories?.some((cat: string) => cat.toLowerCase().includes(searchLower)) || p.category?.toLowerCase().includes(searchLower);
+    return titleMatch || categoryMatch;
+  });
 
   return (
     <div className="space-y-10">
@@ -94,10 +96,13 @@ export default function BlogAdminPage() {
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
                 <div className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <span className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-[10px] font-black uppercase tracking-widest text-primary">
-                      {post.category || 'General'}
-                    </span>
+                  <div className="flex flex-wrap items-center gap-4">
+                    {/* Render new multiple categories or legacy single category */}
+                    {(post.categories || (post.category ? [post.category] : ['General'])).map((cat: string) => (
+                      <span key={cat} className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-[10px] font-black uppercase tracking-widest text-primary">
+                        {cat}
+                      </span>
+                    ))}
                     <span className={`text-[10px] font-black uppercase tracking-widest ${post.status === 'published' ? 'text-green-500' : 'text-yellow-500'}`}>
                       • {post.status}
                     </span>

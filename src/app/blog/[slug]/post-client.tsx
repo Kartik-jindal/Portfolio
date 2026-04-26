@@ -1,5 +1,4 @@
-
-"use client";
+'use client';
 
 import React from 'react';
 import { motion, useScroll, useSpring } from 'framer-motion';
@@ -31,6 +30,9 @@ export default function PostClient({ post, config }: { post: any, config: any })
     );
   }
 
+  // Handle legacy single-category posts
+  const postCategories = post.categories || (post.category ? [post.category] : ['Engineering']);
+
   return (
     <main className="bg-transparent min-h-screen">
       <Navbar resumeUrl={config?.resume?.fileUrl} />
@@ -52,10 +54,14 @@ export default function PostClient({ post, config }: { post: any, config: any })
               <Breadcrumbs items={[{ label: 'Journal', href: '/blog' }, { label: post.title }]} />
             </div>
 
-            <div className="flex justify-center items-center gap-4 text-[10px] uppercase font-black tracking-[0.3em] text-primary">
-              <span className="bg-primary/5 px-3 py-1 rounded-md border border-primary/10">
-                {post.category}
-              </span>
+            <div className="flex flex-wrap justify-center items-center gap-4 text-[10px] uppercase font-black tracking-[0.3em] text-primary">
+              <div className="flex flex-wrap gap-2">
+                {postCategories.map((cat: string) => (
+                  <span key={cat} className="bg-primary/5 px-3 py-1 rounded-md border border-primary/10">
+                    {cat}
+                  </span>
+                ))}
+              </div>
               <span className="w-1 h-1 rounded-full bg-white/20" />
               <span className="text-white/40">{post.readTime}</span>
             </div>

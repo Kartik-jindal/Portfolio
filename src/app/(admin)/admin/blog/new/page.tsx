@@ -6,7 +6,7 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -21,10 +21,11 @@ export default function NewBlogPostPage() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [isSlugManual, setIsSlugManual] = useState(false);
+  const [newCategory, setNewCategory] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
-    category: 'Engineering',
+    categories: ['Engineering'] as string[],
     date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
     readTime: '5 min read',
     summary: '',
@@ -53,6 +54,17 @@ export default function NewBlogPostPage() {
       title: val,
       slug: isSlugManual ? prev.slug : slugify(val)
     }));
+  };
+
+  const addCategory = () => {
+    if (newCategory && !formData.categories.includes(newCategory)) {
+      setFormData(prev => ({ ...prev, categories: [...prev.categories, newCategory] }));
+      setNewCategory('');
+    }
+  };
+
+  const removeCategory = (cat: string) => {
+    setFormData(prev => ({ ...prev, categories: prev.categories.filter(c => c !== cat) }));
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,11 +156,7 @@ export default function NewBlogPostPage() {
               </div>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Category</Label>
-                <Input value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="Engineering" />
-              </div>
+            <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Display Date</Label>
                 <Input value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
@@ -267,11 +275,28 @@ export default function NewBlogPostPage() {
                  )}
                  <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
                     <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileUpload} />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white">{uploading ? 'Syncing...' : 'Upload Cover (S3)'}</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white">{uploading ? 'Syncing...' : 'Upload to S3'}</span>
                  </div>
                </div>
                <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" placeholder="Direct Image URL" />
                <Input value={formData.imageHint} onChange={e => setFormData({ ...formData, imageHint: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" placeholder="AI image hint" />
+            </div>
+          </div>
+
+          <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
+            <div className="space-y-4">
+              <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Category Arsenal</Label>
+              <div className="flex gap-2">
+                <Input value={newCategory} onChange={e => setNewCategory(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addCategory())} className="bg-white/5 border-white/5 rounded-xl h-10 flex-1" placeholder="Add category..." />
+                <Button onClick={addCategory} variant="outline" className="h-10 w-10 rounded-xl border-white/10">+</Button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {formData.categories?.map((cat: string) => (
+                  <span key={cat} className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary flex items-center gap-2">
+                    {cat} <button onClick={() => removeCategory(cat)}><Plus className="w-3 h-3 rotate-45" /></button>
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
 
