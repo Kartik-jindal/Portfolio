@@ -27,8 +27,12 @@ export const Navbar = ({ resumeUrl, navConfig }: NavbarProps) => {
   useEffect(() => {
     if (!navConfig) {
       const fetchNav = async () => {
-        const docSnap = await getDoc(doc(db, 'site_config', 'navbar'));
-        if (docSnap.exists()) setConfig(docSnap.data());
+        try {
+          const docSnap = await getDoc(doc(db, 'site_config', 'navbar'));
+          if (docSnap.exists()) setConfig(docSnap.data());
+        } catch (e) {
+          console.error("Navbar Config Error:", e);
+        }
       };
       fetchNav();
     }
@@ -60,7 +64,7 @@ export const Navbar = ({ resumeUrl, navConfig }: NavbarProps) => {
           <motion.nav 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`flex items-center gap-1 px-3 py-2 rounded-full transition-all duration-700 glass ${isScrolled ? 'opacity-100' : 'opacity-100'}`}
+            className={`flex items-center gap-1 px-3 py-2 rounded-full transition-all duration-700 glass ${isScrolled ? 'bg-black/20 backdrop-blur-2xl' : 'bg-transparent'}`}
           >
             {navItems.map((item: any) => (
               <Link
