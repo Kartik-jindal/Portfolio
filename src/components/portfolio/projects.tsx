@@ -1,15 +1,13 @@
-
 "use client";
 
 import React, { useRef, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence, useSpring } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Github, ArrowUpRight, ArrowRight, X, ExternalLink, ShieldCheck, Zap, Layers, Target, Code } from 'lucide-react';
+import { Github, ArrowUpRight, ArrowRight, X, ExternalLink, ShieldCheck, Zap, Layers, Target, Code, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 
@@ -297,107 +295,120 @@ export const Projects = () => {
                   </div>
                 </div>
 
-                {/* Content Section - Increased Detail Density */}
-                <div className="px-10 py-12 md:px-14 md:py-16 space-y-14 max-h-[70vh] overflow-y-auto custom-scrollbar">
-                  <div className="grid md:grid-cols-12 gap-16">
-                    {/* Primary Narrative */}
-                    <div className="md:col-span-7 space-y-12">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-3 text-primary">
-                          <Target className="w-4 h-4" />
-                          <h4 className="text-xs font-black uppercase tracking-[0.4em]">The Mission</h4>
+                {/* Content Section - Increased Detail Density with Scroll Indicator */}
+                <div className="relative group/modal">
+                  <div className="px-10 py-12 md:px-14 md:py-16 space-y-14 max-h-[70vh] overflow-y-auto custom-scrollbar relative">
+                    <div className="grid md:grid-cols-12 gap-16">
+                      {/* Primary Narrative */}
+                      <div className="md:col-span-7 space-y-12">
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-3 text-primary">
+                            <Target className="w-4 h-4" />
+                            <h4 className="text-xs font-black uppercase tracking-[0.4em]">The Mission</h4>
+                          </div>
+                          <p className="text-lg md:text-xl text-muted-foreground/90 font-body font-light leading-relaxed">
+                            {selectedProject.longDesc}
+                          </p>
                         </div>
-                        <p className="text-lg md:text-xl text-muted-foreground/90 font-body font-light leading-relaxed">
-                          {selectedProject.longDesc}
-                        </p>
+
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-3 text-accent">
+                            <Code className="w-4 h-4" />
+                            <h4 className="text-xs font-black uppercase tracking-[0.4em]">Engineering Methodology</h4>
+                          </div>
+                          <p className="text-lg text-muted-foreground/80 font-body leading-relaxed border-l-2 border-accent/20 pl-6 italic">
+                            {selectedProject.methodology}
+                          </p>
+                        </div>
+
+                        <div className="space-y-6">
+                          <h4 className="text-xs font-black uppercase tracking-[0.4em] text-white/40">Technical Hurdles</h4>
+                          <ul className="grid sm:grid-cols-1 gap-4">
+                            {selectedProject.challenges.map((challenge: string, i: number) => (
+                              <li key={i} className="flex gap-4 items-start group">
+                                <div className="mt-1 w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
+                                  <ShieldCheck className="w-3 h-3 text-primary" />
+                                </div>
+                                <span className="text-muted-foreground/80 font-body text-base group-hover:text-white transition-colors">{challenge}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       </div>
 
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-3 text-accent">
-                          <Code className="w-4 h-4" />
-                          <h4 className="text-xs font-black uppercase tracking-[0.4em]">Engineering Methodology</h4>
+                      {/* Meta Specs Sidebar */}
+                      <div className="md:col-span-5 space-y-12">
+                        <div className="glass p-8 rounded-3xl border-white/5 space-y-8">
+                          <div>
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Strategic Impact</h4>
+                            <p className="text-sm font-medium text-white/90 leading-relaxed bg-primary/5 p-4 rounded-2xl border border-primary/10">
+                              {selectedProject.impact}
+                            </p>
+                          </div>
+                          
+                          <div>
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Core Arsenal</h4>
+                            <div className="flex flex-wrap gap-2">
+                              {selectedProject.tech.map((t: string) => (
+                                <span key={t} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[10px] font-bold text-white/60 tracking-wider hover:text-primary hover:border-primary/30 transition-all cursor-default">
+                                  {t}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
                         </div>
-                        <p className="text-lg text-muted-foreground/80 font-body leading-relaxed border-l-2 border-accent/20 pl-6 italic">
-                          {selectedProject.methodology}
-                        </p>
-                      </div>
 
-                      <div className="space-y-6">
-                        <h4 className="text-xs font-black uppercase tracking-[0.4em] text-white/40">Technical Hurdles</h4>
-                        <ul className="grid sm:grid-cols-1 gap-4">
-                          {selectedProject.challenges.map((challenge: string, i: number) => (
-                            <li key={i} className="flex gap-4 items-start group">
-                              <div className="mt-1 w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                                <ShieldCheck className="w-3 h-3 text-primary" />
+                        <div className="space-y-4">
+                           <div className="flex items-center gap-3">
+                             <Zap className="w-4 h-4 text-accent" />
+                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Project Analytics</span>
+                           </div>
+                           <div className="grid grid-cols-2 gap-4">
+                              <div className="bg-white/[0.02] p-5 rounded-2xl border border-white/5">
+                                 <div className="text-[9px] uppercase tracking-widest text-white/30 mb-1">Status</div>
+                                 <div className="text-xs font-bold text-white">Live Production</div>
                               </div>
-                              <span className="text-muted-foreground/80 font-body text-base group-hover:text-white transition-colors">{challenge}</span>
-                            </li>
-                          ))}
-                        </ul>
+                              <div className="bg-white/[0.02] p-5 rounded-2xl border border-white/5">
+                                 <div className="text-[9px] uppercase tracking-widest text-white/30 mb-1">Year</div>
+                                 <div className="text-xs font-bold text-white">2024 Release</div>
+                              </div>
+                           </div>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Meta Specs Sidebar */}
-                    <div className="md:col-span-5 space-y-12">
-                      <div className="glass p-8 rounded-3xl border-white/5 space-y-8">
-                        <div>
-                          <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Strategic Impact</h4>
-                          <p className="text-sm font-medium text-white/90 leading-relaxed bg-primary/5 p-4 rounded-2xl border border-primary/10">
-                            {selectedProject.impact}
-                          </p>
+                    {/* Footer Action */}
+                    <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
+                      <div className="flex items-center gap-6">
+                        <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+                          <Layers className="w-7 h-7 text-primary" />
                         </div>
-                        
                         <div>
-                          <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Core Arsenal</h4>
-                          <div className="flex flex-wrap gap-2">
-                            {selectedProject.tech.map((t: string) => (
-                              <span key={t} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[10px] font-bold text-white/60 tracking-wider hover:text-primary hover:border-primary/30 transition-all cursor-default">
-                                {t}
-                              </span>
-                            ))}
-                          </div>
+                          <p className="text-[10px] font-black tracking-widest uppercase text-white/40">Architectural Objective</p>
+                          <p className="text-base font-bold text-white">High-Fidelity Scalability</p>
                         </div>
                       </div>
-
-                      <div className="space-y-4">
-                         <div className="flex items-center gap-3">
-                           <Zap className="w-4 h-4 text-accent" />
-                           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Project Analytics</span>
-                         </div>
-                         <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-white/[0.02] p-5 rounded-2xl border border-white/5">
-                               <div className="text-[9px] uppercase tracking-widest text-white/30 mb-1">Status</div>
-                               <div className="text-xs font-bold text-white">Live Production</div>
-                            </div>
-                            <div className="bg-white/[0.02] p-5 rounded-2xl border border-white/5">
-                               <div className="text-[9px] uppercase tracking-widest text-white/30 mb-1">Year</div>
-                               <div className="text-xs font-bold text-white">2024 Release</div>
-                            </div>
-                         </div>
-                      </div>
+                      
+                      <Button 
+                        asChild
+                        className="w-full md:w-auto px-12 py-9 rounded-full bg-white text-black hover:bg-primary hover:text-white transition-all duration-700 font-black uppercase tracking-[0.2em] group shadow-[0_0_30px_rgba(255,255,255,0.05)]"
+                      >
+                        <a href={selectedProject.liveUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4">
+                          Launch Live Product <ExternalLink className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                        </a>
+                      </Button>
                     </div>
                   </div>
 
-                  {/* Footer Action */}
-                  <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="flex items-center gap-6">
-                      <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-                        <Layers className="w-7 h-7 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-black tracking-widest uppercase text-white/40">Architectural Objective</p>
-                        <p className="text-base font-bold text-white">High-Fidelity Scalability</p>
-                      </div>
-                    </div>
-                    
-                    <Button 
-                      asChild
-                      className="w-full md:w-auto px-12 py-9 rounded-full bg-white text-black hover:bg-primary hover:text-white transition-all duration-700 font-black uppercase tracking-[0.2em] group shadow-[0_0_30px_rgba(255,255,255,0.05)]"
+                  {/* Visual Scroll Hint */}
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-none opacity-40 group-hover/modal:opacity-100 transition-opacity duration-500 flex flex-col items-center gap-1">
+                    <span className="text-[8px] uppercase tracking-[0.3em] font-black text-white/30">Scroll</span>
+                    <motion.div
+                      animate={{ y: [0, 4, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                     >
-                      <a href={selectedProject.liveUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4">
-                        Launch Live Product <ExternalLink className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                      </a>
-                    </Button>
+                      <ChevronDown className="w-3 h-3 text-primary" />
+                    </motion.div>
                   </div>
                 </div>
               </motion.div>
