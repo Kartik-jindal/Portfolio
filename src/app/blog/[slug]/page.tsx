@@ -34,7 +34,7 @@ const blogData: Record<string, any> = {
       </ul>
 
       <blockquote>
-        "Digital architecture is the bridge between human imagination and machine execution. WebGL is the paint that makes that bridge beautiful and interactive."
+        Digital architecture is the bridge between human imagination and machine execution. WebGL is the paint that makes that bridge beautiful and interactive.
       </blockquote>
 
       <h3>Performance and Accessibility</h3>
@@ -58,7 +58,7 @@ const blogData: Record<string, any> = {
       <p>Every element on a screen demands attention. By reducing the number of choices and visual distractions, we allow the user's mind to rest. This leads to higher engagement and a more meaningful interaction with the core message of the application.</p>
 
       <blockquote>
-        "Minimalism is not a lack of something. It is simply the perfect amount of something. It is clarity achieved through restraint."
+        Minimalism is not a lack of something. It is simply the perfect amount of something. It is clarity achieved through restraint.
       </blockquote>
       
       <h3>The Pillars of Modern Premium UI</h3>
@@ -68,7 +68,7 @@ const blogData: Record<string, any> = {
         <li><strong>Intentionality:</strong> Every pixel serves a functional or emotional purpose, leaving no room for decoration for its own sake.</li>
         <li><strong>Hierarchy through Space:</strong> Using gaps and margins to tell the user what's important without using bold colors or large fonts.</li>
         <li><strong>Subtle Feedback:</strong> Interactions that whisper rather than scream—smooth transitions, soft shadows, and micro-interactions.</li>
-        <li><strong>Typography as Hero:</strong> Letting the typeface carry the weight of the brand's personality and message.</li>
+        <li><strong>Typography as Hero:</strong> Letting the typeface carry the personality of the brand.</li>
       </ul>
       
       <p>When you remove the noise, the signal becomes undeniable. That is the true power of a minimalist approach to digital architecture.</p>
@@ -86,22 +86,22 @@ const blogData: Record<string, any> = {
       <p>Next.js has become the de facto standard for building production-ready React applications. But how do you handle thousands of routes and millions of concurrent users while maintaining a developer experience that doesn't slow down as the team grows?</p>
       
       <h3>Architectural Precision</h3>
-      <p>Scaling starts with a clean architecture. We discuss the transition from simple Page Router patterns to the more robust App Router, leveraging Server Components for optimized data fetching and smaller client bundles. This shift requires a paradigm change in how we think about the boundary between server and client.</p>
+      <p>Scaling starts with a clean architecture. We discuss the transition from simple Page Router patterns to the more robust App Router, leveraging Server Components for optimized data fetching and smaller client bundles.</p>
 
       <h3>The Four Pillars of Enterprise Scale</h3>
       <ul>
         <li><strong>Infrastructure as Code:</strong> Ensuring environments are reproducible, stable, and easily horizontally scalable.</li>
-        <li><strong>Modular Domain Patterns:</strong> Breaking the monolith into manageable, testable domains that can be owned by separate teams.</li>
-        <li><strong>Observability & Monitoring:</strong> Implementing deep tracing and performance metrics to catch bottlenecks before they impact users.</li>
-        <li><strong>Aggressive Edge Caching:</strong> Moving data closer to the user to reduce latency and server load globally.</li>
+        <li><strong>Modular Domain Patterns:</strong> Breaking the monolith into manageable, testable domains.</li>
+        <li><strong>Observability & Monitoring:</strong> Implementing deep tracing and performance metrics.</li>
+        <li><strong>Aggressive Edge Caching:</strong> Moving data closer to the user to reduce latency globally.</li>
       </ul>
 
       <blockquote>
-        "Performance at scale is the result of a thousand small decisions made with extreme clarity. It is an engineering culture, not just a set of tools."
+        Performance at scale is the result of a thousand small decisions made with extreme clarity. It is an engineering culture, not just a set of tools.
       </blockquote>
 
       <h3>Caching Strategies for the Modern Web</h3>
-      <p>The secret to speed at scale is aggressive caching. From Incremental Static Regeneration (ISR) to edge middleware optimization, we dive deep into how to make your enterprise application feel instantaneous across the globe, regardless of the user's connection speed.</p>
+      <p>The secret to speed at scale is aggressive caching. From Incremental Static Regeneration (ISR) to edge middleware optimization, we dive deep into how to make your enterprise application feel instantaneous.</p>
     `
   }
 };
@@ -209,7 +209,6 @@ export default function BlogDetailPage() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent" />
             
-            {/* Action Bar Overlay */}
             <div className="absolute bottom-8 left-8 md:bottom-12 md:left-12 flex items-center gap-4">
               <button className="w-12 h-12 rounded-full glass border-white/10 flex items-center justify-center text-white/50 hover:text-primary hover:border-primary/40 backdrop-blur-xl transition-all">
                 <Bookmark className="w-4 h-4" />
@@ -287,7 +286,7 @@ export default function BlogDetailPage() {
                 <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Contextual Tags</h4>
                 <div className="flex flex-wrap gap-2">
                   {["System", "Architecture", "Design", "Future"].map(tag => (
-                    <span key={tag} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[9px] font-bold text-white/40 uppercase tracking-widest hover:text-primary transition-colors cursor-pointer">
+                    <span key={tag} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[9px] font-bold text-white/40 uppercase tracking-wider hover:text-primary transition-colors cursor-pointer">
                       #{tag}
                     </span>
                   ))}
