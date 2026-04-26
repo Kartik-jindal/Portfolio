@@ -4,7 +4,7 @@
 import React, { useRef, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence, useSpring } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Github, ArrowUpRight, ArrowRight, X, ExternalLink, ShieldCheck, Zap, Layers } from 'lucide-react';
+import { Github, ArrowUpRight, ArrowRight, X, ExternalLink, ShieldCheck, Zap, Layers, Target, Code } from 'lucide-react';
 import Image from 'next/image';
 import {
   Dialog,
@@ -20,12 +20,15 @@ const flagshipProjects = [
     role: "System Architect",
     desc: "A mission-critical dashboard for real-time satellite telemetry. Leverages WebGL for planetary visualization and high-throughput data streams.",
     longDesc: "Nova Orbital was engineered to handle massive streams of telemetry data from orbital constellations. The primary challenge was rendering high-fidelity planetary models while simultaneously processing thousands of data points per second without UI latency.",
+    methodology: "We utilized a multi-threaded architecture with Web Workers to handle data parsing off the main thread, while implementing a custom shaders system in Three.js for efficient planetary rendering.",
+    impact: "Successfully reduced system response time by 65% and enabled real-time monitoring for over 500+ active satellites simultaneously.",
     challenges: [
       "Real-time processing of 10k+ concurrent data streams",
       "GPU-accelerated WebGL visualization for global tracking",
-      "Sub-100ms latency for critical command and control triggers"
+      "Sub-100ms latency for critical command and control triggers",
+      "Dynamic data normalization across heterogeneous satellite hardware"
     ],
-    tech: ["Next.js 15", "Three.js", "Rust", "WebSockets"],
+    tech: ["Next.js 15", "Three.js", "Rust", "WebSockets", "GLSL"],
     image: "https://picsum.photos/seed/nova/1600/1000",
     color: "rgba(16, 185, 129, 0.05)",
     accent: "#10B981",
@@ -37,12 +40,15 @@ const flagshipProjects = [
     role: "Creative Director",
     desc: "Immersive e-commerce experience for a luxury Parisian fashion house. Features 3D product interaction and cinematic storytelling.",
     longDesc: "Aura Atelier redefines luxury e-commerce by blending traditional high-fashion editorial aesthetics with cutting-edge 3D interactivity. We focused on creating a 'silent' UI that highlights product craftsmanship through physics-based fabric simulation.",
+    methodology: "The project employed a 'Visual-First' engineering approach, using GSAP for complex timeline orchestrations and a custom headless Shopify integration for high-performance state management.",
+    impact: "Led to a 40% increase in user session duration and a significant 25% uplift in conversion for high-ticket limited items.",
     challenges: [
       "Physics-based fabric rendering in the browser",
       "Seamless cinematic transitions between catalog and detail views",
-      "Global CDN optimization for high-resolution 4K assets"
+      "Global CDN optimization for high-resolution 4K assets",
+      "Complex state synchronization between 3D scenes and shopping cart"
     ],
-    tech: ["React", "GLSL", "GSAP", "Shopify API"],
+    tech: ["React", "GLSL", "GSAP", "Shopify API", "Three.js"],
     image: "https://picsum.photos/seed/aura/1600/1000",
     color: "rgba(255, 255, 255, 0.03)",
     accent: "#ffffff",
@@ -54,12 +60,15 @@ const flagshipProjects = [
     role: "Full Stack Dev",
     desc: "Environmental monitoring system tracking global carbon emissions in real-time. Built for massive scalability and accuracy.",
     longDesc: "Eco Pulse provides governmental bodies with the data needed to make climate policy decisions. The platform aggregates data from diverse IoT sensors and satellite imagery to provide a real-time carbon footprint of the planet.",
+    methodology: "Built on a robust Firebase backend with Google Earth Engine integration, the system utilizes D3.js for complex data storytelling and geographic heatmapping.",
+    impact: "Currently utilized by 12 non-profit organizations to track carbon offset initiatives with an accuracy rate of 98.4%.",
     challenges: [
       "Aggregation of multi-source environmental data sets",
       "Dynamic D3.js visualizations for complex temporal data",
-      "Highly accessible interface for non-technical stakeholders"
+      "Highly accessible interface for non-technical stakeholders",
+      "Automated outlier detection in sensor telemetry"
     ],
-    tech: ["Next.js", "Firebase", "D3.js", "Google Earth Engine"],
+    tech: ["Next.js", "Firebase", "D3.js", "Google Earth Engine", "Python"],
     image: "https://picsum.photos/seed/eco/1600/1000",
     color: "rgba(16, 185, 129, 0.05)",
     accent: "#10B981",
@@ -71,12 +80,15 @@ const flagshipProjects = [
     role: "Lead Engineer",
     desc: "A comprehensive design system and component library adopted by Fortune 500 product teams.",
     longDesc: "Stark Design is more than a UI kit; it's a technical framework for consistency. Built with a focus on atomic design principles, it ensures that thousands of developers can ship accessible, performant, and branded experiences with zero friction.",
+    methodology: "Implemented a strict architectural boundary between presentation logic and data handling, utilizing Tailwind for styling and Radix UI for accessible primitives.",
+    impact: "Reduced front-end development time by 30% across 5 global engineering departments and ensured 100% brand consistency.",
     challenges: [
       "Zero-runtime CSS architecture for maximum performance",
       "Strict WCAG 2.2 Level AAA accessibility compliance",
-      "Automated visual regression testing for 200+ components"
+      "Automated visual regression testing for 200+ components",
+      "Tree-shaking optimization for sub-component delivery"
     ],
-    tech: ["React", "Tailwind", "Radix UI", "Storybook"],
+    tech: ["React", "Tailwind", "Radix UI", "Storybook", "Jest"],
     image: "https://picsum.photos/seed/stark/1600/1000",
     color: "rgba(255, 255, 255, 0.03)",
     accent: "#ffffff",
@@ -252,90 +264,114 @@ export const Projects = () => {
 
       {/* Case Study Preview Modal */}
       <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
-        <DialogContent className="max-w-4xl bg-background/95 backdrop-blur-3xl border-white/5 p-0 overflow-hidden rounded-[2rem] md:rounded-[3rem] shadow-[0_0_100px_rgba(0,0,0,0.5)]">
+        <DialogContent className="max-w-5xl bg-background/95 backdrop-blur-3xl border-white/5 p-0 overflow-hidden rounded-[2rem] md:rounded-[3rem] shadow-[0_0_100px_rgba(0,0,0,0.5)]">
           <AnimatePresence>
             {selectedProject && (
               <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
                 className="relative"
               >
-                {/* Visual Header */}
-                <div className="relative aspect-video md:aspect-[21/9] w-full overflow-hidden">
+                {/* Visual Header - Reduced Size */}
+                <div className="relative h-48 md:h-64 w-full overflow-hidden">
                   <Image 
                     src={selectedProject.image} 
                     alt={selectedProject.title} 
                     fill 
-                    className="object-cover"
+                    className="object-cover opacity-60"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
                   
                   <button 
                     onClick={() => setSelectedProject(null)}
-                    className="absolute top-6 right-6 w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-colors z-20"
+                    className="absolute top-6 right-6 w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-colors z-30"
                   >
                     <X className="w-6 h-6 text-white" />
                   </button>
 
-                  <div className="absolute bottom-8 left-10 z-10">
-                     <span className="text-primary font-black tracking-[0.4em] text-[10px] uppercase mb-2 block">{selectedProject.role}</span>
-                     <DialogTitle className="text-4xl md:text-6xl font-headline font-black text-white italic tracking-tighter">
+                  <div className="absolute bottom-6 left-10 z-20">
+                     <span className="text-primary font-black tracking-[0.4em] text-[10px] uppercase mb-1 block">{selectedProject.role}</span>
+                     <DialogTitle className="text-3xl md:text-5xl font-headline font-black text-white italic tracking-tighter">
                        {selectedProject.title}
                      </DialogTitle>
                   </div>
                 </div>
 
-                {/* Content Section */}
-                <div className="p-10 md:p-14 space-y-12 max-h-[60vh] overflow-y-auto custom-scrollbar">
-                  <div className="grid md:grid-cols-12 gap-12">
-                    <div className="md:col-span-7 space-y-8">
+                {/* Content Section - Increased Detail Density */}
+                <div className="px-10 py-12 md:px-14 md:py-16 space-y-14 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                  <div className="grid md:grid-cols-12 gap-16">
+                    {/* Primary Narrative */}
+                    <div className="md:col-span-7 space-y-12">
                       <div className="space-y-4">
-                        <h4 className="text-xs font-black uppercase tracking-[0.4em] text-white/40">The Mission</h4>
-                        <p className="text-lg md:text-xl text-muted-foreground font-body font-light leading-relaxed">
+                        <div className="flex items-center gap-3 text-primary">
+                          <Target className="w-4 h-4" />
+                          <h4 className="text-xs font-black uppercase tracking-[0.4em]">The Mission</h4>
+                        </div>
+                        <p className="text-lg md:text-xl text-muted-foreground/90 font-body font-light leading-relaxed">
                           {selectedProject.longDesc}
+                        </p>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3 text-accent">
+                          <Code className="w-4 h-4" />
+                          <h4 className="text-xs font-black uppercase tracking-[0.4em]">Engineering Methodology</h4>
+                        </div>
+                        <p className="text-lg text-muted-foreground/80 font-body leading-relaxed border-l-2 border-accent/20 pl-6 italic">
+                          {selectedProject.methodology}
                         </p>
                       </div>
 
                       <div className="space-y-6">
                         <h4 className="text-xs font-black uppercase tracking-[0.4em] text-white/40">Technical Hurdles</h4>
-                        <ul className="space-y-4">
+                        <ul className="grid sm:grid-cols-1 gap-4">
                           {selectedProject.challenges.map((challenge: string, i: number) => (
-                            <li key={i} className="flex gap-4 items-start">
-                              <div className="mt-1 w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                            <li key={i} className="flex gap-4 items-start group">
+                              <div className="mt-1 w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
                                 <ShieldCheck className="w-3 h-3 text-primary" />
                               </div>
-                              <span className="text-muted-foreground/80 font-body text-base">{challenge}</span>
+                              <span className="text-muted-foreground/80 font-body text-base group-hover:text-white transition-colors">{challenge}</span>
                             </li>
                           ))}
                         </ul>
                       </div>
                     </div>
 
-                    <div className="md:col-span-5 space-y-10">
-                      <div className="glass p-8 rounded-3xl border-white/5 space-y-6">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Core Arsenal</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {selectedProject.tech.map((t: string) => (
-                            <span key={t} className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-[10px] font-bold text-white/60 tracking-wider">
-                              {t}
-                            </span>
-                          ))}
+                    {/* Meta Specs Sidebar */}
+                    <div className="md:col-span-5 space-y-12">
+                      <div className="glass p-8 rounded-3xl border-white/5 space-y-8">
+                        <div>
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Strategic Impact</h4>
+                          <p className="text-sm font-medium text-white/90 leading-relaxed bg-primary/5 p-4 rounded-2xl border border-primary/10">
+                            {selectedProject.impact}
+                          </p>
+                        </div>
+                        
+                        <div>
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Core Arsenal</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {selectedProject.tech.map((t: string) => (
+                              <span key={t} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[10px] font-bold text-white/60 tracking-wider hover:text-primary hover:border-primary/30 transition-all cursor-default">
+                                {t}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </div>
 
                       <div className="space-y-4">
                          <div className="flex items-center gap-3">
                            <Zap className="w-4 h-4 text-accent" />
-                           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Project Specs</span>
+                           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Project Analytics</span>
                          </div>
                          <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-white/[0.02] p-4 rounded-2xl border border-white/5">
+                            <div className="bg-white/[0.02] p-5 rounded-2xl border border-white/5">
                                <div className="text-[9px] uppercase tracking-widest text-white/30 mb-1">Status</div>
-                               <div className="text-xs font-bold text-white">Production</div>
+                               <div className="text-xs font-bold text-white">Live Production</div>
                             </div>
-                            <div className="bg-white/[0.02] p-4 rounded-2xl border border-white/5">
+                            <div className="bg-white/[0.02] p-5 rounded-2xl border border-white/5">
                                <div className="text-[9px] uppercase tracking-widest text-white/30 mb-1">Year</div>
-                               <div className="text-xs font-bold text-white">2024</div>
+                               <div className="text-xs font-bold text-white">2024 Release</div>
                             </div>
                          </div>
                       </div>
@@ -343,23 +379,23 @@ export const Projects = () => {
                   </div>
 
                   {/* Footer Action */}
-                  <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-                        <Layers className="w-6 h-6 text-primary" />
+                  <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div className="flex items-center gap-6">
+                      <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+                        <Layers className="w-7 h-7 text-primary" />
                       </div>
                       <div>
-                        <p className="text-[10px] font-black tracking-widest uppercase text-white/40">Next Objective</p>
-                        <p className="text-sm font-bold text-white">Enterprise Scalability</p>
+                        <p className="text-[10px] font-black tracking-widest uppercase text-white/40">Architectural Objective</p>
+                        <p className="text-base font-bold text-white">High-Fidelity Scalability</p>
                       </div>
                     </div>
                     
                     <Button 
                       asChild
-                      className="w-full md:w-auto px-10 py-8 rounded-full bg-white text-black hover:bg-primary hover:text-white transition-all duration-500 font-black uppercase tracking-[0.2em] group"
+                      className="w-full md:w-auto px-12 py-9 rounded-full bg-white text-black hover:bg-primary hover:text-white transition-all duration-700 font-black uppercase tracking-[0.2em] group shadow-[0_0_30px_rgba(255,255,255,0.05)]"
                     >
-                      <a href={selectedProject.liveUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3">
-                        Visit Production <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                      <a href={selectedProject.liveUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4">
+                        Launch Live Product <ExternalLink className="w-5 h-5 group-hover:scale-110 transition-transform" />
                       </a>
                     </Button>
                   </div>
