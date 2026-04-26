@@ -155,7 +155,7 @@ export default function NewBlogPostPage() {
               </div>
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Read Time</Label>
-                <Input value={formData.readTime} onChange={e => setFormData({ ...formData, readTime: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
+                <Input value={formData.readTime} onChange={e => setFormData({ ...formData, readTime: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="5 min read" />
               </div>
             </div>
           </div>
@@ -182,11 +182,12 @@ export default function NewBlogPostPage() {
             <div className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title</Label>
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title Override</Label>
                   <Input 
                     value={formData.seo.title} 
                     onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
                     className="bg-white/5 border-white/5 rounded-xl h-14" 
+                    placeholder="Auto-suggested from title..."
                   />
                 </div>
                 <div className="space-y-2">
@@ -201,11 +202,12 @@ export default function NewBlogPostPage() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Description</Label>
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
                 <Textarea 
                   value={formData.seo.description} 
                   onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })} 
-                  className="bg-white/5 border-white/5 rounded-xl h-24" 
+                  className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" 
+                  placeholder="Auto-suggested from summary..."
                 />
               </div>
 
@@ -216,6 +218,7 @@ export default function NewBlogPostPage() {
                     value={formData.seo.canonicalUrl} 
                     onChange={e => setFormData({ ...formData, seo: { ...formData.seo, canonicalUrl: e.target.value } })} 
                     className="bg-white/5 border-white/5 rounded-xl h-14" 
+                    placeholder="https://..."
                   />
                 </div>
                 <div className="space-y-2">
@@ -224,6 +227,7 @@ export default function NewBlogPostPage() {
                     value={formData.seo.ogImage} 
                     onChange={e => setFormData({ ...formData, seo: { ...formData.seo, ogImage: e.target.value } })} 
                     className="bg-white/5 border-white/5 rounded-xl h-14" 
+                    placeholder="https://..."
                   />
                 </div>
               </div>

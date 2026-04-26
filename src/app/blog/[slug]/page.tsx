@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { db } from '@/lib/firebase/config';
 import { collection, query, where, getDocs, doc, getDoc, limit } from 'firebase/firestore';
@@ -47,12 +46,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const title = post.seo?.title || `${post.title} | Kartik Jindal`;
   const description = post.seo?.description || post.summary?.substring(0, 160);
   const ogImage = post.seo?.ogImage || post.image || globalConfig?.seo?.ogImage;
+  const canonical = post.seo?.canonicalUrl || `${process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com'}/blog/${post.slug || post.id}`;
 
   return {
     title,
     description,
     alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com'}/blog/${post.slug || post.id}`,
+      canonical,
     },
     openGraph: {
       title,

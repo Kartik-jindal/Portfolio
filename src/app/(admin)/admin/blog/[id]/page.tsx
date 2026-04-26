@@ -205,7 +205,7 @@ export default function EditBlogPostPage() {
             <div className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title</Label>
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title Override</Label>
                   <Input 
                     value={formData.seo.title} 
                     onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
