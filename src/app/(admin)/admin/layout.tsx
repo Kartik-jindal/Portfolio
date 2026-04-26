@@ -59,15 +59,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return null; // Router handles redirect
   }
 
+  // navItems sorted by homepage placement: Hero -> About -> Projects -> Experience -> Testimonials -> Contact
   const navItems = [
     { label: 'Overview', href: '/admin', icon: LayoutDashboard },
     { label: 'Hero Section', href: '/admin/hero', icon: Zap },
-    { label: 'Projects', href: '/admin/projects', icon: FolderKanban },
-    { label: 'Journal', href: '/admin/blog', icon: FileText },
     { label: 'About Story', href: '/admin/about', icon: User },
+    { label: 'Projects', href: '/admin/projects', icon: FolderKanban },
     { label: 'Experience', href: '/admin/experience', icon: Briefcase },
     { label: 'Voices', href: '/admin/testimonials', icon: Quote },
     { label: 'Contact Module', href: '/admin/contact', icon: Mail },
+    { label: 'Journal', href: '/admin/blog', icon: FileText },
     { label: 'Layout Config', href: '/admin/interface', icon: Layers },
     { label: 'Leads', href: '/admin/leads', icon: Users },
     { label: 'Settings', href: '/admin/settings', icon: Settings },
