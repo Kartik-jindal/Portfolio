@@ -84,9 +84,9 @@ const ProjectCard = ({ project, index, onOpen }: { project: any, index: number, 
         <div className="lg:w-[40%] w-full space-y-6 md:space-y-10">
           <div className="space-y-4 md:space-y-6 text-center lg:text-left">
             <span className="text-primary font-black tracking-[0.5em] text-[10px] uppercase">{project.role}</span>
-            <h3 className="text-4xl sm:text-5xl md:text-7xl font-headline font-bold text-white tracking-tighter">{project.title}</h3>
+            <h3 className="text-4xl sm:text-5xl md:text-7xl font-headline font-bold text-white tracking-tighter break-words">{project.title}</h3>
           </div>
-          <p className="text-lg md:text-xl text-muted-foreground font-body font-light leading-relaxed max-w-xl mx-auto lg:mx-0">
+          <p className="text-lg md:text-xl text-muted-foreground font-body font-light leading-relaxed max-w-xl mx-auto lg:mx-0 break-words line-clamp-4">
             {project.desc}
           </p>
           <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
@@ -132,10 +132,10 @@ export const Projects = ({ initialData, limit = 0 }: { initialData?: any[], limi
       <div className="max-w-7xl mx-auto px-6 mb-12 md:mb-32">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="max-w-3xl text-center lg:text-left">
           <span className="text-primary uppercase tracking-[0.5em] text-[10px] font-black block mb-6">Archive</span>
-          <h2 className="text-5xl md:text-8xl font-headline font-black tracking-tighter leading-none mb-8">
+          <h2 className="text-5xl md:text-8xl font-headline font-black tracking-tighter leading-none mb-8 break-words">
             SELECTED <br /> <span className="text-outline italic">WORKS.</span>
           </h2>
-          <p className="text-muted-foreground/60 text-lg md:text-xl font-light max-w-2xl font-body mx-auto lg:mx-0">
+          <p className="text-muted-foreground/60 text-lg md:text-xl font-light max-w-2xl font-body mx-auto lg:mx-0 break-words">
             A curated collection of high-performance digital products where architectural precision meets emotive design.
           </p>
         </motion.div>
@@ -171,7 +171,7 @@ export const Projects = ({ initialData, limit = 0 }: { initialData?: any[], limi
                   </button>
                   <div className="absolute bottom-8 left-12 z-20">
                      <span className="text-primary font-black tracking-[0.4em] text-[10px] uppercase mb-1 block">{selectedProject.role}</span>
-                     <DialogTitle className="text-4xl md:text-6xl font-headline font-black text-white italic tracking-tighter">{selectedProject.title}</DialogTitle>
+                     <DialogTitle className="text-4xl md:text-6xl font-headline font-black text-white italic tracking-tighter break-words">{selectedProject.title}</DialogTitle>
                   </div>
                 </div>
 
@@ -181,7 +181,7 @@ export const Projects = ({ initialData, limit = 0 }: { initialData?: any[], limi
                       {/* The Narrative */}
                       <div className="space-y-6">
                         <div className="flex items-center gap-3 text-primary"><Target className="w-4 h-4" /><h4 className="text-xs font-black uppercase tracking-[0.4em]">The Architecture</h4></div>
-                        <p className="text-lg md:text-xl text-white/80 font-body font-light leading-relaxed first-letter:text-5xl first-letter:font-headline first-letter:font-black first-letter:text-primary first-letter:mr-3 first-letter:float-left">
+                        <p className="text-lg md:text-xl text-white/80 font-body font-light leading-relaxed first-letter:text-5xl first-letter:font-headline first-letter:font-black first-letter:text-primary first-letter:mr-3 first-letter:float-left break-words">
                           {selectedProject.longDesc || selectedProject.desc}
                         </p>
                       </div>
@@ -190,7 +190,7 @@ export const Projects = ({ initialData, limit = 0 }: { initialData?: any[], limi
                       {selectedProject.methodology && (
                         <div className="space-y-6">
                           <div className="flex items-center gap-3 text-accent"><Code className="w-4 h-4" /><h4 className="text-xs font-black uppercase tracking-[0.4em]">Strategic Methodology</h4></div>
-                          <p className="text-lg text-white/60 font-body border-l-2 border-accent/20 pl-8 italic leading-relaxed">
+                          <p className="text-lg text-white/60 font-body border-l-2 border-accent/20 pl-8 italic leading-relaxed break-words">
                             {selectedProject.methodology}
                           </p>
                         </div>
@@ -204,7 +204,7 @@ export const Projects = ({ initialData, limit = 0 }: { initialData?: any[], limi
                             {selectedProject.challenges.map((c: string, i: number) => (
                               <li key={i} className="flex gap-6 items-start group">
                                 <div className="mt-1 w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_rgba(16,185,129,0.5)] group-hover:scale-150 transition-transform" />
-                                <span className="text-white/50 font-body leading-tight text-base md:text-lg">{c}</span>
+                                <span className="text-white/50 font-body leading-tight text-base md:text-lg break-words">{c}</span>
                               </li>
                             ))}
                           </ul>
@@ -218,7 +218,7 @@ export const Projects = ({ initialData, limit = 0 }: { initialData?: any[], limi
                           <div>
                             <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Project Impact</h4>
                             <div className="bg-primary/5 p-8 rounded-2xl border border-primary/10">
-                              <p className="text-sm md:text-base font-medium text-white/90 leading-relaxed italic">
+                              <p className="text-sm md:text-base font-medium text-white/90 leading-relaxed italic break-words">
                                 "{selectedProject.impact}"
                               </p>
                             </div>

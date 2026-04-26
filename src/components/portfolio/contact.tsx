@@ -87,7 +87,7 @@ export const Contact = () => {
               Now accepting inquiries
             </div>
             
-            <h2 className="text-[12vw] sm:text-[14vw] md:text-[8rem] lg:text-[10rem] font-headline font-black mb-12 md:mb-16 tracking-tighter leading-[1] md:leading-[0.8] animate-float break-words">
+            <h2 className="text-[12vw] sm:text-[14vw] md:text-[8rem] lg:text-[10rem] font-headline font-black mb-12 md:mb-16 tracking-tighter leading-[1] md:leading-[0.8] animate-float break-words px-4">
               LET'S CREATE <br /> 
               <span className="text-primary italic text-outline-primary">LEGACY</span>.
             </h2>

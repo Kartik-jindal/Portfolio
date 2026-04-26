@@ -98,7 +98,7 @@ export default function BlogDetailPage() {
               <span className="text-white/40">{post.readTime}</span>
             </div>
 
-            <h1 className="text-4xl md:text-6xl font-headline font-bold text-white tracking-tight leading-[1.1]">
+            <h1 className="text-4xl md:text-6xl font-headline font-bold text-white tracking-tight leading-[1.1] break-words">
               {post.title}
             </h1>
             
@@ -139,7 +139,7 @@ export default function BlogDetailPage() {
                 prose-p:mb-8
                 prose-blockquote:border-l-2 prose-blockquote:border-primary/50 prose-blockquote:bg-white/[0.02] prose-blockquote:py-8 prose-blockquote:px-8 prose-blockquote:rounded-r-2xl prose-blockquote:text-white prose-blockquote:not-italic prose-blockquote:text-xl prose-blockquote:my-12
                 prose-ul:list-none prose-ul:pl-0 prose-ul:space-y-4
-                prose-li:relative prose-li:pl-8 prose-li:before:content-[''] prose-li:before:absolute prose-li:before:left-0 prose-li:before:top-[0.6em] prose-li:before:w-1.5 prose-li:before:h-1.5 prose-li:before:bg-primary prose-li:before:rounded-full"
+                prose-li:relative prose-li:pl-8 prose-li:before:content-[''] prose-li:before:absolute prose-li:before:left-0 prose-li:before:top-[0.6em] prose-li:before:w-1.5 prose-li:before:h-1.5 prose-li:before:bg-primary prose-li:before:rounded-full break-words"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
 
@@ -162,7 +162,7 @@ export default function BlogDetailPage() {
             <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5 space-y-6">
               <div className="space-y-2">
                 <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Abstract</h4>
-                <p className="text-sm text-white/50 leading-relaxed">
+                <p className="text-sm text-white/50 leading-relaxed break-words">
                   {post.summary}
                 </p>
               </div>

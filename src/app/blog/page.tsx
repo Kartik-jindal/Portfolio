@@ -52,10 +52,10 @@ export default function BlogPage() {
             className="mb-32"
           >
             <span className="text-primary uppercase tracking-[0.6em] text-sm font-black block mb-6">Archive of Thoughts</span>
-            <h1 className="text-5xl md:text-8xl font-headline font-black mb-8 italic tracking-tighter leading-tight">
+            <h1 className="text-5xl md:text-8xl font-headline font-black mb-8 italic tracking-tighter leading-tight break-words">
               The <span className="text-outline">Journal</span>.
             </h1>
-            <p className="text-xl md:text-3xl text-white/80 font-body font-light max-w-3xl leading-relaxed">
+            <p className="text-xl md:text-3xl text-white/80 font-body font-light max-w-3xl leading-relaxed break-words">
               An exploration into the intersection of code, design, and digital architecture.
             </p>
           </motion.div>
@@ -100,10 +100,10 @@ export default function BlogPage() {
                       </div>
 
                       <div className="md:col-span-7 space-y-4">
-                        <h2 className="text-3xl md:text-5xl font-headline font-bold text-white group-hover:text-primary transition-colors cursor-pointer leading-tight tracking-tight">
+                        <h2 className="text-3xl md:text-5xl font-headline font-bold text-white group-hover:text-primary transition-colors cursor-pointer leading-tight tracking-tight break-words">
                           {post.title}
                         </h2>
-                        <p className="text-lg md:text-xl text-white/60 font-body font-light leading-relaxed">
+                        <p className="text-lg md:text-xl text-white/60 font-body font-light leading-relaxed break-words line-clamp-3">
                           {post.summary}
                         </p>
                       </div>

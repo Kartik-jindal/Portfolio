@@ -43,7 +43,7 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 80 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="text-[12vw] sm:text-[14vw] md:text-[9rem] my-4 font-headline font-black leading-[1.2] md:leading-[1.4] tracking-tight text-gradient px-4"
+            className="text-[12vw] sm:text-[14vw] md:text-[9rem] my-4 font-headline font-black leading-[1.2] md:leading-[1.4] tracking-tight text-gradient px-4 break-words"
           >
             KARTIK <span className="text-outline italic">JINDAL</span>
           </motion.h1>
@@ -60,7 +60,7 @@ export const Hero = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 2, delay: 1 }}
-          className="max-w-2xl text-base md:text-xl text-muted-foreground/70 mb-12 md:mb-16 font-body font-light leading-relaxed px-4 md:px-6"
+          className="max-w-2xl text-base md:text-xl text-muted-foreground/70 mb-12 md:mb-16 font-body font-light leading-relaxed px-4 md:px-6 break-words"
         >
           Engineering <span className="text-white font-medium">high-fidelity</span> digital landscapes where 
           <span className="text-primary italic font-headline ml-1">architectural precision</span> meets artistic motion.
