@@ -45,7 +45,22 @@ export default function EditProjectPage() {
           const data = docSnap.data();
           setFormData({ 
             id: docSnap.id, 
-            ...data,
+            title: data.title || '',
+            slug: data.slug || '',
+            type: data.type || 'FLAGSHIP',
+            role: data.role || '',
+            desc: data.desc || '',
+            longDesc: data.longDesc || '',
+            methodology: data.methodology || '',
+            impact: data.impact || '',
+            accentColor: data.accentColor || '#10B981',
+            liveUrl: data.liveUrl || '',
+            githubUrl: data.githubUrl || '',
+            image: data.image || '',
+            tech: data.tech || [],
+            challenges: data.challenges || [],
+            status: data.status || 'draft',
+            order: data.order || 0,
             seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' }
           });
         } else {
@@ -118,6 +133,13 @@ export default function EditProjectPage() {
     }
   };
 
+  const addChallenge = () => {
+    if (newChallenge && !formData.challenges.includes(newChallenge)) {
+      setFormData({ ...formData, challenges: [...formData.challenges, newChallenge] });
+      setNewChallenge('');
+    }
+  };
+
   if (loading || !formData) return <div className="h-96 flex items-center justify-center"><div className="w-2 h-2 bg-primary animate-ping rounded-full" /></div>;
 
   return (
@@ -185,8 +207,19 @@ export default function EditProjectPage() {
                 <Input value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Accent Color</Label>
-                <Input value={formData.accentColor} onChange={e => setFormData({ ...formData, accentColor: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Order</Label>
+                <Input type="number" value={formData.order} onChange={e => setFormData({ ...formData, order: parseInt(e.target.value) })} className="bg-white/5 border-white/5 rounded-xl h-14" />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Live URL</Label>
+                <Input value={formData.liveUrl} onChange={e => setFormData({ ...formData, liveUrl: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="https://..." />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">GitHub URL</Label>
+                <Input value={formData.githubUrl} onChange={e => setFormData({ ...formData, githubUrl: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="https://github.com/..." />
               </div>
             </div>
           </div>
@@ -199,8 +232,16 @@ export default function EditProjectPage() {
                 <Textarea value={formData.desc} onChange={e => setFormData({ ...formData, desc: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[100px]" />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Case Study (Detailed)</Label>
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Detailed Narrative (Case Study)</Label>
                 <Textarea value={formData.longDesc} onChange={e => setFormData({ ...formData, longDesc: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[300px]" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Strategic Methodology</Label>
+                <Textarea value={formData.methodology} onChange={e => setFormData({ ...formData, methodology: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Project Impact</Label>
+                <Textarea value={formData.impact} onChange={e => setFormData({ ...formData, impact: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" />
               </div>
             </div>
           </div>
@@ -302,7 +343,14 @@ export default function EditProjectPage() {
                     <span className="text-[10px] font-black uppercase tracking-widest text-white">{uploading ? 'Syncing...' : 'Update Cover (S3)'}</span>
                  </div>
                </div>
-               <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" />
+               <div className="space-y-2">
+                 <Label className="text-[9px] uppercase font-black text-white/20">Direct Image URL</Label>
+                 <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-10 text-[10px]" />
+               </div>
+               <div className="space-y-2">
+                 <Label className="text-[9px] uppercase font-black text-white/20">Accent Color</Label>
+                 <Input value={formData.accentColor} onChange={e => setFormData({ ...formData, accentColor: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-10 text-[10px]" />
+               </div>
             </div>
           </div>
 
@@ -310,14 +358,34 @@ export default function EditProjectPage() {
              <div className="space-y-4">
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Technology Stack</Label>
                 <div className="flex gap-2">
-                  <Input value={newTech} onChange={e => setNewTech(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTech())} className="bg-white/5 border-white/5 rounded-xl h-10 flex-1" />
+                  <Input value={newTech} onChange={e => setNewTech(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTech())} className="bg-white/5 border-white/5 rounded-xl h-10 flex-1" placeholder="Add tool..." />
                   <Button onClick={addTech} variant="outline" className="h-10 w-10 rounded-xl border-white/10">+</Button>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {formData.tech?.map(t  => (
+                  {formData.tech?.map((t: string) => (
                     <span key={t} className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary flex items-center gap-2">
                       {t} <button onClick={() => setFormData({ ...formData, tech: formData.tech.filter((x: string) => x !== t) })}><Plus className="w-3 h-3 rotate-45" /></button>
                     </span>
+                  ))}
+                </div>
+             </div>
+          </div>
+
+          <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
+             <div className="space-y-4">
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Engineering Challenges</Label>
+                <div className="flex gap-2">
+                  <Input value={newChallenge} onChange={e => setNewChallenge(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addChallenge())} className="bg-white/5 border-white/5 rounded-xl h-10 flex-1" placeholder="Add hurdle..." />
+                  <Button onClick={addChallenge} variant="outline" className="h-10 w-10 rounded-xl border-white/10">+</Button>
+                </div>
+                <div className="space-y-2">
+                  {formData.challenges?.map((c: string) => (
+                    <div key={c} className="p-3 rounded-lg bg-white/5 border border-white/5 text-[10px] text-white/60 flex items-center justify-between group">
+                      <span className="truncate pr-4">{c}</span>
+                      <button onClick={() => setFormData({ ...formData, challenges: formData.challenges.filter((x: string) => x !== c) })} className="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Trash2 className="w-3 h-3 text-destructive" />
+                      </button>
+                    </div>
                   ))}
                 </div>
              </div>

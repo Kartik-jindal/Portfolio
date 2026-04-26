@@ -43,7 +43,16 @@ export default function EditBlogPostPage() {
           const data = docSnap.data();
           setFormData({ 
             id: docSnap.id, 
-            ...data,
+            title: data.title || '',
+            slug: data.slug || '',
+            category: data.category || 'Engineering',
+            date: data.date || '',
+            readTime: data.readTime || '',
+            summary: data.summary || '',
+            content: data.content || '',
+            image: data.image || '',
+            imageHint: data.imageHint || '',
+            status: data.status || 'draft',
             seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' }
           });
         } else {
@@ -155,6 +164,21 @@ export default function EditBlogPostPage() {
                   }} 
                   className="bg-white/5 border-white/5 rounded-xl h-14" 
                 />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Category</Label>
+                <Input value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Display Date</Label>
+                <Input value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Read Time</Label>
+                <Input value={formData.readTime} onChange={e => setFormData({ ...formData, readTime: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
               </div>
             </div>
           </div>
@@ -269,7 +293,8 @@ export default function EditBlogPostPage() {
                     <span className="text-[10px] font-black uppercase tracking-widest text-white">{uploading ? 'Syncing...' : 'Update Cover (S3)'}</span>
                  </div>
                </div>
-               <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" />
+               <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" placeholder="Direct Image URL" />
+               <Input value={formData.imageHint} onChange={e => setFormData({ ...formData, imageHint: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" placeholder="AI image hint" />
             </div>
           </div>
 
