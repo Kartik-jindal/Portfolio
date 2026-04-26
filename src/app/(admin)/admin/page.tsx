@@ -13,7 +13,8 @@ import {
   Zap,
   Globe,
   ChevronRight,
-  Settings
+  Settings,
+  User
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -66,8 +67,8 @@ export default function AdminDashboardPage() {
               <Activity className="w-5 h-5 text-primary" />
               Pulse Stream
             </h2>
-            <Link href="/admin/logs" className="text-[10px] font-black uppercase tracking-widest text-white/20 hover:text-primary transition-colors">
-              View Full Logs
+            <Link href="/admin/leads" className="text-[10px] font-black uppercase tracking-widest text-white/20 hover:text-primary transition-colors">
+              View All Leads
             </Link>
           </div>
           
@@ -81,8 +82,8 @@ export default function AdminDashboardPage() {
                   <div className="flex items-center gap-6">
                     <div className="w-2 h-2 rounded-full bg-primary" />
                     <div>
-                      <p className="text-sm font-bold text-white">Project "Nova Orbital" updated</p>
-                      <p className="text-[10px] text-white/30 uppercase font-black tracking-widest mt-1">4 hours ago • System</p>
+                      <p className="text-sm font-bold text-white">System process heartbeat check</p>
+                      <p className="text-[10px] text-white/30 uppercase font-black tracking-widest mt-1">Live • Operational</p>
                     </div>
                   </div>
                   <ChevronRight className="w-4 h-4 text-white/20" />
@@ -101,10 +102,10 @@ export default function AdminDashboardPage() {
           
           <div className="space-y-4">
             {[
+              { label: 'Update About Story', href: '/admin/about', icon: User },
               { label: 'Deploy New Project', href: '/admin/projects/new', icon: FolderKanban },
               { label: 'Draft Journal Entry', href: '/admin/blog/new', icon: FileText },
               { label: 'System Configuration', href: '/admin/settings', icon: Settings },
-              { label: 'View Public Site', href: '/', icon: Globe },
             ].map((link) => (
               <Link key={link.label} href={link.href}>
                 <div className="glass p-6 rounded-2xl border-white/5 flex items-center justify-between hover:border-primary/30 transition-all group">

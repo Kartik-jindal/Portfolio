@@ -16,7 +16,8 @@ import {
   X,
   ChevronRight,
   Briefcase,
-  Quote
+  Quote,
+  User
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -60,6 +61,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { label: 'Overview', href: '/admin', icon: LayoutDashboard },
     { label: 'Projects', href: '/admin/projects', icon: FolderKanban },
     { label: 'Journal', href: '/admin/blog', icon: FileText },
+    { label: 'About Story', href: '/admin/about', icon: User },
     { label: 'Experience', href: '/admin/experience', icon: Briefcase },
     { label: 'Voices', href: '/admin/testimonials', icon: Quote },
     { label: 'Leads', href: '/admin/leads', icon: Users },

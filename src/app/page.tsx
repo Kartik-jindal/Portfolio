@@ -23,6 +23,17 @@ async function getGlobalConfig() {
   }
 }
 
+async function getAboutData() {
+  try {
+    const docRef = doc(db, 'site_config', 'about');
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? docSnap.data() : null;
+  } catch (err) {
+    console.error("Firebase Error (About):", err);
+    return null;
+  }
+}
+
 async function getProjects(count: number) {
   try {
     const q = query(
@@ -93,6 +104,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
   const config = await getGlobalConfig();
+  const aboutData = await getAboutData();
   const initialProjects = await getProjects(3);
   const experiences = await getExperience();
   const testimonials = await getTestimonials();
@@ -108,7 +120,7 @@ export default async function Home() {
       <Navbar resumeUrl={config?.resume?.fileUrl} />
       <ScrollIndicator />
       <Hero />
-      <About />
+      <About initialData={aboutData} />
       <Projects initialData={initialProjects} limit={3} />
       {visibility.showExperience && <Experience initialData={experiences} />}
       {visibility.showTestimonials && <Testimonials initialData={testimonials} />}
