@@ -156,8 +156,7 @@ const ProjectCard = ({ project, index, onOpen }: { project: any, index: number, 
                     exit={{ opacity: 0 }} 
                     className="absolute inset-0 bg-black/30 backdrop-blur-[2px] hidden md:flex items-center justify-center transition-all duration-500"
                   >
-                    {/* Hover text removed for cleaner aesthetic; Custom cursor provides the label */}
-                    <ArrowRight className="w-8 h-8 text-white/50 group-hover:text-white transition-all scale-75 group-hover:scale-100" />
+                    {/* Hover text and arrow removed for cleaner aesthetic; Custom cursor provides the label */}
                   </motion.div>
                 )}
               </AnimatePresence>
