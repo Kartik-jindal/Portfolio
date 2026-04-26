@@ -3,12 +3,24 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 export const IntroScreen = () => {
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith('/admin');
   const [stage, setStage] = useState(0); // 0: Welcome, 1: Phrases, 2: Exiting
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
+    setHasMounted(true);
+    if (isAdmin) {
+      setIsVisible(false);
+      return;
+    }
+    
+    setIsVisible(true);
+
     // Stage 0: Welcome (0-2s)
     const timer1 = setTimeout(() => {
       setStage(1);
@@ -29,9 +41,9 @@ export const IntroScreen = () => {
       clearTimeout(timer2);
       clearTimeout(timer3);
     };
-  }, []);
+  }, [isAdmin]);
 
-  if (!isVisible) return null;
+  if (!hasMounted || !isVisible || isAdmin) return null;
 
   const phrases = [
     { text: "DESIGN", label: "Let's" },
