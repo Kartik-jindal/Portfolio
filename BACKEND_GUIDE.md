@@ -11,36 +11,33 @@ We utilize **Firebase** (Google's Cloud Platform) to power the portfolio's dynam
 
 ---
 
-## 2. Environment Variables (.env.local)
+## 2. Environment Variables (.env.local) [✅ COMPLETED]
 
-To connect the frontend to your specific Firebase instance, you must populate the following keys in your `.env.local` file (template provided in the root):
+The connection between your frontend and Firebase has been established. Your `.env.local` file is now populated with the required project identifiers.
 
-| Key | Description |
-|-----|-------------|
-| `NEXT_PUBLIC_FIREBASE_API_KEY` | Public identifier for your Firebase project. |
-| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Domain used for authentication handshakes. |
-| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Your unique Firebase project identifier. |
-| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | The URL of your media storage bucket. |
-| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Required for Firebase background services. |
-| `NEXT_PUBLIC_FIREBASE_APP_ID` | Unique ID for the web app instance. |
+| Key | Status |
+|-----|--------|
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | ✅ Linked |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | ✅ Linked |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | ✅ Linked |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | ✅ Linked |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | ✅ Linked |
+| `NEXT_PUBLIC_FIREBASE_APP_ID` | ✅ Linked |
 
 ---
 
 ## 3. Initial Setup & Admin Promotion
 
-To gain access to the `/admin` command center:
+To gain access to the `/admin` command center, follow these remaining steps:
 
-1. **Create Firebase Project**: Visit the [Firebase Console](https://console.firebase.google.com/).
-2. **Enable Services**:
-   - Enable **Authentication** (Google & Email/Password methods).
-   - Enable **Firestore Database** (Start in Test Mode, rules are handled in code).
-   - Enable **Storage**.
-3. **First Sign-In**: Go to `/admin/login` on your local build and sign in with your email.
-4. **Grant Admin Role**:
+1. ✅ **Create Firebase Project**: [Completed] Project created on Firebase Console.
+2. ✅ **Enable Services**: [Completed] Auth, Firestore, and Storage enabled.
+3. ⏳ **First Sign-In**: Go to `/admin/login` on your local build and sign in with your email.
+4. ⏳ **Grant Admin Role**:
    - Initially, you will be a `GUEST` and locked out.
    - Go to the **Firestore Console**.
-   - Find the `users` collection.
-   - Find the document corresponding to your `uid` (created after first login).
+   - Find the `users` collection (it will appear after your first login).
+   - Find the document corresponding to your `uid`.
    - Change the `role` field from `"GUEST"` to `"SUPER_ADMIN"`.
    - Refresh the page to access the dashboard.
 
