@@ -93,7 +93,7 @@ export const Footer = ({ config, footerLayout }: FooterProps) => {
 
           {/* Contact Leads */}
           <div className="lg:col-span-5 space-y-10">
-            <h4 className="text-md uppercase tracking-[0.6em] font-black text-white/70">Say Hello</h4>
+            <h4 className="text-md uppercase tracking-[0.6em] font-black text-white/70">Hello There!</h4>
             <div className="space-y-10 max-w-full">
               <a href={`mailto:${socials.email || 'kartikjindal2003@gmail.com'}`} className="block group max-w-full">
                 <span className="text-sm uppercase tracking-widest text-primary font-black mb-3 block">General Enquiries</span>
@@ -113,7 +113,7 @@ export const Footer = ({ config, footerLayout }: FooterProps) => {
           </div>
         </div>
 
-        <div className="mt-18 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-8 text-xs tracking-[0.4em] font-black text-white/60 uppercase">
+        <div className="mt-24 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-8 text-xs tracking-[0.4em] font-black text-white/60 uppercase">
           <div className="flex items-center gap-8">
             <span>&copy; {new Date().getFullYear()} Kartik Jindal</span>
             <span className="hidden md:block w-1 h-1 rounded-full bg-white/30" />

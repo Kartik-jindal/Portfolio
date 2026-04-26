@@ -13,11 +13,23 @@ import { db } from '@/lib/firebase/config';
 import { doc, getDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import type { Metadata } from 'next';
 
+// Helper to ensure data passed to Client Components is a plain object
+function serialize(data: any) {
+  if (!data) return data;
+  return JSON.parse(JSON.stringify(data, (key, value) => {
+    // Check if value is a Firestore Timestamp
+    if (value && typeof value === 'object' && value.seconds !== undefined && value.nanoseconds !== undefined) {
+      return new Date(value.seconds * 1000).getTime();
+    }
+    return value;
+  }));
+}
+
 async function getGlobalConfig() {
   try {
     const docRef = doc(db, 'site_config', 'global');
     const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? docSnap.data() : null;
+    return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (err) {
     console.error("Firebase Error (Global Config):", err);
     return null;
@@ -28,7 +40,7 @@ async function getSeoPageConfig() {
   try {
     const docRef = doc(db, 'site_config', 'seo_pages');
     const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? docSnap.data() : null;
+    return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (err) {
     return null;
   }
@@ -38,7 +50,7 @@ async function getHeroData() {
   try {
     const docRef = doc(db, 'site_config', 'hero');
     const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? docSnap.data() : null;
+    return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (err) {
     console.error("Firebase Error (Hero):", err);
     return null;
@@ -49,7 +61,7 @@ async function getNavbarData() {
   try {
     const docRef = doc(db, 'site_config', 'navbar');
     const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? docSnap.data() : null;
+    return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (err) {
     console.error("Firebase Error (Navbar):", err);
     return null;
@@ -60,7 +72,7 @@ async function getFooterData() {
   try {
     const docRef = doc(db, 'site_config', 'footer');
     const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? docSnap.data() : null;
+    return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (err) {
     console.error("Firebase Error (Footer):", err);
     return null;
@@ -71,7 +83,7 @@ async function getAboutData() {
   try {
     const docRef = doc(db, 'site_config', 'about');
     const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? docSnap.data() : null;
+    return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (err) {
     console.error("Firebase Error (About):", err);
     return null;
@@ -82,7 +94,7 @@ async function getContactData() {
   try {
     const docRef = doc(db, 'site_config', 'contact');
     const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? docSnap.data() : null;
+    return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (err) {
     console.error("Firebase Error (Contact):", err);
     return null;
@@ -96,7 +108,7 @@ async function getProjects(count: number) {
       where('status', '==', 'published')
     );
     const snap = await getDocs(q);
-    const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const data = snap.docs.map(doc => serialize({ id: doc.id, ...doc.data() }));
     return data.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)).slice(0, count);
   } catch (err) {
     console.error("Firebase Error (Projects):", err);
@@ -108,7 +120,7 @@ async function getExperience() {
   try {
     const q = collection(db, 'experience');
     const snap = await getDocs(q);
-    const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const data = snap.docs.map(doc => serialize({ id: doc.id, ...doc.data() }));
     return data.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
   } catch (err) {
     console.error("Firebase Error (Experience):", err);
@@ -120,7 +132,7 @@ async function getTestimonials() {
   try {
     const q = collection(db, 'testimonials');
     const snap = await getDocs(q);
-    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return snap.docs.map(doc => serialize({ id: doc.id, ...doc.data() }));
   } catch (err) {
     console.error("Firebase Error (Testimonials):", err);
     return [];

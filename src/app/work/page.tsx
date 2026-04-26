@@ -7,17 +7,27 @@ import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firesto
 import type { Metadata } from 'next';
 import WorkClient from './work-client';
 
+function serialize(data: any) {
+  if (!data) return data;
+  return JSON.parse(JSON.stringify(data, (key, value) => {
+    if (value && typeof value === 'object' && value.seconds !== undefined && value.nanoseconds !== undefined) {
+      return new Date(value.seconds * 1000).getTime();
+    }
+    return value;
+  }));
+}
+
 async function getGlobalConfig() {
   try {
     const docSnap = await getDoc(doc(db, 'site_config', 'global'));
-    return docSnap.exists() ? docSnap.data() : null;
+    return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (e) { return null; }
 }
 
 async function getSeoPageConfig() {
   try {
     const docSnap = await getDoc(doc(db, 'site_config', 'seo_pages'));
-    return docSnap.exists() ? docSnap.data() : null;
+    return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (e) { return null; }
 }
 
@@ -29,7 +39,7 @@ async function getExperiments() {
     );
     const snap = await getDocs(q);
     return snap.docs
-      .map(d => ({ id: d.id, ...d.data() }))
+      .map(d => serialize({ id: d.id, ...d.data() }))
       .filter((p: any) => p.type === 'EXPERIMENT')
       .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
   } catch (err) { return []; }

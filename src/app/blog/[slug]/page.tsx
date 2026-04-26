@@ -5,16 +5,26 @@ import { collection, query, where, getDocs, doc, getDoc, limit } from 'firebase/
 import type { Metadata } from 'next';
 import PostClient from './post-client';
 
+function serialize(data: any) {
+  if (!data) return data;
+  return JSON.parse(JSON.stringify(data, (key, value) => {
+    if (value && typeof value === 'object' && value.seconds !== undefined && value.nanoseconds !== undefined) {
+      return new Date(value.seconds * 1000).getTime();
+    }
+    return value;
+  }));
+}
+
 async function getPost(slug: string) {
   try {
     // Try by slug first
     const q = query(collection(db, 'blog'), where('slug', '==', slug), limit(1));
     const snap = await getDocs(q);
-    if (!snap.empty) return { id: snap.docs[0].id, ...snap.docs[0].data() };
+    if (!snap.empty) return serialize({ id: snap.docs[0].id, ...snap.docs[0].data() });
 
     // Fallback to ID
     const docSnap = await getDoc(doc(db, 'blog', slug));
-    if (docSnap.exists()) return { id: docSnap.id, ...docSnap.data() };
+    if (docSnap.exists()) return serialize({ id: docSnap.id, ...docSnap.data() });
 
     return null;
   } catch (e) { return null; }
@@ -23,7 +33,7 @@ async function getPost(slug: string) {
 async function getGlobalConfig() {
   try {
     const docSnap = await getDoc(doc(db, 'site_config', 'global'));
-    return docSnap.exists() ? docSnap.data() : null;
+    return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (e) { return null; }
 }
 
@@ -49,7 +59,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       description,
       images: ogImage ? [{ url: ogImage }] : [],
       type: 'article',
-      publishedTime: post.createdAt?.toDate ? post.createdAt.toDate().toISOString() : undefined,
+      publishedTime: post.createdAt ? new Date(post.createdAt).toISOString() : undefined,
     },
     robots: {
       index: post.seo?.indexable ?? (post.status === 'published'),
