@@ -218,16 +218,25 @@ export default function NewBlogPostPage() {
                     className="bg-white/5 border-white/5 rounded-xl h-14" 
                   />
                 </div>
-                <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 h-14 mt-6">
-                  <div className="space-y-0.5">
-                    <Label className="text-[10px] uppercase font-black tracking-widest text-white">Indexable</Label>
-                    <p className="text-[8px] text-white/20 uppercase font-black">Allow bots to crawl</p>
-                  </div>
-                  <Switch 
-                    checked={formData.seo.indexable} 
-                    onCheckedChange={v => setFormData({ ...formData, seo: { ...formData.seo, indexable: v } })}
+                <div className="space-y-2">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">OG Image URL</Label>
+                  <Input 
+                    value={formData.seo.ogImage} 
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, ogImage: e.target.value } })} 
+                    className="bg-white/5 border-white/5 rounded-xl h-14" 
                   />
                 </div>
+              </div>
+
+              <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 h-14 mt-6">
+                <div className="space-y-0.5">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white">Indexable</Label>
+                  <p className="text-[8px] text-white/20 uppercase font-black">Allow bots to crawl</p>
+                </div>
+                <Switch 
+                  checked={formData.seo.indexable} 
+                  onCheckedChange={v => setFormData({ ...formData, seo: { ...formData.seo, indexable: v } })}
+                />
               </div>
             </div>
           </div>
@@ -235,10 +244,10 @@ export default function NewBlogPostPage() {
 
         <div className="lg:col-span-4 space-y-10">
           <SeoHud 
-            title={formData.seo.title}
-            description={formData.seo.description}
+            title={formData.seo.title || formData.title}
+            description={formData.seo.description || formData.summary}
             keywords={formData.seo.keywords}
-            ogImage={formData.image}
+            ogImage={formData.seo.ogImage || formData.image}
           />
 
           <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">

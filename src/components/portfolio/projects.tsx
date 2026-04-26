@@ -1,10 +1,9 @@
-
 "use client";
 
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence, useSpring } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Github, ArrowUpRight, X, ExternalLink, Target, Code } from 'lucide-react';
+import { Github, ArrowUpRight, X, ExternalLink, Target, Code, Calendar } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { db } from '@/lib/firebase/config';
@@ -66,7 +65,13 @@ const ProjectCard = ({ project, index, onOpen }: { project: any, index: number, 
             data-cursor="View"
           >
             <div className="relative aspect-[16/9] overflow-hidden rounded-[calc(1rem-1px)] md:rounded-[calc(1.5rem-1px)]">
-              <Image src={project.image || 'https://picsum.photos/seed/placeholder/1600/1000'} alt={project.title} fill className="object-cover" />
+              <Image 
+                src={project.image || 'https://picsum.photos/seed/placeholder/1600/1000'} 
+                alt={project.title} 
+                fill 
+                className="object-cover"
+                data-ai-hint={project.imageHint || "project cover"}
+              />
               <AnimatePresence>
                 {isHovered && (
                   <motion.div 
@@ -83,7 +88,12 @@ const ProjectCard = ({ project, index, onOpen }: { project: any, index: number, 
 
         <div className="lg:w-[40%] w-full space-y-6 md:space-y-10">
           <div className="space-y-4 md:space-y-6 text-center lg:text-left">
-            <span className="text-primary font-black tracking-[0.5em] text-[10px] uppercase">{project.role}</span>
+            <div className="flex items-center justify-center lg:justify-start gap-4">
+               <span className="text-primary font-black tracking-[0.5em] text-[10px] uppercase">{project.role}</span>
+               {project.date && (
+                 <span className="text-white/20 text-[9px] font-black uppercase tracking-widest">{project.date}</span>
+               )}
+            </div>
             <h3 className="text-4xl sm:text-5xl md:text-7xl font-headline font-bold text-white tracking-tighter break-words">{project.title}</h3>
           </div>
           <p className="text-lg md:text-xl text-muted-foreground font-body font-light leading-relaxed max-w-xl mx-auto lg:mx-0 break-words line-clamp-4">
@@ -115,7 +125,6 @@ export const Projects = ({ initialData, limit = 0 }: { initialData?: any[], limi
     if (!initialData) {
       const fetchProjects = async () => {
         try {
-          // Simple query to avoid composite index requirements
           const q = query(
             collection(db, 'projects'),
             where('status', '==', 'published')
@@ -186,13 +195,26 @@ export const Projects = ({ initialData, limit = 0 }: { initialData?: any[], limi
             {selectedProject && (
               <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col max-h-[90vh]">
                 <div className="relative h-64 md:h-80 w-full shrink-0 overflow-hidden">
-                  <Image src={selectedProject.image || 'https://picsum.photos/seed/placeholder/1600/1000'} alt={selectedProject.title} fill className="object-cover opacity-60" />
+                  <Image 
+                    src={selectedProject.image || 'https://picsum.photos/seed/placeholder/1600/1000'} 
+                    alt={selectedProject.title} 
+                    fill 
+                    className="object-cover opacity-60" 
+                    data-ai-hint={selectedProject.imageHint || "project hero"}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
                   <button onClick={() => setSelectedProject(null)} className="absolute top-8 right-8 w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-colors z-[6000] group">
                     <X className="w-6 h-6 text-white group-hover:rotate-90 transition-transform" />
                   </button>
                   <div className="absolute bottom-8 left-12 z-20">
-                     <span className="text-primary font-black tracking-[0.4em] text-[10px] uppercase mb-1 block">{selectedProject.role}</span>
+                     <div className="flex items-center gap-4 mb-1">
+                        <span className="text-primary font-black tracking-[0.4em] text-[10px] uppercase">{selectedProject.role}</span>
+                        {selectedProject.date && (
+                          <span className="text-white/30 text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
+                             <Calendar className="w-3 h-3" /> {selectedProject.date}
+                          </span>
+                        )}
+                     </div>
                      <DialogTitle className="text-4xl md:text-6xl font-headline font-black text-white italic tracking-tighter break-words">{selectedProject.title}</DialogTitle>
                   </div>
                 </div>

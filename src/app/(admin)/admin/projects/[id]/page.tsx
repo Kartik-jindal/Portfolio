@@ -6,7 +6,7 @@ import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box, Globe } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box, Globe, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -49,6 +49,7 @@ export default function EditProjectPage() {
             slug: data.slug || '',
             type: data.type || 'FLAGSHIP',
             role: data.role || '',
+            date: data.date || '',
             desc: data.desc || '',
             longDesc: data.longDesc || '',
             methodology: data.methodology || '',
@@ -57,6 +58,7 @@ export default function EditProjectPage() {
             liveUrl: data.liveUrl || '',
             githubUrl: data.githubUrl || '',
             image: data.image || '',
+            imageHint: data.imageHint || '',
             tech: data.tech || [],
             challenges: data.challenges || [],
             status: data.status || 'draft',
@@ -207,12 +209,19 @@ export default function EditProjectPage() {
                 <Input value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Order</Label>
-                <Input type="number" value={formData.order} onChange={e => setFormData({ ...formData, order: parseInt(e.target.value) })} className="bg-white/5 border-white/5 rounded-xl h-14" />
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Completion Date</Label>
+                <div className="relative">
+                   <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+                   <Input value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="bg-white/5 border-white/10 rounded-xl h-14 pl-12" placeholder="e.g. June 2024" />
+                </div>
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Order</Label>
+                <Input type="number" value={formData.order} onChange={e => setFormData({ ...formData, order: parseInt(e.target.value) })} className="bg-white/5 border-white/5 rounded-xl h-14" />
+              </div>
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Live URL</Label>
                 <Input value={formData.liveUrl} onChange={e => setFormData({ ...formData, liveUrl: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="https://..." />
@@ -304,16 +313,26 @@ export default function EditProjectPage() {
                     placeholder="https://..."
                   />
                 </div>
-                <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 h-14 mt-6">
-                  <div className="space-y-0.5">
-                    <Label className="text-[10px] uppercase font-black tracking-widest text-white">Indexable</Label>
-                    <p className="text-[8px] text-white/20 uppercase font-black">Allow bots to crawl</p>
-                  </div>
-                  <Switch 
-                    checked={formData.seo.indexable} 
-                    onCheckedChange={v => setFormData({ ...formData, seo: { ...formData.seo, indexable: v } })}
+                <div className="space-y-2">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">OG Image URL</Label>
+                  <Input 
+                    value={formData.seo.ogImage} 
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, ogImage: e.target.value } })} 
+                    className="bg-white/5 border-white/5 rounded-xl h-14" 
+                    placeholder="https://..."
                   />
                 </div>
+              </div>
+
+              <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 h-14 mt-6">
+                <div className="space-y-0.5">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white">Indexable</Label>
+                  <p className="text-[8px] text-white/20 uppercase font-black">Allow bots to crawl</p>
+                </div>
+                <Switch 
+                  checked={formData.seo.indexable} 
+                  onCheckedChange={v => setFormData({ ...formData, seo: { ...formData.seo, indexable: v } })}
+                />
               </div>
             </div>
           </div>
@@ -346,6 +365,10 @@ export default function EditProjectPage() {
                <div className="space-y-2">
                  <Label className="text-[9px] uppercase font-black text-white/20">Direct Image URL</Label>
                  <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-10 text-[10px]" />
+               </div>
+               <div className="space-y-2">
+                 <Label className="text-[9px] uppercase font-black text-white/20">AI Image Hint</Label>
+                 <Input value={formData.imageHint} onChange={e => setFormData({ ...formData, imageHint: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-10 text-[10px]" placeholder="e.g. high-tech workspace" />
                </div>
                <div className="space-y-2">
                  <Label className="text-[9px] uppercase font-black text-white/20">Accent Color</Label>

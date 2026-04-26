@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -6,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar } from '@/components/portfolio/navbar';
 import { Footer } from '@/components/portfolio/footer';
 import { Projects } from '@/components/portfolio/projects';
-import { ArrowUpRight, X, Terminal, Binary } from 'lucide-react';
+import { ArrowUpRight, X, Terminal, Binary, Calendar } from 'lucide-react';
 import Image from 'next/image';
 import {
   Dialog,
@@ -89,11 +88,17 @@ export default function WorkClient({ config, initialExperiments }: { config: any
                           alt={project.title} 
                           fill 
                           className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                          data-ai-hint={project.imageHint || "experiment cover"}
                         />
                       </div>
 
                       <div className="space-y-3">
-                        <h3 className="text-2xl font-headline font-bold text-white group-hover:text-primary transition-colors">{project.title}</h3>
+                        <div className="flex items-center gap-3">
+                          <h3 className="text-2xl font-headline font-bold text-white group-hover:text-primary transition-colors">{project.title}</h3>
+                          {project.date && (
+                             <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">{project.date}</span>
+                          )}
+                        </div>
                         <p className="text-sm text-muted-foreground leading-relaxed line-clamp-4">{project.desc}</p>
                       </div>
                     </div>
@@ -122,7 +127,13 @@ export default function WorkClient({ config, initialExperiments }: { config: any
             {selectedProject && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col h-[90vh] md:h-auto max-h-[90vh]">
                 <div className="relative h-64 md:h-80 w-full shrink-0 overflow-hidden">
-                  <Image src={selectedProject.image || 'https://picsum.photos/seed/placeholder/1200/800'} alt={selectedProject.title} fill className="object-cover opacity-30 grayscale" />
+                  <Image 
+                    src={selectedProject.image || 'https://picsum.photos/seed/placeholder/1200/800'} 
+                    alt={selectedProject.title} 
+                    fill 
+                    className="object-cover opacity-30 grayscale" 
+                    data-ai-hint={selectedProject.imageHint || "experiment hero"}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
                   
                   <button 
@@ -135,6 +146,11 @@ export default function WorkClient({ config, initialExperiments }: { config: any
                   <div className="absolute bottom-10 left-12 right-12 z-20">
                      <div className="flex items-center gap-4 mb-3">
                         <span className="text-primary font-black tracking-[0.4em] text-[10px] uppercase bg-primary/10 px-3 py-1 rounded-md border border-primary/20">Technical_Case_{selectedProject.type}</span>
+                        {selectedProject.date && (
+                          <span className="text-white/20 text-[9px] font-black uppercase tracking-[0.4em] flex items-center gap-2">
+                             <Calendar className="w-3 h-3" /> {selectedProject.date}
+                          </span>
+                        )}
                         <div className="h-px flex-1 bg-white/10" />
                      </div>
                      <DialogTitle className="text-4xl md:text-7xl font-headline font-black text-white italic tracking-tighter leading-tight">{selectedProject.title}</DialogTitle>
