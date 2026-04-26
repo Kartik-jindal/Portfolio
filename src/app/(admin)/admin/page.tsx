@@ -11,7 +11,9 @@ import {
   ArrowUpRight,
   Activity,
   Zap,
-  Globe
+  Globe,
+  ChevronRight,
+  Settings
 } from 'lucide-react';
 import Link from 'next/link';
 
