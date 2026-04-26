@@ -1,46 +1,69 @@
 
 "use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar } from '@/components/portfolio/navbar';
 import { Footer } from '@/components/portfolio/footer';
 import { Projects } from '@/components/portfolio/projects';
-import { ArrowUpRight, Github, Code2, Globe, Cpu } from 'lucide-react';
-import { flagshipProjects } from '@/components/portfolio/projects';
+import { ArrowUpRight, Github, Code2, Globe, Cpu, X, ExternalLink, Box, Terminal, Activity } from 'lucide-react';
+import Image from 'next/image';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const smallProjects = [
   {
     title: "Vesper Shader Lab",
     type: "Experiment",
     desc: "A collection of high-performance GLSL shaders exploring procedural textures.",
+    longDesc: "Vesper is an experimental playground for testing noise algorithms and fluid simulations. It pushes the boundaries of what's possible with Fragment Shaders in a browser environment.",
     tech: ["WebGL", "GLSL", "Three.js"],
-    link: "#"
+    image: "https://picsum.photos/seed/shader/800/600",
+    imageHint: "webgl shaders",
+    link: "#",
+    metrics: { cpu: "Low", gpu: "High", latency: "Sub-16ms" }
   },
   {
     title: "Kryptos Auth",
     type: "Utility",
     desc: "Zero-knowledge proof authentication library for decentralized applications.",
-    tech: ["TypeScript", "Cryptography"],
-    link: "#"
+    longDesc: "A cryptographic utility designed for privacy-first applications. It implements secure handshake protocols without ever exposing user credentials to the server.",
+    tech: ["TypeScript", "Cryptography", "Node.js"],
+    image: "https://picsum.photos/seed/crypto/800/600",
+    imageHint: "encryption security",
+    link: "#",
+    metrics: { cpu: "Medium", gpu: "N/A", latency: "40ms" }
   },
   {
     title: "Onyx Grid",
     type: "Library",
     desc: "A CSS-in-JS layout engine optimized for ultra-low latency dashboards.",
-    tech: ["React", "Stylus"],
-    link: "#"
+    longDesc: "Onyx Grid solves the problem of DOM thrashing in heavy data environments. It uses a virtualized layout engine to render thousands of cells with minimal layout shift.",
+    tech: ["React", "Stylus", "Vite"],
+    image: "https://picsum.photos/seed/grid/800/600",
+    imageHint: "data grid",
+    link: "#",
+    metrics: { cpu: "Ultra-Low", gpu: "N/A", latency: "8ms" }
   },
   {
     title: "Aether CMS",
     type: "Tool",
     desc: "Minimalist headless CMS architecture designed for static site generation.",
-    tech: ["Go", "Next.js"],
-    link: "#"
+    longDesc: "A lightweight content management solution that prioritizes developer speed. It features a Git-based workflow and instant edge-deployment triggers.",
+    tech: ["Go", "Next.js", "Redis"],
+    image: "https://picsum.photos/seed/cms/800/600",
+    imageHint: "headless cms",
+    link: "#",
+    metrics: { cpu: "Low", gpu: "N/A", latency: "120ms" }
   }
 ];
 
 export default function WorkPage() {
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+
   return (
     <main className="bg-transparent min-h-screen">
       <Navbar />
@@ -93,7 +116,8 @@ export default function WorkPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="glass p-8 rounded-3xl border-white/5 hover:border-primary/30 transition-all duration-500 group relative flex flex-col justify-between h-[320px]"
+                onClick={() => setSelectedProject(project)}
+                className="glass p-8 rounded-3xl border-white/5 hover:border-primary/30 transition-all duration-500 group relative flex flex-col justify-between h-[380px] cursor-pointer"
               >
                 <div className="space-y-6">
                   <div className="flex justify-between items-start">
@@ -102,27 +126,103 @@ export default function WorkPage() {
                     </div>
                     <span className="text-[10px] font-black uppercase tracking-widest text-white/20">{project.type}</span>
                   </div>
+                  
+                  <div className="relative aspect-video rounded-xl overflow-hidden mb-4 border border-white/5">
+                    <Image 
+                      src={project.image} 
+                      alt={project.title} 
+                      fill 
+                      className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                      data-ai-hint={project.imageHint}
+                    />
+                  </div>
+
                   <div className="space-y-3">
                     <h3 className="text-2xl font-headline font-bold text-white group-hover:text-primary transition-colors">{project.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{project.desc}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">{project.desc}</p>
                   </div>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-6 pt-4">
                   <div className="flex flex-wrap gap-2">
                     {project.tech.map(t => (
                       <span key={t} className="text-[9px] font-bold text-white/30 uppercase tracking-widest">{t}</span>
                     ))}
                   </div>
-                  <a href={project.link} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-white hover:text-primary transition-colors">
-                    View Lab <ArrowUpRight className="w-3 h-3" />
-                  </a>
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors">
+                    Analyze Entry <ArrowUpRight className="w-3 h-3" />
+                  </div>
                 </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
+
+      {/* Lab Entry Modal */}
+      <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
+        <DialogContent className="max-w-3xl bg-background/95 backdrop-blur-3xl border-white/5 p-0 overflow-hidden rounded-[2rem] shadow-2xl">
+          <AnimatePresence>
+            {selectedProject && (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                <div className="relative h-48 w-full overflow-hidden">
+                  <Image src={selectedProject.image} alt={selectedProject.title} fill className="object-cover opacity-40 grayscale" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+                  <button onClick={() => setSelectedProject(null)} className="absolute top-6 right-6 w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-colors z-30">
+                    <X className="w-5 h-5 text-white" />
+                  </button>
+                  <div className="absolute bottom-6 left-10 z-20">
+                     <span className="text-primary font-black tracking-[0.4em] text-[10px] uppercase mb-1 block">Lab Entry_{selectedProject.type}</span>
+                     <DialogTitle className="text-3xl md:text-4xl font-headline font-black text-white italic tracking-tighter">{selectedProject.title}</DialogTitle>
+                  </div>
+                </div>
+
+                <div className="p-10 space-y-10">
+                  <div className="grid md:grid-cols-2 gap-10">
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3 text-primary">
+                        <Terminal className="w-4 h-4" />
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.4em]">Abstract</h4>
+                      </div>
+                      <p className="text-muted-foreground text-sm leading-relaxed font-body">
+                        {selectedProject.longDesc}
+                      </p>
+                      
+                      <div className="space-y-4 pt-4">
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">Technologies</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedProject.tech.map((t: string) => (
+                            <span key={t} className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-[10px] font-bold text-white/60">{t}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3 text-accent">
+                        <Activity className="w-4 h-4" />
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.4em]">Performance Metrics</h4>
+                      </div>
+                      <div className="grid grid-cols-1 gap-3">
+                        {Object.entries(selectedProject.metrics).map(([key, val]: [string, any]) => (
+                          <div key={key} className="flex justify-between items-center p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-white/30">{key}</span>
+                            <span className="text-xs font-mono text-primary font-bold">{val}</span>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <a href={selectedProject.link} className="flex items-center justify-center gap-3 w-full py-4 rounded-xl bg-white text-black text-[10px] font-black uppercase tracking-[0.3em] hover:bg-primary transition-all mt-6">
+                        View Repository <ExternalLink className="w-4 h-4" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </main>
