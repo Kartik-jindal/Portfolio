@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -16,7 +17,7 @@ export const Navbar = () => {
   }, []);
 
   const navItems = [
-    { label: "Works", href: "/#work" },
+    { label: "Works", href: "/work" },
     { label: "Vision", href: "/#about" },
     { label: "Timeline", href: "/#experience" },
     { label: "Journal", href: "/blog" },

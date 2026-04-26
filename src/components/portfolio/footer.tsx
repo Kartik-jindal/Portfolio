@@ -43,7 +43,7 @@ export const Footer = () => {
             <ul className="space-y-6 font-body">
               {[
                 { label: 'Home', href: '/' },
-                { label: 'Selected Work', href: '/#work' },
+                { label: 'Selected Work', href: '/work' },
                 { label: 'About Story', href: '/#about' },
                 { label: 'Journal', href: '/blog' }
               ].map((item) => (
@@ -66,13 +66,13 @@ export const Footer = () => {
                   hello@kartikjindal.com
                 </span>
               </a>
-              <div className="pt-4">
-                <Link href="/blog" className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.3em] font-black text-primary hover:text-white transition-colors py-4 px-8 rounded-full border border-primary/30 glass mb-4">
+              <div className="pt-4 flex flex-col gap-3">
+                <Link href="/blog" className="inline-flex items-center justify-center gap-3 text-xs uppercase tracking-[0.3em] font-black text-primary hover:text-white transition-colors py-4 px-8 rounded-full border border-primary/30 glass">
                   Visit the Journal
                 </Link>
-                <a href="#" className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.3em] font-black text-white/80 hover:text-white transition-colors py-4 px-8 rounded-full border border-white/20 glass">
-                  Download Portfolio PDF
-                </a>
+                <Link href="/work" className="inline-flex items-center justify-center gap-3 text-xs uppercase tracking-[0.3em] font-black text-white/80 hover:text-white transition-colors py-4 px-8 rounded-full border border-white/20 glass">
+                  View Full Portfolio
+                </Link>
               </div>
             </div>
           </div>

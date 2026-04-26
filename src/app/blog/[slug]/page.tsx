@@ -246,8 +246,7 @@ export default function BlogDetailPage() {
             </button>
           </aside>
         </div>
-      </div>
-
+      </article>
       <Footer />
     </main>
   );
