@@ -26,21 +26,14 @@ The connection between your frontend and Firebase has been established.
 
 ---
 
-## 3. Initial Setup & Admin Access
+## 3. Initial Setup & Admin Access [✅ COMPLETED]
 
-To gain access to the `/admin` command center, follow these steps:
+The administrative layer is now fully operational.
 
 1. ✅ **Create Firebase Project**: [Completed]
 2. ✅ **Enable Services**: [Completed] Auth (Email/Password), Firestore, and Storage enabled.
-3. ⏳ **Create Your User**:
-   - Go to your **Firebase Console** -> **Authentication**.
-   - Click **Add User**.
-   - Email: `kartikjindal2003@gmail.com`
-   - Password: `Student@9716838500`
-4. ⏳ **Sign-In**: 
-   - Navigate to `/admin/login` on your local build.
-   - Sign in with the credentials above.
-   - **Note**: The system is programmed to automatically grant `SUPER_ADMIN` status to this specific email on your first login.
+3. ✅ **Create Your User**: [Completed] User `kartikjindal2003@gmail.com` created and verified.
+4. ✅ **Sign-In**: [Completed] Owner account successfully bootstrapped with `SUPER_ADMIN` status on first login.
 
 ---
 
