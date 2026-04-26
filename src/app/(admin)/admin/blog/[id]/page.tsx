@@ -205,12 +205,7 @@ export default function EditBlogPostPage() {
             <div className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <div className="flex justify-between items-end px-1">
-                    <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title Override</Label>
-                    <span className={`text-[9px] font-mono ${formData.seo.title.length > 60 ? 'text-red-500' : 'text-white/20'}`}>
-                      {formData.seo.title.length} / 60
-                    </span>
-                  </div>
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title</Label>
                   <Input 
                     value={formData.seo.title} 
                     onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
@@ -219,7 +214,7 @@ export default function EditBlogPostPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Keywords (Comma Separated)</Label>
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Keywords (CSV)</Label>
                   <Input 
                     value={formData.seo.keywords} 
                     onChange={e => setFormData({ ...formData, seo: { ...formData.seo, keywords: e.target.value } })} 
@@ -230,12 +225,7 @@ export default function EditBlogPostPage() {
               </div>
 
               <div className="space-y-2">
-                <div className="flex justify-between items-end px-1">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
-                  <span className={`text-[9px] font-mono ${formData.seo.description.length > 160 ? 'text-red-500' : 'text-white/20'}`}>
-                    {formData.seo.description.length} / 160
-                  </span>
-                </div>
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
                 <Textarea 
                   value={formData.seo.description} 
                   onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })} 
@@ -271,8 +261,8 @@ export default function EditBlogPostPage() {
 
         <div className="lg:col-span-4 space-y-10">
           <SeoHud 
-            title={formData.seo.title}
-            description={formData.seo.description}
+            title={formData.seo.title || formData.title}
+            description={formData.seo.description || formData.summary}
             keywords={formData.seo.keywords}
             ogImage={formData.seo.ogImage || formData.image}
           />
