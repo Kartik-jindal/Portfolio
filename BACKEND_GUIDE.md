@@ -13,7 +13,7 @@ We utilize **Firebase** (Google's Cloud Platform) to power the portfolio's dynam
 
 ## 2. Environment Variables (.env.local) [✅ COMPLETED]
 
-The connection between your frontend and Firebase has been established. Your `.env.local` file is now populated with the required project identifiers.
+The connection between your frontend and Firebase has been established.
 
 | Key | Status |
 |-----|--------|
@@ -26,20 +26,21 @@ The connection between your frontend and Firebase has been established. Your `.e
 
 ---
 
-## 3. Initial Setup & Admin Promotion
+## 3. Initial Setup & Admin Access
 
-To gain access to the `/admin` command center, follow these remaining steps:
+To gain access to the `/admin` command center, follow these steps:
 
-1. ✅ **Create Firebase Project**: [Completed] Project created on Firebase Console.
-2. ✅ **Enable Services**: [Completed] Auth, Firestore, and Storage enabled.
-3. ⏳ **First Sign-In**: Go to `/admin/login` on your local build and sign in with your email.
-4. ⏳ **Grant Admin Role**:
-   - Initially, you will be a `GUEST` and locked out.
-   - Go to the **Firestore Console**.
-   - Find the `users` collection (it will appear after your first login).
-   - Find the document corresponding to your `uid`.
-   - Change the `role` field from `"GUEST"` to `"SUPER_ADMIN"`.
-   - Refresh the page to access the dashboard.
+1. ✅ **Create Firebase Project**: [Completed]
+2. ✅ **Enable Services**: [Completed] Auth (Email/Password), Firestore, and Storage enabled.
+3. ⏳ **Create Your User**:
+   - Go to your **Firebase Console** -> **Authentication**.
+   - Click **Add User**.
+   - Email: `kartikjindal2003@gmail.com`
+   - Password: `Student@9716838500`
+4. ⏳ **Sign-In**: 
+   - Navigate to `/admin/login` on your local build.
+   - Sign in with the credentials above.
+   - **Note**: The system is programmed to automatically grant `SUPER_ADMIN` status to this specific email on your first login.
 
 ---
 

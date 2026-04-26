@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
@@ -7,7 +6,7 @@ import {
   User, 
   signOut as firebaseSignOut 
 } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
 
 interface AuthContextType {
@@ -24,6 +23,9 @@ const AuthContext = createContext<AuthContextType>({
   signOut: async () => {},
 });
 
+// The designated owner email for automatic bootstrapping
+const OWNER_EMAIL = 'kartikjindal2003@gmail.com';
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<'SUPER_ADMIN' | 'ADMIN' | 'GUEST' | null>(null);
@@ -33,11 +35,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user);
-        // Fetch role from Firestore
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (userDoc.exists()) {
-          setRole(userDoc.data().role);
-        } else {
+        try {
+          // Fetch role from Firestore
+          const userRef = doc(db, 'users', user.uid);
+          const userDoc = await getDoc(userRef);
+          
+          if (userDoc.exists()) {
+            setRole(userDoc.data().role);
+          } else {
+            // Self-promotion bootstrap for the designated owner
+            const initialRole = user.email === OWNER_EMAIL ? 'SUPER_ADMIN' : 'GUEST';
+            
+            await setDoc(userRef, {
+              email: user.email,
+              role: initialRole,
+              displayName: user.displayName || 'Admin',
+              photoURL: user.photoURL || '',
+              createdAt: serverTimestamp()
+            });
+            
+            setRole(initialRole);
+          }
+        } catch (error) {
+          console.error("Auth Context Error:", error);
           setRole('GUEST');
         }
       } else {
