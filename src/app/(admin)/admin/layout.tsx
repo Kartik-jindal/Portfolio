@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect } from 'react';
@@ -19,7 +18,8 @@ import {
   Quote,
   User,
   Zap,
-  Layers
+  Layers,
+  Mail
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -67,6 +67,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { label: 'About Story', href: '/admin/about', icon: User },
     { label: 'Experience', href: '/admin/experience', icon: Briefcase },
     { label: 'Voices', href: '/admin/testimonials', icon: Quote },
+    { label: 'Contact Module', href: '/admin/contact', icon: Mail },
     { label: 'Layout Config', href: '/admin/interface', icon: Layers },
     { label: 'Leads', href: '/admin/leads', icon: Users },
     { label: 'Settings', href: '/admin/settings', icon: Settings },

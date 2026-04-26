@@ -1,12 +1,11 @@
-
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Send, X, CheckCircle2, Globe, Shield } from 'lucide-react';
 import { db } from '@/lib/firebase/config';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -18,7 +17,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-export const Contact = () => {
+export const Contact = ({ initialData }: { initialData?: any }) => {
+  const [data, setData] = useState(initialData);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -30,10 +30,45 @@ export const Contact = () => {
     hp: '' // Honeypot field for bot protection
   });
 
+  useEffect(() => {
+    if (!initialData) {
+      const fetchContact = async () => {
+        try {
+          const docSnap = await getDoc(doc(db, 'site_config', 'contact'));
+          if (docSnap.exists()) setData(docSnap.data());
+        } catch (e) {
+          console.error("Contact Config Error:", e);
+        }
+      };
+      fetchContact();
+    }
+  }, [initialData]);
+
+  // Fallback defaults
+  const content = data || {
+    badge: 'TRANSMISSION_READY',
+    headlineMain: 'START A',
+    headlineHighlight: 'PROJECT',
+    triggerButtonText: 'Deploy Vision',
+    dialogTitle: 'Inquiry Payload.',
+    dialogSubtitle: 'Initialize project architectural parameters',
+    labels: {
+      name: 'Identity',
+      email: 'Communication Link',
+      subject: 'Mission Objective',
+      message: 'Strategic Narrative'
+    },
+    placeholders: {
+      name: 'Commander Name',
+      email: 'email@coordinates.com',
+      subject: 'e.g. Next-Gen Web Architecture',
+      message: 'Describe the requirements of your vision...'
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Simple Honeypot Check
     if (formData.hp) {
       setSubmitted(true);
       return;
@@ -85,12 +120,12 @@ export const Contact = () => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </span>
-              TRANSMISSION_READY
+              {content.badge}
             </div>
             
             <h2 className="text-[12vw] sm:text-[14vw] md:text-[8rem] lg:text-[11rem] font-headline font-black mb-16 tracking-tighter leading-[0.8] text-gradient break-words">
-              START A <br /> 
-              <span className="text-outline-primary italic">PROJECT</span>.
+              {content.headlineMain} <br /> 
+              <span className="text-outline-primary italic">{content.headlineHighlight}</span>
             </h2>
 
             <div className="flex justify-center">
@@ -101,7 +136,7 @@ export const Contact = () => {
                 data-cursor="Initiate"
               >
                 <span className="relative z-10 flex items-center gap-4">
-                  Deploy Vision <ArrowRight className="w-8 h-8 md:w-10 md:h-10 group-hover:translate-x-2 transition-transform" />
+                  {content.triggerButtonText} <ArrowRight className="w-8 h-8 md:w-10 md:h-10 group-hover:translate-x-2 transition-transform" />
                 </span>
                 <div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.16,1,0.3,1]" />
               </Button>
@@ -135,8 +170,8 @@ export const Contact = () => {
                 <div className="h-48 relative overflow-hidden flex items-center px-12 border-b border-white/5">
                   <div className="absolute inset-0 bg-primary/5 z-0" />
                   <div className="relative z-10 space-y-2">
-                    <DialogTitle className="text-5xl font-headline font-black italic tracking-tighter text-white">Inquiry Payload.</DialogTitle>
-                    <DialogDescription className="text-white/30 text-[10px] uppercase font-black tracking-[0.4em]">Initialize project architectural parameters</DialogDescription>
+                    <DialogTitle className="text-5xl font-headline font-black italic tracking-tighter text-white">{content.dialogTitle}</DialogTitle>
+                    <DialogDescription className="text-white/30 text-[10px] uppercase font-black tracking-[0.4em]">{content.dialogSubtitle}</DialogDescription>
                   </div>
                   <button 
                     onClick={() => setIsOpen(false)} 
@@ -153,22 +188,22 @@ export const Contact = () => {
 
                   <div className="grid md:grid-cols-2 gap-8">
                     <div className="space-y-3">
-                      <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 ml-1">Identity</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 ml-1">{content.labels.name}</Label>
                       <Input 
                         required
                         className="bg-white/[0.03] border-white/5 h-14 rounded-2xl focus:border-primary/50 text-white placeholder:text-white/10" 
-                        placeholder="Commander Name"
+                        placeholder={content.placeholders.name}
                         value={formData.name}
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
                       />
                     </div>
                     <div className="space-y-3">
-                      <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 ml-1">Communication Link</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 ml-1">{content.labels.email}</Label>
                       <Input 
                         required
                         type="email"
                         className="bg-white/[0.03] border-white/5 h-14 rounded-2xl focus:border-primary/50 text-white placeholder:text-white/10" 
-                        placeholder="email@coordinates.com"
+                        placeholder={content.placeholders.email}
                         value={formData.email}
                         onChange={(e) => setFormData({...formData, email: e.target.value})}
                       />
@@ -176,22 +211,22 @@ export const Contact = () => {
                   </div>
 
                   <div className="space-y-3">
-                    <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 ml-1">Mission Objective</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 ml-1">{content.labels.subject}</Label>
                     <Input 
                       required
                       className="bg-white/[0.03] border-white/5 h-14 rounded-2xl focus:border-primary/50 text-white placeholder:text-white/10" 
-                      placeholder="e.g. Next-Gen Web Architecture"
+                      placeholder={content.placeholders.subject}
                       value={formData.subject}
                       onChange={(e) => setFormData({...formData, subject: e.target.value})}
                     />
                   </div>
 
                   <div className="space-y-3">
-                    <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 ml-1">Strategic Narrative</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 ml-1">{content.labels.message}</Label>
                     <Textarea 
                       required
                       className="bg-white/[0.03] border-white/5 min-h-[160px] rounded-[2rem] focus:border-primary/50 text-white placeholder:text-white/10 p-6 resize-none" 
-                      placeholder="Describe the requirements of your vision..."
+                      placeholder={content.placeholders.message}
                       value={formData.message}
                       onChange={(e) => setFormData({...formData, message: e.target.value})}
                     />

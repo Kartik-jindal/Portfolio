@@ -1,4 +1,3 @@
-
 import { Navbar } from '@/components/portfolio/navbar';
 import { Hero } from '@/components/portfolio/hero';
 import { About } from '@/components/portfolio/about';
@@ -63,6 +62,17 @@ async function getAboutData() {
     return docSnap.exists() ? docSnap.data() : null;
   } catch (err) {
     console.error("Firebase Error (About):", err);
+    return null;
+  }
+}
+
+async function getContactData() {
+  try {
+    const docRef = doc(db, 'site_config', 'contact');
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? docSnap.data() : null;
+  } catch (err) {
+    console.error("Firebase Error (Contact):", err);
     return null;
   }
 }
@@ -141,6 +151,7 @@ export default async function Home() {
   const navData = await getNavbarData();
   const footerLayout = await getFooterData();
   const aboutData = await getAboutData();
+  const contactData = await getContactData();
   const initialProjects = await getProjects(3);
   const experiences = await getExperience();
   const testimonials = await getTestimonials();
@@ -160,7 +171,7 @@ export default async function Home() {
       <Projects initialData={initialProjects} limit={3} />
       {visibility.showExperience && <Experience initialData={experiences} />}
       {visibility.showTestimonials && <Testimonials initialData={testimonials} />}
-      <Contact />
+      <Contact initialData={contactData} />
       <Footer config={config} footerLayout={footerLayout} />
       
       {/* Structured Data (JSON-LD) */}
