@@ -168,7 +168,7 @@ export default function BlogDetailPage() {
                   </span>
                 </div>
 
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-headline font-black italic tracking-tighter leading-[0.95] text-white">
+                <h1 className="text-4xl md:text-5xl lg:text-7xl font-headline font-black italic tracking-tighter leading-[0.95] text-white">
                   {post.title}
                 </h1>
               </motion.div>
@@ -227,13 +227,14 @@ export default function BlogDetailPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
               className="prose prose-invert prose-lg md:prose-xl max-w-none font-body font-light text-white/70 leading-relaxed
+                prose-p:mb-12 prose-p:leading-[1.9]
+                prose-p:first-of-type:first-letter:text-7xl prose-p:first-of-type:first-letter:font-headline prose-p:first-of-type:first-letter:font-black prose-p:first-of-type:first-letter:mr-4 prose-p:first-of-type:first-letter:float-left prose-p:first-of-type:first-letter:text-primary prose-p:first-of-type:first-letter:italic
                 prose-headings:font-headline prose-headings:font-bold prose-headings:text-white prose-headings:tracking-tight
-                prose-h3:text-3xl md:text-4xl prose-h3:mt-16 prose-h3:mb-8 prose-h3:italic
-                prose-blockquote:border-l-0 prose-blockquote:bg-white/[0.03] prose-blockquote:py-12 prose-blockquote:px-12 prose-blockquote:rounded-[2.5rem] prose-blockquote:italic prose-blockquote:text-white prose-blockquote:not-italic prose-blockquote:text-2xl md:text-3xl prose-blockquote:my-16 prose-blockquote:relative prose-blockquote:border prose-blockquote:border-white/5
+                prose-h3:text-4xl md:text-5xl prose-h3:mt-24 prose-h3:mb-10 prose-h3:italic prose-h3:leading-none
+                prose-blockquote:border-l-0 prose-blockquote:bg-white/[0.03] prose-blockquote:py-16 prose-blockquote:px-14 prose-blockquote:rounded-[3rem] prose-blockquote:italic prose-blockquote:text-white prose-blockquote:not-italic prose-blockquote:text-3xl md:text-4xl prose-blockquote:my-20 prose-blockquote:relative prose-blockquote:border prose-blockquote:border-white/5
                 prose-strong:text-white prose-strong:font-bold
-                prose-p:mb-8 prose-p:leading-[1.8]
-                prose-ul:my-8 prose-ul:list-none prose-ul:pl-0
-                prose-li:relative prose-li:pl-8 prose-li:mb-4 prose-li:before:content-[''] prose-li:before:absolute prose-li:before:left-0 prose-li:before:top-[0.8em] prose-li:before:w-2 prose-li:before:h-2 prose-li:before:bg-primary prose-li:before:rounded-full"
+                prose-ul:my-12 prose-ul:list-none prose-ul:pl-0 prose-ul:space-y-6
+                prose-li:relative prose-li:pl-10 prose-li:text-xl prose-li:before:content-[''] prose-li:before:absolute prose-li:before:left-0 prose-li:before:top-[0.7em] prose-li:before:w-2.5 prose-li:before:h-2.5 prose-li:before:bg-primary prose-li:before:rounded-full prose-li:before:shadow-[0_0_10px_rgba(16,185,129,0.5)]"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
 
