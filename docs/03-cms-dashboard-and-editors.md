@@ -1,3 +1,4 @@
+
 # CMS Dashboard and Editors Specification
 
 ## 1. Dashboard Architecture
@@ -6,38 +7,34 @@ The admin dashboard is built as a protected route group `/(admin)/admin` using t
 ## 2. Sidebar Navigation Sections
 - **Overview**: Real-time metrics and system pulse.
 - **Projects**: Manage Flagship and Experimental builds.
-- **Journal**: Full CMS for blog posts with markdown support.
+- **Journal**: Full CMS for blog posts with markdown/HTML support.
 - **Leads**: Inbox for contact form submissions.
-- **Experience**: Manage career timeline entries.
 - **Settings**: Global SEO, Socials, Resume, and Section Visibility.
 
 ## 3. Content Modules & Editor Flows
 
-### 3.1 Project Manager
-- **Fields**: Title, Slug, Type (Flagship/Experiment), Role, Short Description, Long Description (Markdown), Methodology, Impact, Challenges (Array), Tech (Array), Live URL, GitHub URL, Accent Color, Image URL.
-- **Logic**: Flagship projects appear in the main "Selected Works" section, while Experiments appear in the "Technical Lab" section.
+### 3.1 Project Manager (`/admin/projects`)
+- **CRUD Implementation**: Support for adding new projects (`/admin/projects/new`) and editing existing ones (`/admin/projects/[id]`).
+- **Fields**: Title, Slug, Type (Flagship/Experiment), Role, Short Description, Long Description, Methodology, Impact, Challenges (Array), Tech (Array), Live URL, GitHub URL, Accent Color, Image URL.
+- **Media**: Integrated Firebase Storage uploads for cover images.
 
-### 3.2 Journal (Blog) Editor
-- **Fields**: Title, Slug, Category, Date, Read Time, Image, Image Hint, Summary, Content (Markdown).
+### 3.2 Journal (Blog) Editor (`/admin/blog`)
+- **CRUD Implementation**: Support for new entries (`/admin/blog/new`) and editorial updates (`/admin/blog/[id]`).
+- **Fields**: Title, Slug, Category, Date, Read Time, Image, Image Hint, Summary, Content (Markdown/HTML).
 - **Workflow**: Supports 'Draft' and 'Published' statuses for scheduled launches.
 
-### 3.3 Experience Manager
-- **Fields**: Company, Role, Period, Description, Sort Order.
-- **Ordering**: Uses a numeric `order` field for manual career sequence control.
-
-### 3.4 Site Settings & SEO
+### 3.3 Site Settings & SEO
 - **SEO**: Meta titles, descriptions, and keywords.
 - **Socials**: Centralized link management for footer and contact points.
-- **Resume**: Direct PDF URL update or upload management.
+- **Resume**: Direct PDF upload management via Firebase Storage.
 - **Visibility**: Toggles for Testimonials, Experience, and experimental sections.
 
 ## 4. Technical Implementation Notes
-- **Forms**: Powered by `react-hook-form` and `zod` for strict schema validation.
-- **UI Components**: Built using Radix UI / Shadcn for accessibility and performance.
-- **Data Persistence**: Direct Firestore integration using the Firebase Client SDK for real-time updates.
-- **Draft/Publish**: All public fetching logic must filter for `status == 'published'` unless a preview secret is provided.
+- **Data Persistence**: Uses Firebase Firestore Client SDK for real-time updates and low latency.
+- **File Management**: Firebase Storage handles project assets and resumes with public read access.
+- **Draft Logic**: Public queries filter for `status == 'published'` to protect work-in-progress content.
 
 ## 5. Next Stage Instructions
-1. **Wire Public Pages**: Replace hardcoded data in `src/app/page.tsx`, `src/app/work/page.tsx`, and `src/app/blog/page.tsx` with Firestore fetch calls.
-2. **Contact Form Hook**: Update the public `Contact` component to write directly to the `contact_leads` collection.
-3. **Draft Preview Route**: Implement `/api/preview` to allow admin-only viewing of draft content.
+1. **Content Migration**: Use the editors to populate your real projects and blog posts.
+2. **SEO Verification**: Verify metadata rendering in the public site after updating CMS settings.
+3. **Lead Testing**: Perform a live test of the contact form and verify payload delivery in the Leads inbox.
