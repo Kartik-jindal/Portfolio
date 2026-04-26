@@ -19,6 +19,7 @@ import Link from 'next/link';
 export default function NewProjectPage() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [isSlugManual, setIsSlugManual] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -42,6 +43,23 @@ export default function NewProjectPage() {
   const [newChallenge, setNewChallenge] = useState('');
   const router = useRouter();
   const { toast } = useToast();
+
+  const slugify = (text: string) => {
+    return text
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  };
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      title: val,
+      slug: isSlugManual ? prev.slug : slugify(val)
+    }));
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -114,7 +132,6 @@ export default function NewProjectPage() {
 
       <div className="grid lg:grid-cols-12 gap-10">
         <div className="lg:col-span-8 space-y-10">
-          {/* Identity Section */}
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
             <div className="flex items-center gap-4 text-primary">
               <Box className="w-6 h-6" />
@@ -124,11 +141,19 @@ export default function NewProjectPage() {
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Project Title</Label>
-                <Input value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="e.g. Nova Orbital" />
+                <Input value={formData.title} onChange={handleTitleChange} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="e.g. Nova Orbital" />
               </div>
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Slug (URL Path)</Label>
-                <Input value={formData.slug} onChange={e => setFormData({ ...formData, slug: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="nova-orbital" />
+                <Input 
+                  value={formData.slug} 
+                  onChange={e => {
+                    setIsSlugManual(true);
+                    setFormData({ ...formData, slug: e.target.value });
+                  }} 
+                  className="bg-white/5 border-white/5 rounded-xl h-14" 
+                  placeholder="nova-orbital" 
+                />
               </div>
             </div>
 
@@ -156,7 +181,6 @@ export default function NewProjectPage() {
             </div>
           </div>
 
-          {/* Narrative Section */}
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
             <h3 className="text-lg font-headline font-black italic tracking-tight text-white/60">Architectural Narrative</h3>
             <div className="space-y-6">
@@ -183,7 +207,6 @@ export default function NewProjectPage() {
         </div>
 
         <div className="lg:col-span-4 space-y-10">
-          {/* Media & Links */}
           <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
             <h3 className="text-[10px] uppercase font-black tracking-widest text-white/40">Media & Assets</h3>
             <div className="space-y-4">
@@ -215,7 +238,6 @@ export default function NewProjectPage() {
             </div>
           </div>
 
-          {/* Technical Constraints */}
           <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
              <div className="space-y-4">
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Technology Stack</Label>

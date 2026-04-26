@@ -19,6 +19,7 @@ import Link from 'next/link';
 export default function NewBlogPostPage() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [isSlugManual, setIsSlugManual] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -35,6 +36,23 @@ export default function NewBlogPostPage() {
 
   const router = useRouter();
   const { toast } = useToast();
+
+  const slugify = (text: string) => {
+    return text
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  };
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      title: val,
+      slug: isSlugManual ? prev.slug : slugify(val)
+    }));
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -102,11 +120,19 @@ export default function NewBlogPostPage() {
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Post Title</Label>
-                <Input value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="The Future of WebGL" />
+                <Input value={formData.title} onChange={handleTitleChange} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="The Future of WebGL" />
               </div>
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Slug</Label>
-                <Input value={formData.slug} onChange={e => setFormData({ ...formData, slug: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="future-of-webgl" />
+                <Input 
+                  value={formData.slug} 
+                  onChange={e => {
+                    setIsSlugManual(true);
+                    setFormData({ ...formData, slug: e.target.value });
+                  }} 
+                  className="bg-white/5 border-white/5 rounded-xl h-14" 
+                  placeholder="future-of-webgl" 
+                />
               </div>
             </div>
 

@@ -24,8 +24,17 @@ export default function EditProjectPage() {
   const [formData, setFormData] = useState<any>(null);
   const [newTech, setNewTech] = useState('');
   const [newChallenge, setNewChallenge] = useState('');
+  const [isSlugManual, setIsSlugManual] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+
+  const slugify = (text: string) => {
+    return text
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  };
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -44,6 +53,15 @@ export default function EditProjectPage() {
     };
     fetchProject();
   }, [id]);
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setFormData((prev: any) => ({
+      ...prev,
+      title: val,
+      slug: isSlugManual ? prev.slug : slugify(val)
+    }));
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -128,11 +146,18 @@ export default function EditProjectPage() {
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Project Title</Label>
-                <Input value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
+                <Input value={formData.title} onChange={handleTitleChange} className="bg-white/5 border-white/5 rounded-xl h-14" />
               </div>
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Slug (URL Path)</Label>
-                <Input value={formData.slug} onChange={e => setFormData({ ...formData, slug: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
+                <Input 
+                  value={formData.slug} 
+                  onChange={e => {
+                    setIsSlugManual(true);
+                    setFormData({ ...formData, slug: e.target.value });
+                  }} 
+                  className="bg-white/5 border-white/5 rounded-xl h-14" 
+                />
               </div>
             </div>
 
