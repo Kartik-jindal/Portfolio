@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -37,7 +38,7 @@ const posts = [
 
 export default function BlogPage() {
   return (
-    <main className="bg-background min-h-screen">
+    <main className="bg-transparent min-h-screen">
       <Navbar />
       
       {/* Blog Hero Section */}

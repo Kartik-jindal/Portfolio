@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -73,9 +74,9 @@ export default function BlogDetailPage() {
 
   if (!post) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-transparent">
         <div className="text-center space-y-6">
-          <h1 className="text-4xl font-headline font-bold">Post not found</h1>
+          <h1 className="text-4xl font-headline font-bold text-white">Post not found</h1>
           <Link href="/blog" className="text-primary uppercase tracking-widest font-black text-xs inline-flex items-center gap-2">
             <ArrowLeft className="w-4 h-4" /> Back to Journal
           </Link>
@@ -85,7 +86,7 @@ export default function BlogDetailPage() {
   }
 
   return (
-    <main className="bg-background min-h-screen">
+    <main className="bg-transparent min-h-screen">
       <Navbar />
 
       <article className="pt-32 pb-24">
