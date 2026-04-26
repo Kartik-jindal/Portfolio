@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -40,7 +39,7 @@ export const Footer = ({ config, footerLayout }: FooterProps) => {
   return (
     <footer className="relative py-12 px-6 border-t border-white/10 bg-transparent overflow-hidden">
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 md:gap-12 pt-12 pb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 md:gap-20 lg:gap-28 pt-12 pb-12">
           {/* Brand Bio */}
           <div className="lg:col-span-4 space-y-8">
             <div className="space-y-6">
