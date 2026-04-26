@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -90,9 +89,9 @@ export default function AdminDashboardPage() {
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/5 pb-10">
         <div className="space-y-3">
           <div className="flex items-center gap-3">
-             <span className="text-primary font-black uppercase tracking-[0.6em] text-[10px]">Administrative Hub</span>
+             <span className="text-primary font-black uppercase tracking-[0.6em] text-[12px]">Administrative Hub</span>
              <div className="h-px w-12 bg-primary/20" />
-             <span className="text-white/20 font-mono text-[9px] uppercase tracking-widest">{time.toLocaleTimeString()}</span>
+             <span className="text-white/20 font-mono text-[11px] uppercase tracking-widest">{time.toLocaleTimeString()}</span>
           </div>
           <h1 className="text-6xl font-headline font-black italic tracking-tighter text-white">Central Command<span className="text-primary">.</span></h1>
         </div>
@@ -101,8 +100,8 @@ export default function AdminDashboardPage() {
            <div className="glass px-6 py-3 rounded-2xl border-white/5 flex items-center gap-4">
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
               <div className="flex flex-col">
-                 <span className="text-[8px] font-black uppercase tracking-widest text-white/30 leading-none mb-1">Infrastructure</span>
-                 <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none italic">S3_Firestore_Live</span>
+                 <span className="text-[10px] font-black uppercase tracking-widest text-white/30 leading-none mb-1">Infrastructure</span>
+                 <span className="text-[12px] font-black text-white uppercase tracking-widest leading-none italic">S3_Firestore_Live</span>
               </div>
            </div>
         </div>
@@ -119,14 +118,14 @@ export default function AdminDashboardPage() {
         >
           <div className="flex items-center justify-between mb-10">
              <div className="space-y-1">
-                <h3 className="text-xl font-headline font-bold italic text-white flex items-center gap-3">
-                  <Activity className="w-5 h-5 text-primary" />
+                <h3 className="text-2xl font-headline font-bold italic text-white flex items-center gap-3">
+                  <Activity className="w-6 h-6 text-primary" />
                   System Throughput
                 </h3>
-                <p className="text-[10px] text-white/30 uppercase font-black tracking-widest">Real-time activity visualization</p>
+                <p className="text-[12px] text-white/30 uppercase font-black tracking-widest">Real-time activity visualization</p>
              </div>
              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/5">
-                <span className="text-[10px] font-black uppercase tracking-widest text-primary">Live_Feed</span>
+                <span className="text-[12px] font-black uppercase tracking-widest text-primary">Live_Feed</span>
              </div>
           </div>
 
@@ -141,7 +140,7 @@ export default function AdminDashboardPage() {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0a0a0a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '10px', textTransform: 'uppercase' }}
+                  contentStyle={{ backgroundColor: '#0a0a0a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '11px', textTransform: 'uppercase' }}
                   itemStyle={{ color: '#10B981' }}
                 />
                 <Area 
@@ -165,8 +164,8 @@ export default function AdminDashboardPage() {
           className="lg:col-span-4 glass rounded-[2.5rem] border-white/5 p-10 flex flex-col justify-between"
         >
           <div className="space-y-6">
-            <h3 className="text-xl font-headline font-bold italic text-white flex items-center gap-3">
-              <Zap className="w-5 h-5 text-primary" />
+            <h3 className="text-2xl font-headline font-bold italic text-white flex items-center gap-3">
+              <Zap className="w-6 h-6 text-primary" />
               Launch Pad
             </h3>
             <div className="grid gap-4">
@@ -178,10 +177,10 @@ export default function AdminDashboardPage() {
                 <Link key={link.label} href={link.href}>
                   <div className="flex items-center justify-between p-5 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-primary/40 hover:bg-primary/5 transition-all group">
                     <div className="flex items-center gap-4">
-                      <link.icon className="w-4 h-4 text-white/30 group-hover:text-primary transition-colors" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white/60 group-hover:text-white">{link.label}</span>
+                      <link.icon className="w-5 h-5 text-white/30 group-hover:text-primary transition-colors" />
+                      <span className="text-[12px] font-black uppercase tracking-widest text-white/60 group-hover:text-white">{link.label}</span>
                     </div>
-                    <ArrowUpRight className="w-4 h-4 text-white/10 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                    <ArrowUpRight className="w-5 h-5 text-white/10 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                   </div>
                 </Link>
               ))}
@@ -190,8 +189,8 @@ export default function AdminDashboardPage() {
 
           <div className="pt-8 border-t border-white/5 mt-8">
              <div className="flex items-center gap-4 text-primary/40">
-                <ShieldAlert className="w-4 h-4" />
-                <span className="text-[9px] font-black uppercase tracking-[0.3em]">Encrypted_Session_Active</span>
+                <ShieldAlert className="w-5 h-5" />
+                <span className="text-[11px] font-black uppercase tracking-[0.3em]">Encrypted_Session_Active</span>
              </div>
           </div>
         </motion.div>
@@ -207,15 +206,15 @@ export default function AdminDashboardPage() {
           >
             <div className="flex justify-between items-start">
               <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/10">
-                <stat.icon className="w-5 h-5 text-primary" />
+                <stat.icon className="w-6 h-6 text-primary" />
               </div>
-              <span className={`text-[8px] font-black uppercase tracking-widest ${stat.label === 'Total Leads' && counts.newLeads > 0 ? 'text-primary' : 'text-white/20'}`}>
+              <span className={`text-[10px] font-black uppercase tracking-widest ${stat.label === 'Total Leads' && counts.newLeads > 0 ? 'text-primary' : 'text-white/20'}`}>
                 {stat.trend}
               </span>
             </div>
             <div>
-              <div className="text-4xl font-headline font-black text-white mb-1 leading-none">{stat.value}</div>
-              <div className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">{stat.label}</div>
+              <div className="text-5xl font-headline font-black text-white mb-1 leading-none">{stat.value}</div>
+              <div className="text-[12px] font-black uppercase tracking-[0.4em] text-white/30">{stat.label}</div>
             </div>
           </motion.div>
         ))}
@@ -228,11 +227,11 @@ export default function AdminDashboardPage() {
           className="lg:col-span-12 glass rounded-[2.5rem] border-white/5 p-10 space-y-8"
         >
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-headline font-bold italic text-white flex items-center gap-3">
-              <Activity className="w-5 h-5 text-primary" />
+            <h3 className="text-2xl font-headline font-bold italic text-white flex items-center gap-3">
+              <Activity className="w-6 h-6 text-primary" />
               Pulse Stream
             </h3>
-            <Link href="/admin/leads" className="text-[10px] font-black uppercase tracking-widest text-white/20 hover:text-primary transition-colors">
+            <Link href="/admin/leads" className="text-[12px] font-black uppercase tracking-widest text-white/20 hover:text-primary transition-colors">
               Access Full Logs
             </Link>
           </div>
@@ -245,24 +244,24 @@ export default function AdminDashboardPage() {
               >
                 <div className="flex items-center gap-8">
                   <div className="flex flex-col items-center">
-                     <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">Mark</span>
+                     <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Mark</span>
                      <div className={`w-2 h-2 rounded-full mt-2 ${i === 0 ? 'bg-primary shadow-[0_0_10px_#10B981]' : 'bg-white/10'}`} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-white uppercase tracking-widest">
+                    <p className="text-sm font-bold text-white uppercase tracking-widest">
                       {i === 0 ? 'Project Architecture Transmission' : 'System Database Heartbeat Synchronized'}
                     </p>
                     <div className="flex items-center gap-4 mt-2">
-                       <span className="text-[9px] text-white/20 uppercase font-black tracking-widest">Status: Operational</span>
+                       <span className="text-[11px] text-white/20 uppercase font-black tracking-widest">Status: Operational</span>
                        <div className="h-1 w-1 rounded-full bg-white/10" />
-                       <span className="text-[9px] text-primary/40 font-mono">CODE_0{i}_SUCCESS</span>
+                       <span className="text-[11px] text-primary/40 font-mono">CODE_0{i}_SUCCESS</span>
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                   <Clock className="w-3.5 h-3.5 text-white/10" />
-                   <span className="text-[9px] font-mono text-white/20 uppercase">0{i}:12:00</span>
-                   <ChevronRight className="w-4 h-4 text-white/10" />
+                   <Clock className="w-4 h-4 text-white/10" />
+                   <span className="text-[11px] font-mono text-white/20 uppercase">0{i}:12:00</span>
+                   <ChevronRight className="w-5 h-5 text-white/10" />
                 </div>
               </div>
             ))}
@@ -271,7 +270,7 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="max-w-4xl mx-auto pt-10">
-         <p className="text-center text-[9px] uppercase tracking-[0.8em] text-white/10 font-black">
+         <p className="text-center text-[11px] uppercase tracking-[0.8em] text-white/10 font-black">
            Architectural_Management_Protocol_Verified // Session_ID: {Math.random().toString(36).substring(7).toUpperCase()}
          </p>
       </div>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -98,39 +97,39 @@ export default function SettingsAdminPage() {
     <div className="space-y-10 pb-20">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
-          <span className="text-primary font-black uppercase tracking-[0.6em] text-[10px]">Global Control</span>
+          <span className="text-primary font-black uppercase tracking-[0.6em] text-[12px]">Global Control</span>
           <h1 className="text-5xl font-headline font-black italic tracking-tighter text-white">System Settings.</h1>
         </div>
         <Button 
           onClick={handleSave}
           disabled={saving}
-          className="h-14 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-8 group"
+          className="h-14 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-8 group text-sm"
         >
-          {saving ? 'Syncing...' : 'Sync Settings'} <Save className="w-5 h-5 ml-2 group-hover:scale-110 transition-transform" />
+          {saving ? 'Syncing...' : 'Sync Settings'} <Save className="w-6 h-6 ml-2 group-hover:scale-110 transition-transform" />
         </Button>
       </header>
 
       <Tabs defaultValue="socials" className="space-y-10">
         <TabsList className="bg-white/5 border border-white/5 p-1 rounded-2xl h-14 overflow-x-auto custom-scrollbar">
-          <TabsTrigger value="socials" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[10px] font-black uppercase tracking-widest px-8 h-full">Social Bridge</TabsTrigger>
-          <TabsTrigger value="resume" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[10px] font-black uppercase tracking-widest px-8 h-full">Assets (S3)</TabsTrigger>
-          <TabsTrigger value="visibility" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[10px] font-black uppercase tracking-widest px-8 h-full">Interface</TabsTrigger>
+          <TabsTrigger value="socials" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[12px] font-black uppercase tracking-widest px-8 h-full">Social Bridge</TabsTrigger>
+          <TabsTrigger value="resume" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[12px] font-black uppercase tracking-widest px-8 h-full">Assets (S3)</TabsTrigger>
+          <TabsTrigger value="visibility" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[12px] font-black uppercase tracking-widest px-8 h-full">Interface</TabsTrigger>
         </TabsList>
 
         <TabsContent value="socials" className="space-y-6">
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
              <div className="flex items-center gap-4 text-primary">
-              <Share2 className="w-6 h-6" />
-              <h3 className="text-lg font-headline font-black italic tracking-tight">Social Connectors</h3>
+              <Share2 className="w-7 h-7" />
+              <h3 className="text-xl font-headline font-black italic tracking-tight">Social Connectors</h3>
             </div>
             <div className="grid md:grid-cols-2 gap-6">
               {Object.keys(settings?.socials || {}).map((key) => (
                 <div key={key} className="space-y-2">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40 capitalize">{key}</Label>
+                  <Label className="text-[12px] uppercase font-black tracking-widest text-white/40 capitalize">{key}</Label>
                   <Input 
                     value={settings.socials[key]} 
                     onChange={(e) => setSettings({ ...settings, socials: { ...settings.socials, [key]: e.target.value } })}
-                    className="bg-white/5 border-white/5 rounded-xl h-14"
+                    className="bg-white/5 border-white/5 rounded-xl h-14 text-base"
                   />
                 </div>
               ))}
@@ -141,16 +140,16 @@ export default function SettingsAdminPage() {
         <TabsContent value="resume" className="space-y-6">
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
              <div className="flex items-center gap-4 text-primary">
-              <FileUp className="w-6 h-6" />
-              <h3 className="text-lg font-headline font-black italic tracking-tight">Asset Management (S3)</h3>
+              <FileUp className="w-7 h-7" />
+              <h3 className="text-xl font-headline font-black italic tracking-tight">Asset Management (S3)</h3>
             </div>
             <div className="space-y-4">
-              <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Resume PDF</Label>
+              <Label className="text-[12px] uppercase font-black tracking-widest text-white/40">Resume PDF</Label>
               <div className="flex gap-4">
                 <Input 
                   value={settings?.resume?.fileUrl} 
                   onChange={(e) => setSettings({ ...settings, resume: { ...settings.resume, fileUrl: e.target.value } })}
-                  className="bg-white/5 border-white/5 rounded-xl h-14 flex-1"
+                  className="bg-white/5 border-white/5 rounded-xl h-14 flex-1 text-base"
                 />
                 <div className="relative">
                   <input 
@@ -159,12 +158,12 @@ export default function SettingsAdminPage() {
                     className="absolute inset-0 opacity-0 cursor-pointer" 
                     onChange={(e) => handleFileUpload(e, 'resumes', 'resume.fileUrl')}
                   />
-                  <Button variant="outline" className="h-14 rounded-xl border-white/10 px-6 font-black uppercase tracking-widest text-[10px]">
+                  <Button variant="outline" className="h-14 rounded-xl border-white/10 px-6 font-black uppercase tracking-widest text-[12px]">
                     {uploading === 'resume.fileUrl' ? 'Syncing...' : 'Upload PDF to S3'}
                   </Button>
                 </div>
               </div>
-              <p className="text-[10px] text-white/20 uppercase font-black tracking-widest">Files are securely stored in your AWS S3 bucket and linked back to Firestore.</p>
+              <p className="text-[12px] text-white/20 uppercase font-black tracking-widest">Files are securely stored in your AWS S3 bucket and linked back to Firestore.</p>
             </div>
           </div>
         </TabsContent>
@@ -172,13 +171,13 @@ export default function SettingsAdminPage() {
         <TabsContent value="visibility" className="space-y-6">
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
              <div className="flex items-center gap-4 text-primary">
-              <Eye className="w-6 h-6" />
-              <h3 className="text-lg font-headline font-black italic tracking-tight">Interface Toggles</h3>
+              <Eye className="w-7 h-7" />
+              <h3 className="text-xl font-headline font-black italic tracking-tight">Interface Toggles</h3>
             </div>
             <div className="grid gap-6">
               {Object.keys(settings?.visibility || {}).map((key) => (
                 <div key={key} className="flex items-center justify-between p-6 rounded-2xl bg-white/5 border border-white/5">
-                  <span className="text-xs uppercase font-black tracking-widest text-white/60">{key.replace('show', 'Show ')}</span>
+                  <span className="text-sm uppercase font-black tracking-widest text-white/60">{key.replace('show', 'Show ')}</span>
                   <Switch 
                     checked={settings.visibility[key]} 
                     onCheckedChange={(checked) => setSettings({ ...settings, visibility: { ...settings.visibility, [key]: checked } })}

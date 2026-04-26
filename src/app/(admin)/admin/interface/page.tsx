@@ -120,15 +120,15 @@ export default function InterfaceAdminPage() {
     <div className="space-y-10 pb-20">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
-          <span className="text-primary font-black uppercase tracking-[0.6em] text-[10px]">Global Framework</span>
+          <span className="text-primary font-black uppercase tracking-[0.6em] text-[12px]">Global Framework</span>
           <h1 className="text-5xl font-headline font-black italic tracking-tighter text-white">Layout Master.</h1>
         </div>
         <Button 
           onClick={handleSave}
           disabled={saving}
-          className="h-14 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-8 group"
+          className="h-14 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-8 group text-sm"
         >
-          {saving ? 'Syncing...' : 'Sync Layout'} <Save className="w-5 h-5 ml-2 group-hover:scale-110 transition-transform" />
+          {saving ? 'Syncing...' : 'Sync Layout'} <Save className="w-6 h-6 ml-2 group-hover:scale-110 transition-transform" />
         </Button>
       </header>
 
@@ -138,10 +138,10 @@ export default function InterfaceAdminPage() {
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4 text-primary">
-                <List className="w-6 h-6" />
-                <h3 className="text-lg font-headline font-black italic tracking-tight">Navigation Dock</h3>
+                <List className="w-7 h-7" />
+                <h3 className="text-xl font-headline font-black italic tracking-tight">Navigation Dock</h3>
               </div>
-              <Button onClick={addNavItem} variant="outline" className="h-10 rounded-xl border-white/10 text-[10px] uppercase font-black tracking-widest">
+              <Button onClick={addNavItem} variant="outline" className="h-10 rounded-xl border-white/10 text-[12px] uppercase font-black tracking-widest">
                 <Plus className="w-4 h-4 mr-2" /> Add Link
               </Button>
             </div>
@@ -154,19 +154,19 @@ export default function InterfaceAdminPage() {
                   className="grid grid-cols-12 gap-4 items-center p-4 rounded-2xl bg-white/5 border border-white/5 group hover:border-primary/20 transition-all cursor-grab active:cursor-grabbing"
                 >
                   <div className="col-span-1 flex items-center justify-center text-white/20">
-                    <GripVertical className="w-5 h-5" />
+                    <GripVertical className="w-6 h-6" />
                   </div>
                   <div className="col-span-5 space-y-1">
-                    <Label className="text-[8px] uppercase font-black text-white/30 ml-2">Label</Label>
-                    <Input value={item.label} onChange={e => updateNavItem(item.id, 'label', e.target.value)} className="bg-transparent border-white/5 h-10 text-xs font-bold" />
+                    <Label className="text-[10px] uppercase font-black text-white/30 ml-2">Label</Label>
+                    <Input value={item.label} onChange={e => updateNavItem(item.id, 'label', e.target.value)} className="bg-transparent border-white/5 h-12 text-sm font-bold" />
                   </div>
                   <div className="col-span-4 space-y-1">
-                    <Label className="text-[8px] uppercase font-black text-white/30 ml-2">Path / URL</Label>
-                    <Input value={item.href} onChange={e => updateNavItem(item.id, 'href', e.target.value)} className="bg-transparent border-white/5 h-10 text-xs font-mono" />
+                    <Label className="text-[10px] uppercase font-black text-white/30 ml-2">Path / URL</Label>
+                    <Input value={item.href} onChange={e => updateNavItem(item.id, 'href', e.target.value)} className="bg-transparent border-white/5 h-12 text-sm font-mono" />
                   </div>
                   <div className="col-span-2 flex justify-end pt-4">
-                    <Button onClick={() => removeNavItem(item.id)} variant="ghost" size="icon" className="w-10 h-10 rounded-xl hover:bg-destructive/10 text-white/20 hover:text-destructive">
-                      <Trash2 className="w-4 h-4" />
+                    <Button onClick={() => removeNavItem(item.id)} variant="ghost" size="icon" className="w-12 h-12 rounded-xl hover:bg-destructive/10 text-white/20 hover:text-destructive">
+                      <Trash2 className="w-5 h-5" />
                     </Button>
                   </div>
                 </Reorder.Item>
@@ -177,26 +177,26 @@ export default function InterfaceAdminPage() {
           {/* Footer Editor */}
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-10">
             <div className="flex items-center gap-4 text-primary">
-              <AlignLeft className="w-6 h-6" />
-              <h3 className="text-lg font-headline font-black italic tracking-tight">Footer Identity</h3>
+              <AlignLeft className="w-7 h-7" />
+              <h3 className="text-xl font-headline font-black italic tracking-tight">Footer Identity</h3>
             </div>
             
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Brand Bio</Label>
-                <Textarea value={footerBio} onChange={e => setFooterBio(e.target.value)} className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" />
+                <Label className="text-[12px] uppercase font-black tracking-widest text-white/40">Brand Bio</Label>
+                <Textarea value={footerBio} onChange={e => setFooterBio(e.target.value)} className="bg-white/5 border-white/5 rounded-xl min-h-[140px] text-base" />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Establishment Mark</Label>
-                <Input value={footerEst} onChange={e => setFooterEst(e.target.value)} className="bg-white/5 border-white/5 rounded-xl h-14" />
+                <Label className="text-[12px] uppercase font-black tracking-widest text-white/40">Establishment Mark</Label>
+                <Input value={footerEst} onChange={e => setFooterEst(e.target.value)} className="bg-white/5 border-white/5 rounded-xl h-14 text-base" />
               </div>
             </div>
 
             <div className="space-y-6 pt-6 border-t border-white/5">
               <div className="flex items-center justify-between">
-                <h4 className="text-[10px] uppercase font-black tracking-widest text-white/40">Footer Links</h4>
-                <Button onClick={addFooterLink} variant="outline" size="sm" className="h-8 rounded-lg border-white/10 text-[9px] uppercase font-black tracking-widest">
-                  <Plus className="w-3 h-3 mr-1" /> Add Link
+                <h4 className="text-[12px] uppercase font-black tracking-widest text-white/40">Footer Links</h4>
+                <Button onClick={addFooterLink} variant="outline" size="sm" className="h-10 rounded-lg border-white/10 text-[11px] uppercase font-black tracking-widest">
+                  <Plus className="w-4 h-4 mr-1" /> Add Link
                 </Button>
               </div>
 
@@ -208,17 +208,17 @@ export default function InterfaceAdminPage() {
                     className="grid grid-cols-12 gap-3 items-center p-3 rounded-xl bg-white/[0.02] border border-white/5 group hover:border-primary/20 transition-all cursor-grab active:cursor-grabbing"
                   >
                     <div className="col-span-1 flex items-center justify-center text-white/10">
-                      <GripVertical className="w-4 h-4" />
+                      <GripVertical className="w-5 h-5" />
                     </div>
                     <div className="col-span-5">
-                      <Input value={link.label} onChange={e => updateFooterLink(link.id, 'label', e.target.value)} className="bg-transparent border-none h-8 text-[10px] font-bold" placeholder="Label" />
+                      <Input value={link.label} onChange={e => updateFooterLink(link.id, 'label', e.target.value)} className="bg-transparent border-none h-10 text-[12px] font-bold" placeholder="Label" />
                     </div>
                     <div className="col-span-4">
-                      <Input value={link.href} onChange={e => updateFooterLink(link.id, 'href', e.target.value)} className="bg-transparent border-none h-8 text-[10px] font-mono" placeholder="URL" />
+                      <Input value={link.href} onChange={e => updateFooterLink(link.id, 'href', e.target.value)} className="bg-transparent border-none h-10 text-[12px] font-mono" placeholder="URL" />
                     </div>
                     <div className="col-span-2 flex justify-end">
-                      <Button onClick={() => removeFooterLink(link.id)} variant="ghost" size="icon" className="w-8 h-8 rounded-lg hover:bg-destructive/10 text-white/20 hover:text-destructive">
-                        <Trash2 className="w-3.5 h-3.5" />
+                      <Button onClick={() => removeFooterLink(link.id)} variant="ghost" size="icon" className="w-10 h-10 rounded-lg hover:bg-destructive/10 text-white/20 hover:text-destructive">
+                        <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
                   </Reorder.Item>
@@ -231,18 +231,18 @@ export default function InterfaceAdminPage() {
         <div className="lg:col-span-5 space-y-10">
           <div className="glass p-8 rounded-[2rem] border-white/5 space-y-6">
             <div className="flex items-center gap-3 text-primary">
-              <Layers className="w-4 h-4" />
-              <h3 className="text-[10px] font-black uppercase tracking-widest">Interface Logic</h3>
+              <Layers className="w-5 h-5" />
+              <h3 className="text-[12px] font-black uppercase tracking-widest">Interface Logic</h3>
             </div>
-            <p className="text-xs text-white/40 leading-relaxed font-bold italic">
+            <p className="text-sm text-white/40 leading-relaxed font-bold italic">
               Drag the grip handles to adjust positioning. Changes update the structural navigation of the entire application immediately upon sync.
             </p>
             <div className="pt-6 border-t border-white/5 space-y-4">
                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5">
-                  <span className="text-[9px] font-black uppercase text-white/20 tracking-widest block mb-4">Nav Preview</span>
+                  <span className="text-[11px] font-black uppercase text-white/20 tracking-widest block mb-4">Nav Preview</span>
                   <div className="flex flex-wrap gap-2">
                     {navItems?.map((item: any, index: number) => (
-                      <span key={item.id || `preview-${index}`} className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest text-white/60">
+                      <span key={item.id || `preview-${index}`} className="px-3 py-1.5 rounded-md bg-white/5 border border-white/10 text-[11px] font-black uppercase tracking-widest text-white/60">
                         {item.label}
                       </span>
                     ))}
@@ -253,10 +253,10 @@ export default function InterfaceAdminPage() {
 
           <div className="p-8 rounded-[2.5rem] border border-white/5 bg-gradient-to-br from-primary/5 to-transparent space-y-4">
              <div className="flex items-center gap-3 text-primary">
-                <Globe className="w-4 h-4" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Global Resilience</span>
+                <Globe className="w-5 h-5" />
+                <span className="text-[12px] font-black uppercase tracking-widest">Global Resilience</span>
              </div>
-             <p className="text-xs text-white/60 font-light leading-relaxed">
+             <p className="text-sm text-white/60 font-light leading-relaxed">
                The Navbar automatically handles scroll-detection. Footer social links are managed separately via the <Link href="/admin/settings" className="text-primary hover:underline">Global Settings</Link> portal.
              </p>
           </div>

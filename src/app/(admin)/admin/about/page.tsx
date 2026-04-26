@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -80,15 +79,15 @@ export default function AboutAdminPage() {
     <div className="space-y-10 pb-20">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
-          <span className="text-primary font-black uppercase tracking-[0.6em] text-[10px]">Personal Brand</span>
+          <span className="text-primary font-black uppercase tracking-[0.6em] text-[12px]">Personal Brand</span>
           <h1 className="text-5xl font-headline font-black italic tracking-tighter text-white">About Story.</h1>
         </div>
         <Button 
           onClick={handleSubmit}
           disabled={saving}
-          className="h-14 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-8 group"
+          className="h-14 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-8 group text-sm"
         >
-          {saving ? 'Syncing...' : 'Sync About'} <Save className="w-5 h-5 ml-2 group-hover:scale-110 transition-transform" />
+          {saving ? 'Syncing...' : 'Sync About'} <Save className="w-6 h-6 ml-2 group-hover:scale-110 transition-transform" />
         </Button>
       </header>
 
@@ -97,26 +96,26 @@ export default function AboutAdminPage() {
           {/* Headline & Philosophy */}
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
             <div className="flex items-center gap-4 text-primary">
-              <User className="w-6 h-6" />
-              <h3 className="text-lg font-headline font-black italic tracking-tight">Identity & Vision</h3>
+              <User className="w-7 h-7" />
+              <h3 className="text-xl font-headline font-black italic tracking-tight">Identity & Vision</h3>
             </div>
             
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Philosophy Label</Label>
-                <Input value={formData.philosophy} onChange={e => setFormData({ ...formData, philosophy: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
+                <Label className="text-[12px] uppercase font-black tracking-widest text-white/40">Philosophy Label</Label>
+                <Input value={formData.philosophy} onChange={e => setFormData({ ...formData, philosophy: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-base" />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Headline Main</Label>
-                <Input value={formData.headlineMain} onChange={e => setFormData({ ...formData, headlineMain: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
+                <Label className="text-[12px] uppercase font-black tracking-widest text-white/40">Headline Main</Label>
+                <Input value={formData.headlineMain} onChange={e => setFormData({ ...formData, headlineMain: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-base" />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Headline Highlight (Outline)</Label>
-                <Input value={formData.headlineOutline} onChange={e => setFormData({ ...formData, headlineOutline: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
+                <Label className="text-[12px] uppercase font-black tracking-widest text-white/40">Headline Highlight (Outline)</Label>
+                <Input value={formData.headlineOutline} onChange={e => setFormData({ ...formData, headlineOutline: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-base" />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Headline Primary (Green)</Label>
-                <Input value={formData.headlinePrimary} onChange={e => setFormData({ ...formData, headlinePrimary: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
+                <Label className="text-[12px] uppercase font-black tracking-widest text-white/40">Headline Primary (Green)</Label>
+                <Input value={formData.headlinePrimary} onChange={e => setFormData({ ...formData, headlinePrimary: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-base" />
               </div>
             </div>
           </div>
@@ -124,17 +123,17 @@ export default function AboutAdminPage() {
           {/* Narrative Paragraphs */}
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
             <div className="flex items-center gap-4 text-primary">
-              <BookOpen className="w-6 h-6" />
-              <h3 className="text-lg font-headline font-black italic tracking-tight">Narrative</h3>
+              <BookOpen className="w-7 h-7" />
+              <h3 className="text-xl font-headline font-black italic tracking-tight">Narrative</h3>
             </div>
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Primary Statement (Large Text)</Label>
-                <Textarea value={formData.narrative1} onChange={e => setFormData({ ...formData, narrative1: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[100px]" />
+                <Label className="text-[12px] uppercase font-black tracking-widest text-white/40">Primary Statement (Large Text)</Label>
+                <Textarea value={formData.narrative1} onChange={e => setFormData({ ...formData, narrative1: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[120px] text-lg" />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Supporting Context (Small Text)</Label>
-                <Textarea value={formData.narrative2} onChange={e => setFormData({ ...formData, narrative2: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[150px]" />
+                <Label className="text-[12px] uppercase font-black tracking-widest text-white/40">Supporting Context (Small Text)</Label>
+                <Textarea value={formData.narrative2} onChange={e => setFormData({ ...formData, narrative2: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[150px] text-base" />
               </div>
             </div>
           </div>
@@ -142,8 +141,8 @@ export default function AboutAdminPage() {
           {/* Core Pillars */}
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
             <div className="flex items-center gap-4 text-primary">
-              <Layers className="w-6 h-6" />
-              <h3 className="text-lg font-headline font-black italic tracking-tight">Core Pillars</h3>
+              <Layers className="w-7 h-7" />
+              <h3 className="text-xl font-headline font-black italic tracking-tight">Core Pillars</h3>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
               {formData.pillars?.map((pillar: any, i: number) => (
@@ -153,7 +152,7 @@ export default function AboutAdminPage() {
                     newPillars[i].icon = v;
                     setFormData({ ...formData, pillars: newPillars });
                   }}>
-                    <SelectTrigger className="bg-white/10 border-white/10 h-10 rounded-xl text-[10px] font-black uppercase">
+                    <SelectTrigger className="bg-white/10 border-white/10 h-10 rounded-xl text-[12px] font-black uppercase">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -171,7 +170,7 @@ export default function AboutAdminPage() {
                       newPillars[i].title = e.target.value;
                       setFormData({ ...formData, pillars: newPillars });
                     }}
-                    className="bg-transparent border-white/5 h-10 text-xs font-bold"
+                    className="bg-transparent border-white/5 h-10 text-sm font-bold"
                     placeholder="Title"
                   />
                   <Textarea 
@@ -181,7 +180,7 @@ export default function AboutAdminPage() {
                       newPillars[i].desc = e.target.value;
                       setFormData({ ...formData, pillars: newPillars });
                     }}
-                    className="bg-transparent border-white/5 text-[10px] min-h-[80px]"
+                    className="bg-transparent border-white/5 text-[12px] min-h-[100px]"
                     placeholder="Description"
                   />
                 </div>
@@ -193,16 +192,16 @@ export default function AboutAdminPage() {
         <div className="lg:col-span-4 space-y-10">
           {/* Skills Arsenal */}
           <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
-            <h3 className="text-[10px] uppercase font-black tracking-widest text-white/40">Core Arsenal</h3>
+            <h3 className="text-[12px] uppercase font-black tracking-widest text-white/40">Core Arsenal</h3>
             <div className="space-y-4">
               <div className="flex gap-2">
-                <Input value={newSkill} onChange={e => setNewSkill(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSkill())} className="bg-white/5 border-white/5 rounded-xl h-10 flex-1" placeholder="Add Tool..." />
-                <Button onClick={addSkill} variant="outline" className="h-10 w-10 rounded-xl border-white/10">+</Button>
+                <Input value={newSkill} onChange={e => setNewSkill(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSkill())} className="bg-white/5 border-white/5 rounded-xl h-12 flex-1 text-sm" placeholder="Add Tool..." />
+                <Button onClick={addSkill} variant="outline" className="h-12 w-12 rounded-xl border-white/10">+</Button>
               </div>
               <div className="flex flex-wrap gap-2">
                 {formData.skills?.map((s: string) => (
-                  <span key={s} className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary flex items-center gap-2">
-                    {s} <button onClick={() => setFormData({ ...formData, skills: formData.skills.filter((x: string) => x !== s) })}><Plus className="w-3 h-3 rotate-45" /></button>
+                  <span key={s} className="px-3 py-1.5 rounded-md bg-primary/10 border border-primary/20 text-[11px] font-bold text-primary flex items-center gap-2">
+                    {s} <button onClick={() => setFormData({ ...formData, skills: formData.skills.filter((x: string) => x !== s) })}><Plus className="w-3.5 h-3.5 rotate-45" /></button>
                   </span>
                 ))}
               </div>
@@ -211,23 +210,23 @@ export default function AboutAdminPage() {
 
           {/* Key Metrics */}
           <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
-            <h3 className="text-[10px] uppercase font-black tracking-widest text-white/40">Milestone Metrics</h3>
+            <h3 className="text-[12px] uppercase font-black tracking-widest text-white/40">Milestone Metrics</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-[9px] uppercase font-black text-white/20">Metric 1 Val</Label>
-                <Input value={formData.stat1Value} onChange={e => setFormData({ ...formData, stat1Value: e.target.value })} className="bg-white/5 border-white/5 h-10 text-xs" />
+                <Label className="text-[11px] uppercase font-black text-white/20">Metric 1 Val</Label>
+                <Input value={formData.stat1Value} onChange={e => setFormData({ ...formData, stat1Value: e.target.value })} className="bg-white/5 border-white/5 h-12 text-sm" />
               </div>
               <div className="space-y-2">
-                <Label className="text-[9px] uppercase font-black text-white/20">Metric 1 Lbl</Label>
-                <Input value={formData.stat1Label} onChange={e => setFormData({ ...formData, stat1Label: e.target.value })} className="bg-white/5 border-white/5 h-10 text-xs" />
+                <Label className="text-[11px] uppercase font-black text-white/20">Metric 1 Lbl</Label>
+                <Input value={formData.stat1Label} onChange={e => setFormData({ ...formData, stat1Label: e.target.value })} className="bg-white/5 border-white/5 h-12 text-sm" />
               </div>
               <div className="space-y-2">
-                <Label className="text-[9px] uppercase font-black text-white/20">Metric 2 Val</Label>
-                <Input value={formData.stat2Value} onChange={e => setFormData({ ...formData, stat2Value: e.target.value })} className="bg-white/5 border-white/5 h-10 text-xs" />
+                <Label className="text-[11px] uppercase font-black text-white/20">Metric 2 Val</Label>
+                <Input value={formData.stat2Value} onChange={e => setFormData({ ...formData, stat2Value: e.target.value })} className="bg-white/5 border-white/5 h-12 text-sm" />
               </div>
               <div className="space-y-2">
-                <Label className="text-[9px] uppercase font-black text-white/20">Metric 2 Lbl</Label>
-                <Input value={formData.stat2Label} onChange={e => setFormData({ ...formData, stat2Label: e.target.value })} className="bg-white/5 border-white/5 h-10 text-xs" />
+                <Label className="text-[11px] uppercase font-black text-white/20">Metric 2 Lbl</Label>
+                <Input value={formData.stat2Label} onChange={e => setFormData({ ...formData, stat2Label: e.target.value })} className="bg-white/5 border-white/5 h-12 text-sm" />
               </div>
             </div>
           </div>
@@ -235,10 +234,10 @@ export default function AboutAdminPage() {
           {/* Vision Quote */}
           <div className="glass p-8 rounded-[2rem] border-white/5 space-y-4">
             <div className="flex items-center gap-3 text-primary">
-              <Sparkles className="w-4 h-4" />
-              <h3 className="text-[10px] font-black uppercase tracking-widest">Vision Quote</h3>
+              <Sparkles className="w-5 h-5" />
+              <h3 className="text-[12px] font-black uppercase tracking-widest">Vision Quote</h3>
             </div>
-            <Textarea value={formData.quote} onChange={e => setFormData({ ...formData, quote: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-24 italic text-xs" />
+            <Textarea value={formData.quote} onChange={e => setFormData({ ...formData, quote: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-32 italic text-sm" />
           </div>
         </div>
       </div>

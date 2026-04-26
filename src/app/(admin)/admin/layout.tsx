@@ -44,7 +44,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <motion.div
           animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.6, 0.3] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="text-primary font-black text-xs tracking-[1em] uppercase"
+          className="text-primary font-black text-sm tracking-[1em] uppercase"
         >
           AUTHENTICATING...
         </motion.div>
@@ -86,7 +86,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       >
         <div className="p-8 flex items-center justify-between">
           <Link href="/admin">
-            <div className={`font-headline font-black italic text-2xl tracking-tighter transition-opacity ${!isSidebarOpen && 'opacity-0'}`}>
+            <div className={`font-headline font-black italic text-3xl tracking-tighter transition-opacity ${!isSidebarOpen && 'opacity-0'}`}>
               Admin<span className="text-primary">.</span>
             </div>
           </Link>
@@ -109,7 +109,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 `}>
                   <item.icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary' : 'group-hover:text-primary'}`} />
                   {isSidebarOpen && (
-                    <span className="text-xs font-black uppercase tracking-widest">{item.label}</span>
+                    <span className="text-sm font-black uppercase tracking-widest">{item.label}</span>
                   )}
                   {isActive && isSidebarOpen && (
                     <motion.div layoutId="activeNav" className="absolute right-4">
@@ -131,7 +131,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             className="w-full flex items-center gap-4 px-4 py-3 text-white/40 hover:text-destructive hover:bg-destructive/5 rounded-xl transition-all border border-transparent"
           >
             <LogOut className="w-5 h-5 shrink-0" />
-            {isSidebarOpen && <span className="text-xs font-black uppercase tracking-widest">Terminate Session</span>}
+            {isSidebarOpen && <span className="text-sm font-black uppercase tracking-widest">Terminate Session</span>}
           </button>
         </div>
       </motion.aside>
@@ -142,20 +142,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         
         <header className="h-20 border-b border-white/5 flex items-center justify-between px-10 bg-[#050505]/50 backdrop-blur-xl sticky top-0 z-40">
           <div className="flex items-center gap-4">
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">System Status:</span>
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+            <span className="text-[12px] font-black uppercase tracking-[0.4em] text-white/20">System Status:</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
               <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-primary">Live_Operational</span>
+              <span className="text-[12px] font-black uppercase tracking-widest text-primary">Live_Operational</span>
             </div>
           </div>
 
           <div className="flex items-center gap-6">
              <div className="flex flex-col items-end">
-               <span className="text-xs font-bold text-white">{user?.email}</span>
-               <span className="text-[9px] uppercase font-black tracking-widest text-white/30">{role}</span>
+               <span className="text-sm font-bold text-white">{user?.email}</span>
+               <span className="text-[11px] uppercase font-black tracking-widest text-white/30">{role}</span>
              </div>
              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
-                <span className="text-xs font-black text-primary">{user?.email?.charAt(0).toUpperCase()}</span>
+                <span className="text-sm font-black text-primary">{user?.email?.charAt(0).toUpperCase()}</span>
              </div>
           </div>
         </header>
