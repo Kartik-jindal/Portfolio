@@ -25,23 +25,36 @@ export const Contact = () => {
     name: '',
     email: '',
     subject: '',
-    message: ''
+    message: '',
+    hp: '' // Honeypot field
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Simple Honeypot Check
+    if (formData.hp) {
+      console.warn("Spam detected.");
+      setSubmitted(true);
+      return;
+    }
+
     setLoading(true);
     try {
       await addDoc(collection(db, 'contact_leads'), {
-        ...formData,
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
         status: 'new',
         createdAt: serverTimestamp(),
         metadata: {
-          userAgent: navigator.userAgent
+          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
+          platform: typeof navigator !== 'undefined' ? navigator.platform : 'unknown'
         }
       });
       setSubmitted(true);
-      setFormData({ name: '', email: '', subject: '', message: '' });
+      setFormData({ name: '', email: '', subject: '', message: '', hp: '' });
       setTimeout(() => {
         setSubmitted(false);
         setIsOpen(false);
@@ -122,6 +135,17 @@ export const Contact = () => {
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Honeypot field (hidden) */}
+                  <div className="hidden">
+                    <Input 
+                      type="text" 
+                      value={formData.hp} 
+                      onChange={(e) => setFormData({...formData, hp: e.target.value})} 
+                      tabIndex={-1} 
+                      autoComplete="off" 
+                    />
+                  </div>
+
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Full Name</Label>

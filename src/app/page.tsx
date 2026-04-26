@@ -64,11 +64,27 @@ async function getTestimonials() {
 export async function generateMetadata(): Promise<Metadata> {
   try {
     const config = await getGlobalConfig();
-    if (!config?.seo) return { title: 'Kartik Jindal | Portfolio' };
+    const title = config?.seo?.defaultTitle || 'Kartik Jindal | Portfolio';
+    const description = config?.seo?.defaultDescription || 'Full Stack Architect & Creative Engineer';
+    const keywords = config?.seo?.keywords || 'Portfolio, Full Stack, Developer, Creative Engineering';
+    const ogImage = config?.seo?.ogImage || 'https://picsum.photos/seed/portfolio/1200/630';
+
     return {
-      title: config.seo.defaultTitle || 'Kartik Jindal | Portfolio',
-      description: config.seo.defaultDescription,
-      keywords: config.seo.keywords,
+      title,
+      description,
+      keywords,
+      openGraph: {
+        title,
+        description,
+        images: [{ url: ogImage }],
+        type: 'website',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [ogImage],
+      },
     };
   } catch (e) {
     return { title: 'Kartik Jindal | Portfolio' };
@@ -98,6 +114,25 @@ export default async function Home() {
       {visibility.showTestimonials && <Testimonials initialData={testimonials} />}
       <Contact />
       <Footer config={config} />
+      
+      {/* Structured Data (JSON-LD) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Kartik Jindal",
+            "jobTitle": "Full Stack Architect",
+            "url": "https://kartikjindal.com",
+            "sameAs": [
+              config?.socials?.github,
+              config?.socials?.linkedin,
+              config?.socials?.twitter
+            ].filter(Boolean)
+          })
+        }}
+      />
     </main>
   );
 }
