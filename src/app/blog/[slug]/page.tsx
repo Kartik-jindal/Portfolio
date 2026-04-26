@@ -5,113 +5,60 @@ import React, { useEffect, useState } from 'react';
 import { motion, useScroll, useSpring } from 'framer-motion';
 import { Navbar } from '@/components/portfolio/navbar';
 import { Footer } from '@/components/portfolio/footer';
-import { ArrowLeft, Calendar, Clock, Share2, Tag, ChevronRight, Bookmark, MessageSquare, Quote } from 'lucide-react';
+import { ArrowLeft, Share2, Bookmark } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-
-const blogData: Record<string, any> = {
-  "future-of-web-interactivity": {
-    title: "The Future of Web Interactivity with WebGL",
-    date: "March 12, 2024",
-    readTime: "8 min read",
-    category: "Technical",
-    image: "https://picsum.photos/seed/webgl/1600/900",
-    imageHint: "webgl graphics",
-    summary: "An exploration into how GPU-accelerated graphics are redefining user engagement in modern web architecture.",
-    content: `
-      <p>The web is evolving from static pages to living, breathing environments. At the heart of this transformation is WebGL—the technology that brings hardware-accelerated 3D graphics directly to the browser. We are moving away from traditional layouts into a world where spatial awareness and real-time feedback define the user experience.</p>
-      
-      <h3>The Shift to Spatial Web</h3>
-      <p>We are no longer limited by the traditional 2D box model. As developers, we now have the power to create immersive narratives where users don't just consume content—they inhabit it. This shift requires a new mental model for design:</p>
-      
-      <ul>
-        <li><strong>Depth Perception:</strong> Using Z-axis layering to create hierarchy and focus.</li>
-        <li><strong>Real-time Physics:</strong> Making digital objects react with weight, momentum, and tactile feedback.</li>
-        <li><strong>Dynamic Lighting:</strong> Setting the emotional tone through computed light sources and shadows.</li>
-        <li><strong>Procedural Generation:</strong> Creating infinite variations of patterns and textures on the fly.</li>
-      </ul>
-
-      <blockquote>
-        Digital architecture is the bridge between human imagination and machine execution. WebGL is the paint that makes that bridge beautiful and interactive.
-      </blockquote>
-
-      <h3>Performance and Accessibility</h3>
-      <p>One of the biggest hurdles has always been performance. However, with the rise of WebGPU and more efficient GLSL shaders, we can now render millions of polygons at 60fps on mobile devices. The barrier to entry for high-end web experiences has never been lower.</p>
-      
-      <p>In this article, we've explored how to leverage custom shaders and GPU instances to build websites that feel like high-budget cinema. The future isn't just fast; it's visually breathtaking and deeply engaging.</p>
-    `
-  },
-  "minimalism-in-ui-design": {
-    title: "Minimalism in UI: Why Less is Still More",
-    date: "Feb 28, 2024",
-    readTime: "5 min read",
-    category: "Design",
-    image: "https://picsum.photos/seed/minimal/1600/900",
-    imageHint: "minimalist design",
-    summary: "A deep dive into the psychological impact of whitespace and reduced cognitive load in premium design.",
-    content: `
-      <p>True minimalism isn't just about white space; it's about the intentional removal of the unnecessary. In an age of information overload, simplicity is the ultimate luxury. It demands more from the designer because every remaining element must be executed with absolute precision.</p>
-      
-      <h3>Cognitive Load and User Peace</h3>
-      <p>Every element on a screen demands attention. By reducing the number of choices and visual distractions, we allow the user's mind to rest. This leads to higher engagement and a more meaningful interaction with the core message of the application.</p>
-
-      <blockquote>
-        Minimalism is not a lack of something. It is simply the perfect amount of something. It is clarity achieved through restraint.
-      </blockquote>
-      
-      <h3>The Pillars of Modern Premium UI</h3>
-      <ul>
-        <li><strong>Intentionality:</strong> Every pixel serves a functional or emotional purpose, leaving no room for decoration for its own sake.</li>
-        <li><strong>Hierarchy through Space:</strong> Using gaps and margins to tell the user what's important without using bold colors or large fonts.</li>
-        <li><strong>Subtle Feedback:</strong> Interactions that whisper rather than scream—smooth transitions, soft shadows, and micro-interactions.</li>
-        <li><strong>Typography as Hero:</strong> Letting the typeface carry the personality of the brand.</li>
-      </ul>
-      
-      <p>When you remove the noise, the signal becomes undeniable. That is the true power of a minimalist approach to digital architecture.</p>
-    `
-  },
-  "scaling-nextjs-enterprise": {
-    title: "Scaling Next.js Applications for Enterprise",
-    date: "Jan 15, 2024",
-    readTime: "12 min read",
-    category: "Engineering",
-    image: "https://picsum.photos/seed/scaling/1600/900",
-    imageHint: "enterprise code",
-    summary: "Best practices for maintaining performance and developer experience in large-scale React codebases.",
-    content: `
-      <p>Next.js has become the de facto standard for building production-ready React applications. But how do you handle thousands of routes and millions of concurrent users while maintaining a developer experience that doesn't slow down as the team grows?</p>
-      
-      <h3>Architectural Precision</h3>
-      <p>Scaling starts with a clean architecture. We discuss the transition from simple Page Router patterns to the more robust App Router, leveraging Server Components for optimized data fetching and smaller client bundles.</p>
-
-      <h3>The Four Pillars of Enterprise Scale</h3>
-      <ul>
-        <li><strong>Infrastructure as Code:</strong> Ensuring environments are reproducible, stable, and easily horizontally scalable.</li>
-        <li><strong>Modular Domain Patterns:</strong> Breaking the monolith into manageable, testable domains.</li>
-        <li><strong>Observability & Monitoring:</strong> Implementing deep tracing and performance metrics.</li>
-        <li><strong>Aggressive Edge Caching:</strong> Moving data closer to the user to reduce latency globally.</li>
-      </ul>
-
-      <blockquote>
-        Performance at scale is the result of a thousand small decisions made with extreme clarity. It is an engineering culture, not just a set of tools.
-      </blockquote>
-
-      <h3>Caching Strategies for the Modern Web</h3>
-      <p>The secret to speed at scale is aggressive caching. From Incremental Static Regeneration (ISR) to edge middleware optimization, we dive deep into how to make your enterprise application feel instantaneous.</p>
-    `
-  }
-};
+import { db } from '@/lib/firebase/config';
+import { collection, query, where, getDocs, doc, getDoc, limit } from 'firebase/firestore';
 
 export default function BlogDetailPage() {
   const { slug } = useParams();
-  const post = blogData[slug as string];
+  const [post, setPost] = useState<any>(null);
+  const [config, setConfig] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
     restDelta: 0.001
   });
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const configSnap = await getDoc(doc(db, 'site_config', 'global'));
+        if (configSnap.exists()) setConfig(configSnap.data());
+
+        // First try fetching by slug
+        const q = query(collection(db, 'blog'), where('slug', '==', slug), limit(1));
+        const snap = await getDocs(q);
+        
+        if (!snap.empty) {
+          setPost({ id: snap.docs[0].id, ...snap.docs[0].data() });
+        } else {
+          // Fallback to fetching by ID
+          const docSnap = await getDoc(doc(db, 'blog', slug as string));
+          if (docSnap.exists()) {
+            setPost({ id: docSnap.id, ...docSnap.data() });
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPost();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <div className="w-2 h-2 rounded-full bg-primary animate-ping" />
+      </div>
+    );
+  }
 
   if (!post) {
     return (
@@ -128,16 +75,14 @@ export default function BlogDetailPage() {
 
   return (
     <main className="bg-transparent min-h-screen">
-      <Navbar />
+      <Navbar resumeUrl={config?.resume?.fileUrl} />
 
-      {/* Reading Progress Bar */}
       <motion.div
         className="fixed top-0 left-0 right-0 h-1 bg-primary z-[200] origin-left"
         style={{ scaleX }}
       />
 
       <article className="pt-32 pb-24">
-        {/* Simplified Post Header */}
         <header className="max-w-4xl mx-auto px-6 mb-16 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -163,7 +108,6 @@ export default function BlogDetailPage() {
           </motion.div>
         </header>
 
-        {/* Cinematic Featured Image */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -172,18 +116,17 @@ export default function BlogDetailPage() {
         >
           <div className="relative aspect-[21/9] rounded-3xl overflow-hidden border border-white/5 shadow-2xl">
             <Image 
-              src={post.image} 
+              src={post.image || 'https://picsum.photos/seed/blog/1600/900'} 
               alt={post.title} 
               fill 
               className="object-cover"
               priority
-              data-ai-hint={post.imageHint}
+              data-ai-hint={post.imageHint || "blog post"}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
           </div>
         </motion.div>
 
-        {/* Balanced Content Body */}
         <div className="max-w-6xl mx-auto px-6 grid lg:grid-cols-12 gap-12 lg:gap-20">
           <div className="lg:col-span-8 lg:col-start-1">
             <motion.div
@@ -215,7 +158,6 @@ export default function BlogDetailPage() {
             </footer>
           </div>
 
-          {/* Simplified Meta Sidebar */}
           <aside className="lg:col-span-4 lg:sticky lg:top-32 h-fit space-y-10">
             <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5 space-y-6">
               <div className="space-y-2">
@@ -247,7 +189,7 @@ export default function BlogDetailPage() {
           </aside>
         </div>
       </article>
-      <Footer />
+      <Footer config={config} />
     </main>
   );
 }

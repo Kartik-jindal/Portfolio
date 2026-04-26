@@ -6,7 +6,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 
-export const Navbar = () => {
+interface NavbarProps {
+  resumeUrl?: string;
+}
+
+export const Navbar = ({ resumeUrl }: NavbarProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -55,13 +59,15 @@ export const Navbar = () => {
             ))}
           </motion.nav>
 
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex items-center gap-2 px-8 py-4 rounded-full bg-white text-black text-[14px] uppercase font-black tracking-widest hover:bg-primary transition-colors group"
-          >
-            Resume <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </motion.button>
+          <a href={resumeUrl || '#'} target="_blank" rel="noopener noreferrer">
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center gap-2 px-8 py-4 rounded-full bg-white text-black text-[14px] uppercase font-black tracking-widest hover:bg-primary transition-colors group"
+            >
+              Resume <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </motion.button>
+          </a>
         </div>
 
         {/* Mobile Toggle */}

@@ -3,10 +3,23 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Github, Twitter, Linkedin, Instagram, ExternalLink } from 'lucide-react';
+import { Github, Twitter, Linkedin, Instagram, ExternalLink, Mail } from 'lucide-react';
 import Link from 'next/link';
 
-export const Footer = () => {
+interface FooterProps {
+  config?: any;
+}
+
+export const Footer = ({ config }: FooterProps) => {
+  const socials = config?.socials || {};
+  
+  const socialItems = [
+    { icon: Github, href: socials.github },
+    { icon: Twitter, href: socials.twitter },
+    { icon: Linkedin, href: socials.linkedin },
+    { icon: Instagram, href: socials.instagram }
+  ].filter(item => item.href);
+
   return (
     <footer className="relative py-12 px-6 border-t border-white/10 bg-transparent overflow-hidden">
       <div className="max-w-7xl mx-auto relative z-10">
@@ -20,15 +33,12 @@ export const Footer = () => {
             </div>
             
             <div className="flex gap-4">
-              {[
-                { icon: Github, href: "#" },
-                { icon: Twitter, href: "#" },
-                { icon: Linkedin, href: "#" },
-                { icon: Instagram, href: "#" }
-              ].map((social, i) => (
+              {socialItems.map((social, i) => (
                 <motion.a 
                   key={i} 
                   href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   whileHover={{ y: -5, scale: 1.1, rotate: 5 }}
                   className="w-14 h-14 rounded-2xl glass border-white/10 flex items-center justify-center text-white/90 hover:text-primary hover:border-primary/40 transition-all duration-300"
                 >
@@ -60,10 +70,10 @@ export const Footer = () => {
           <div className="space-y-8">
             <h4 className="text-md uppercase tracking-[0.6em] font-black text-white/70">Say Hello</h4>
             <div className="space-y-8">
-              <a href="mailto:hello@kartikjindal.com" className="block group">
+              <a href={`mailto:${socials.email || 'hello@kartikjindal.com'}`} className="block group">
                 <span className="text-sm uppercase tracking-widest text-primary font-black mb-2 block">General Enquiries</span>
-                <span className="text-2xl md:text-3xl lg:text-4xl text-white font-headline border-b border-white/40 group-hover:border-primary transition-colors inline-block pb-1">
-                  hello@kartikjindal.com
+                <span className="text-2xl md:text-3xl lg:text-4xl text-white font-headline border-b border-white/40 group-hover:border-primary transition-colors inline-block pb-1 break-all">
+                  {socials.email || 'hello@kartikjindal.com'}
                 </span>
               </a>
               <div className="pt-4 flex flex-col gap-3">
@@ -80,7 +90,7 @@ export const Footer = () => {
 
         <div className="mt-24 pt-12 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6 text-xs tracking-[0.4em] font-black text-white/60 uppercase">
           <div className="flex items-center gap-8">
-            <span>&copy; 2026 Kartik Jindal</span>
+            <span>&copy; {new Date().getFullYear()} Kartik Jindal</span>
             <span className="hidden md:block w-1 h-1 rounded-full bg-white/30" />
             <span className="hidden md:block">EST. 2025</span>
           </div>

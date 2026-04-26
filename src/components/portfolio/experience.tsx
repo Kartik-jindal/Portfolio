@@ -1,31 +1,13 @@
 
 "use client";
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { db } from '@/lib/firebase/config';
+import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 
-const experiences = [
-  {
-    company: "Lumina Labs",
-    role: "Senior Full Stack Engineer",
-    period: "2022 — Present",
-    desc: "Spearheading the core platform redesign using Next.js and Go. Improved load times by 40% and developer velocity by 2x."
-  },
-  {
-    company: "Veridian Agency",
-    role: "Creative Developer",
-    period: "2020 — 2022",
-    desc: "Built award-winning digital experiences for Fortune 500 clients. Specialized in GSAP animations and Three.js integrations."
-  },
-  {
-    company: "Stark Tech",
-    role: "Frontend Developer",
-    period: "2018 — 2020",
-    desc: "Developed a comprehensive design system adopted by 5 product teams. Optimized React rendering cycles for high-traffic dashboards."
-  }
-];
-
-export const Experience = () => {
+export const Experience = ({ initialData }: { initialData?: any[] }) => {
+  const [experiences, setExperiences] = useState<any[]>(initialData || []);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: scrollRef,
@@ -33,6 +15,19 @@ export const Experience = () => {
   });
 
   const pathLength = useTransform(scrollYProgress, [0, 0.8], [0, 1]);
+
+  useEffect(() => {
+    if (!initialData) {
+      const fetchExp = async () => {
+        const q = query(collection(db, 'experience'), orderBy('order', 'asc'));
+        const snap = await getDocs(q);
+        setExperiences(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      };
+      fetchExp();
+    }
+  }, [initialData]);
+
+  if (experiences.length === 0) return null;
 
   return (
     <section id="experience" ref={scrollRef} className="py-24 md:py-32 px-6 bg-white/[0.01]">
@@ -56,7 +51,7 @@ export const Experience = () => {
           <div className="space-y-16 md:space-y-24">
             {experiences.map((exp, i) => (
               <motion.div
-                key={exp.company}
+                key={exp.id || i}
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: "-100px" }}

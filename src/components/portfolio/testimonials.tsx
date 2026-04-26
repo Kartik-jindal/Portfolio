@@ -1,32 +1,27 @@
 
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Quote } from 'lucide-react';
+import { db } from '@/lib/firebase/config';
+import { collection, getDocs } from 'firebase/firestore';
 
-const testimonials = [
-  {
-    name: "Elena Rossi",
-    position: "Founder at Aura",
-    text: "Kartik doesn't just write code; he crafts experiences. His eye for detail and technical depth transformed our brand completely.",
-    avatar: "ER"
-  },
-  {
-    name: "James Chen",
-    position: "CTO at Lumina",
-    text: "A rare talent who understands both the 'how' and the 'why'. His contributions to our core architecture were invaluable.",
-    avatar: "JC"
-  },
-  {
-    name: "Sarah Miller",
-    position: "Design Director",
-    text: "Working with Kartik was a breeze. He brought our wildest design ideas to life with flawless execution and insane performance.",
-    avatar: "SM"
-  }
-];
+export const Testimonials = ({ initialData }: { initialData?: any[] }) => {
+  const [testimonials, setTestimonials] = useState<any[]>(initialData || []);
 
-export const Testimonials = () => {
+  useEffect(() => {
+    if (!initialData) {
+      const fetchT = async () => {
+        const snap = await getDocs(collection(db, 'testimonials'));
+        setTestimonials(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      };
+      fetchT();
+    }
+  }, [initialData]);
+
+  if (testimonials.length === 0) return null;
+
   return (
     <section className="py-32 px-6 overflow-hidden bg-transparent">
       <div className="max-w-7xl mx-auto">
@@ -38,7 +33,7 @@ export const Testimonials = () => {
         <div className="grid md:grid-cols-3 gap-6 md:gap-8">
           {testimonials.map((t, i) => (
             <motion.div
-              key={t.name}
+              key={t.id || i}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -53,7 +48,7 @@ export const Testimonials = () => {
               </div>
               <div className="flex items-center gap-4 border-t border-white/5 pt-8">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center font-black text-[10px] text-background">
-                  {t.avatar}
+                  {t.avatar || t.name?.charAt(0) || 'K'}
                 </div>
                 <div>
                   <div className="font-bold text-white text-sm">{t.name}</div>
