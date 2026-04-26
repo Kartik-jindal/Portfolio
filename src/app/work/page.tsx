@@ -211,7 +211,7 @@ export default function WorkPage() {
                             rel="noopener noreferrer"
                             className="flex items-center justify-center gap-3 w-full py-6 rounded-2xl bg-white text-black text-[12px] font-black uppercase tracking-[0.3em] hover:bg-primary hover:text-black transition-all shadow-2xl group"
                           >
-                            Explore Build <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                            Check Live <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                           </a>
                         </div>
                       </div>

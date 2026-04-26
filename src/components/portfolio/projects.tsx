@@ -270,7 +270,7 @@ export const Projects = ({ initialData, limit = 0 }: { initialData?: any[], limi
                       {selectedProject.liveUrl && (
                         <Button asChild className="w-full py-10 rounded-[2rem] bg-white text-black hover:bg-primary transition-all font-black uppercase tracking-[0.3em] shadow-2xl group">
                           <a href={selectedProject.liveUrl} target="_blank" rel="noopener noreferrer">
-                            Launch Product <ArrowUpRight className="w-5 h-5 ml-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                            Check Live <ArrowUpRight className="w-5 h-5 ml-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                           </a>
                         </Button>
                       )}
