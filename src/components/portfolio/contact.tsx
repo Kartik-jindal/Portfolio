@@ -10,6 +10,9 @@ import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/fires
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import {
   Dialog,
   DialogContent,
@@ -18,17 +21,30 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
+const ContactSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  email: z.string().email({ message: "Please enter a valid mission coordinates (email)." }),
+  subject: z.string().min(5, { message: "Subject must be at least 5 characters." }),
+  message: z.string().min(10, { message: "Message must be at least 10 characters." }),
+  hp: z.string().optional(),
+});
+
+type ContactFormData = z.infer<typeof ContactSchema>;
+
 export const Contact = ({ initialData }: { initialData?: any }) => {
   const [data, setData] = useState(initialData);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-    hp: '' // Honeypot field for bot protection
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(ContactSchema),
+    mode: "onChange",
   });
 
   useEffect(() => {
@@ -45,7 +61,6 @@ export const Contact = ({ initialData }: { initialData?: any }) => {
     }
   }, [initialData]);
 
-  // Fallback defaults strictly following the original "Frozen" design text
   const content = data || {
     badge: 'Now accepting inquiries',
     headlineMain: "LET'S CREATE",
@@ -67,10 +82,7 @@ export const Contact = ({ initialData }: { initialData?: any }) => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Simple honeypot check
+  const onSubmit = async (formData: ContactFormData) => {
     if (formData.hp) {
       setSubmitted(true);
       return;
@@ -91,7 +103,7 @@ export const Contact = ({ initialData }: { initialData?: any }) => {
         }
       });
       setSubmitted(true);
-      setFormData({ name: '', email: '', subject: '', message: '', hp: '' });
+      reset();
       setTimeout(() => {
         setSubmitted(false);
         setIsOpen(false);
@@ -105,7 +117,6 @@ export const Contact = ({ initialData }: { initialData?: any }) => {
 
   return (
     <section id="contact" className="relative pt-24 pb-24 px-6 md:pt-64 overflow-hidden bg-transparent">
-      {/* Local Background Atmosphere - Frozen design spotlight */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(16,185,129,0.08),transparent_70%)] pointer-events-none" />
       
       <div className="max-w-7xl mx-auto relative z-10">
@@ -117,7 +128,6 @@ export const Contact = ({ initialData }: { initialData?: any }) => {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             className="w-full"
           >
-            {/* Frozen Glass Badge */}
             <div className="inline-flex items-center gap-3 px-4 md:px-6 py-2 rounded-full glass border-white/5 text-[9px] sm:text-[10px] md:text-xs font-black uppercase tracking-[0.3em] md:tracking-[0.4em] text-accent mb-8 md:mb-12 relative">
               <span className="flex h-2 w-2 relative">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
@@ -126,13 +136,11 @@ export const Contact = ({ initialData }: { initialData?: any }) => {
               {content.badge}
             </div>
             
-            {/* Massive Cinematic Headline - Frozen Typography */}
             <h2 className="text-[12vw] sm:text-[14vw] md:text-[8rem] lg:text-[10rem] font-headline font-black mb-12 md:mb-16 tracking-tighter leading-[1] md:leading-[0.8] animate-float break-words">
               {content.headlineMain} <br /> 
               <span className="text-primary italic text-outline-primary">{content.headlineHighlight}</span>
             </h2>
 
-            {/* Giant Frozen Action Button */}
             <div className="flex justify-center w-full px-4 sm:px-0">
               <Button 
                 onClick={() => setIsOpen(true)}
@@ -150,7 +158,6 @@ export const Contact = ({ initialData }: { initialData?: any }) => {
         </div>
       </div>
 
-      {/* Inquiry Dialog - HUD Logic */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-3xl bg-[#030303]/95 backdrop-blur-[50px] border-white/5 p-0 rounded-[3.5rem] shadow-[0_0_100px_rgba(0,0,0,0.8)] outline-none z-[5000] cursor-none overflow-hidden ring-1 ring-white/10">
           <AnimatePresence mode="wait">
@@ -194,55 +201,59 @@ export const Contact = ({ initialData }: { initialData?: any }) => {
                   </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-10 md:p-12 space-y-8">
+                <form onSubmit={handleSubmit(onSubmit)} className="p-10 md:p-12 space-y-8">
                   <div className="hidden">
-                    <Input type="text" value={formData.hp} onChange={(e) => setFormData({...formData, hp: e.target.value})} tabIndex={-1} autoComplete="off" />
+                    <Input {...register('hp')} type="text" tabIndex={-1} autoComplete="off" />
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-8">
                     <div className="space-y-3">
                       <Label className="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 ml-2">{content.labels.name}</Label>
                       <Input 
-                        required
-                        className="bg-white/[0.04] border-white/5 h-14 rounded-xl focus:border-primary/50 text-white placeholder:text-white/10 text-base px-6 transition-all" 
+                        {...register('name')}
+                        className={`bg-white/[0.04] border-white/5 h-14 rounded-xl focus:border-primary/50 text-white placeholder:text-white/10 text-base px-6 transition-all ${errors.name ? 'border-destructive/50 ring-1 ring-destructive/20' : ''}`} 
                         placeholder={content.placeholders.name}
-                        value={formData.name}
-                        onChange={(e) => setFormData({...formData, name: e.target.value})}
                       />
+                      {errors.name && (
+                        <p className="text-[9px] text-destructive font-black uppercase tracking-widest ml-2">{errors.name.message}</p>
+                      )}
                     </div>
                     <div className="space-y-3">
                       <Label className="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 ml-2">{content.labels.email}</Label>
                       <Input 
-                        required
+                        {...register('email')}
                         type="email"
-                        className="bg-white/[0.04] border-white/5 h-14 rounded-xl focus:border-primary/50 text-white placeholder:text-white/10 text-base px-6 transition-all" 
+                        className={`bg-white/[0.04] border-white/5 h-14 rounded-xl focus:border-primary/50 text-white placeholder:text-white/10 text-base px-6 transition-all ${errors.email ? 'border-destructive/50 ring-1 ring-destructive/20' : ''}`} 
                         placeholder={content.placeholders.email}
-                        value={formData.email}
-                        onChange={(e) => setFormData({...formData, email: e.target.value})}
                       />
+                      {errors.email && (
+                        <p className="text-[9px] text-destructive font-black uppercase tracking-widest ml-2">{errors.email.message}</p>
+                      )}
                     </div>
                   </div>
 
                   <div className="space-y-3">
                     <Label className="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 ml-2">{content.labels.subject}</Label>
                     <Input 
-                      required
-                      className="bg-white/[0.04] border-white/5 h-14 rounded-xl focus:border-primary/50 text-white placeholder:text-white/10 text-base px-6 transition-all" 
+                      {...register('subject')}
+                      className={`bg-white/[0.04] border-white/5 h-14 rounded-xl focus:border-primary/50 text-white placeholder:text-white/10 text-base px-6 transition-all ${errors.subject ? 'border-destructive/50 ring-1 ring-destructive/20' : ''}`} 
                       placeholder={content.placeholders.subject}
-                      value={formData.subject}
-                      onChange={(e) => setFormData({...formData, subject: e.target.value})}
                     />
+                    {errors.subject && (
+                      <p className="text-[9px] text-destructive font-black uppercase tracking-widest ml-2">{errors.subject.message}</p>
+                    )}
                   </div>
 
                   <div className="space-y-3">
                     <Label className="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 ml-2">{content.labels.message}</Label>
                     <Textarea 
-                      required
-                      className="bg-white/[0.04] border-white/5 min-h-[160px] rounded-2xl focus:border-primary/50 text-white placeholder:text-white/10 p-6 resize-none text-base leading-relaxed transition-all" 
+                      {...register('message')}
+                      className={`bg-white/[0.04] border-white/5 min-h-[160px] rounded-2xl focus:border-primary/50 text-white placeholder:text-white/10 p-6 resize-none text-base leading-relaxed transition-all ${errors.message ? 'border-destructive/50 ring-1 ring-destructive/20' : ''}`} 
                       placeholder={content.placeholders.message}
-                      value={formData.message}
-                      onChange={(e) => setFormData({...formData, message: e.target.value})}
                     />
+                    {errors.message && (
+                      <p className="text-[9px] text-destructive font-black uppercase tracking-widest ml-2">{errors.message.message}</p>
+                    )}
                   </div>
 
                   <Button 
