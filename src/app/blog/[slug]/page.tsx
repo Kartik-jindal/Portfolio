@@ -136,7 +136,7 @@ export default function BlogDetailPage() {
                   </span>
                 </div>
 
-                <h1 className="text-5xl md:text-7xl lg:text-8xl font-headline font-black italic tracking-tighter leading-[0.95] text-white">
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-headline font-black italic tracking-tighter leading-[0.95] text-white">
                   {post.title}
                 </h1>
               </motion.div>
@@ -194,17 +194,17 @@ export default function BlogDetailPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="prose prose-invert prose-2xl max-w-none font-body font-light text-white/70 leading-relaxed
+              className="prose prose-invert prose-lg md:prose-xl max-w-none font-body font-light text-white/70 leading-relaxed
                 prose-headings:font-headline prose-headings:font-bold prose-headings:text-white prose-headings:tracking-tight
-                prose-h3:text-4xl md:text-5xl prose-h3:mt-16 prose-h3:mb-8 prose-h3:italic
-                prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-10 prose-blockquote:px-12 prose-blockquote:rounded-3xl prose-blockquote:italic prose-blockquote:text-white prose-blockquote:not-italic prose-blockquote:text-3xl prose-blockquote:my-16
+                prose-h3:text-3xl md:text-4xl prose-h3:mt-12 prose-h3:mb-6 prose-h3:italic
+                prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-8 prose-blockquote:px-10 prose-blockquote:rounded-3xl prose-blockquote:italic prose-blockquote:text-white prose-blockquote:not-italic prose-blockquote:text-2xl prose-blockquote:my-12
                 prose-strong:text-white prose-strong:font-bold
-                prose-p:mb-8 prose-p:leading-[1.8]"
+                prose-p:mb-6 prose-p:leading-[1.7]"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
 
             {/* Post Footer Actions */}
-            <footer className="mt-24 pt-16 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-10">
+            <footer className="mt-20 pt-12 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-10">
               <div className="flex items-center gap-8">
                 <span className="text-[10px] uppercase font-black tracking-[0.4em] text-white/20">Spread Insight</span>
                 <div className="flex gap-4">
