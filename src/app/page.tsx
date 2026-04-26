@@ -1,3 +1,4 @@
+
 import { Navbar } from '@/components/portfolio/navbar';
 import { Hero } from '@/components/portfolio/hero';
 import { About } from '@/components/portfolio/about';
@@ -7,6 +8,7 @@ import { Testimonials } from '@/components/portfolio/testimonials';
 import { Contact } from '@/components/portfolio/contact';
 import { Footer } from '@/components/portfolio/footer';
 import { ScrollIndicator } from '@/components/portfolio/scroll-indicator';
+import { IntroScreen } from '@/components/portfolio/intro-screen';
 import { db } from '@/lib/firebase/config';
 import { doc, getDoc, collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
 import type { Metadata } from 'next';
@@ -164,6 +166,7 @@ export default async function Home() {
 
   return (
     <main className="relative">
+      <IntroScreen />
       <Navbar navConfig={navData} resumeUrl={config?.resume?.fileUrl} />
       <ScrollIndicator />
       <Hero initialData={heroData} />

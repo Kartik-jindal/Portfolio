@@ -3,7 +3,6 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { CustomCursor } from '@/components/portfolio/custom-cursor';
 import { Hero3D } from '@/components/portfolio/hero-3d';
-import { IntroScreen } from '@/components/portfolio/intro-screen';
 import { AuthProvider } from '@/context/auth-context';
 import { Toaster } from '@/components/ui/toaster';
 
@@ -26,8 +25,6 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased bg-background text-foreground min-h-screen relative">
         <AuthProvider>
-          <IntroScreen />
-          
           {/* Global 3D Background */}
           <div className="fixed inset-0 z-0 pointer-events-none">
             <Hero3D />
