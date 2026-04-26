@@ -19,15 +19,16 @@ export const flagshipProjects = [
     title: "Nova Orbital",
     role: "System Architect",
     desc: "A mission-critical dashboard for real-time satellite telemetry. Leverages WebGL for planetary visualization and high-throughput data streams.",
-    longDesc: "Nova Orbital was engineered to handle massive streams of telemetry data from orbital constellations. The primary challenge was rendering high-fidelity planetary models while simultaneously processing thousands of data points per second without UI latency.",
-    methodology: "We utilized a multi-threaded architecture with Web Workers to handle data parsing off the main thread, while implementing a custom shaders system in Three.js for efficient planetary rendering.",
-    impact: "Successfully reduced system response time by 65% and enabled real-time monitoring for over 500+ active satellites simultaneously.",
+    longDesc: "Nova Orbital was engineered to solve the complex problem of visualizing massive telemetry data streams from low-earth orbit constellations. The application handles high-velocity data ingestion through a distributed socket architecture, processing over 10,000 concurrent metrics per second. The primary architectural challenge was ensuring that the main thread remained responsive for user interaction while the GPU managed high-fidelity planetary rendering and trajectory projections. We implemented a custom coordinate transformation engine to map raw satellite coordinates to the WebGL sphere in real-time, allowing for sub-millimeter precision in tracking data.",
+    methodology: "Our approach utilized a multi-threaded execution model using Web Workers to offload heavy data parsing and state management. The frontend employs a hybrid rendering strategy: Three.js handles the spatial 3D visualization using custom GLSL shaders for atmospheric effects, while a React-based UI layer provides precise data overlays. We also integrated a Rust-compiled WASM module to perform high-speed orbital calculations, significantly reducing the computational overhead compared to pure JavaScript.",
+    impact: "Successfully reduced system response latency by 65%, enabling ground control teams to respond to orbital anomalies in under 2 seconds. The platform currently monitors over 500 active satellites and has been cited as a benchmark for real-time aerospace data visualization.",
     challenges: [
-      "Real-time processing of 10k+ concurrent data streams",
-      "GPU-accelerated WebGL visualization for global tracking",
-      "Sub-100ms latency for critical command and control triggers"
+      "Real-time processing of 10k+ concurrent data streams with zero packet loss",
+      "Dynamic WebGL memory management to prevent context loss during long-running sessions",
+      "Achieving sub-100ms latency for critical command and control triggers",
+      "Normalizing telemetry data from 14 different hardware providers"
     ],
-    tech: ["Next.js 15", "Three.js", "Rust", "WebSockets"],
+    tech: ["Next.js 15", "Three.js", "Rust (WASM)", "WebSockets", "GLSL"],
     image: "https://picsum.photos/seed/nova/1600/1000",
     color: "rgba(16, 185, 129, 0.05)",
     accent: "#10B981",
@@ -38,15 +39,16 @@ export const flagshipProjects = [
     title: "Aura Atelier",
     role: "Creative Director",
     desc: "Immersive e-commerce experience for a luxury Parisian fashion house. Features 3D product interaction and cinematic storytelling.",
-    longDesc: "Aura Atelier redefines luxury e-commerce by blending traditional high-fashion editorial aesthetics with cutting-edge 3D interactivity.",
-    methodology: "The project employed a 'Visual-First' engineering approach, using GSAP for complex timeline orchestrations and a custom headless Shopify integration.",
-    impact: "Led to a 40% increase in user session duration and a significant 25% uplift in conversion.",
+    longDesc: "Aura Atelier represents a paradigm shift in luxury digital retail. Instead of a traditional catalog, we built a cinematic journey that translates the tactile experience of high fashion into the digital realm. The core of the experience is an interactive 3D gallery where users can examine garment textures down to the thread level. We engineered a proprietary 'Fabric Shader' that simulates light scattering and physics-based movement, allowing digital textures to react naturally to mouse interaction and virtual lighting environments.",
+    methodology: "The project followed a 'Visual-First' engineering philosophy. We used GSAP to orchestrate complex scrolling timelines that transition seamlessly between 2D editorial layouts and 3D product stages. To maintain a premium feel, we implemented a custom asset loader with intelligent pre-fetching, ensuring that 4K cinematic videos and heavy 3D models load progressively without interrupting the user's flow. The backend is built on a headless Shopify integration, keeping the frontend entirely decoupled for maximum performance and design freedom.",
+    impact: "Led to a 40% increase in user session duration and a 25% uplift in conversion for high-ticket items. The project won several industry awards for its innovative approach to spatial commerce and mobile performance.",
     challenges: [
-      "Physics-based fabric rendering in the browser",
-      "Seamless cinematic transitions",
-      "Global CDN optimization for 4K assets"
+      "Physics-based fabric rendering with 60fps performance on mobile devices",
+      "Synchronizing GSAP timelines with Three.js camera transitions",
+      "Optimizing global CDN delivery for multi-gigabyte 4K cinematic assets",
+      "Implementing accessible navigation within a highly non-linear layout"
     ],
-    tech: ["React", "GLSL", "GSAP", "Shopify API"],
+    tech: ["React", "GLSL", "GSAP", "Shopify Headless", "Three.js"],
     image: "https://picsum.photos/seed/aura/1600/1000",
     color: "rgba(255, 255, 255, 0.03)",
     accent: "#ffffff",
@@ -57,15 +59,16 @@ export const flagshipProjects = [
     title: "Eco Pulse",
     role: "Full Stack Dev",
     desc: "Environmental monitoring system tracking global carbon emissions in real-time. Built for massive scalability and accuracy.",
-    longDesc: "Eco Pulse provides governmental bodies with the data needed to make climate policy decisions.",
-    methodology: "Built on a robust Firebase backend with Google Earth Engine integration, the system utilizes D3.js for complex data storytelling.",
-    impact: "Currently utilized by 12 non-profit organizations to track carbon offset initiatives.",
+    longDesc: "Eco Pulse was designed as a tool for transparency and action in the global climate effort. It aggregates environmental data from satellite sensors, ground-based stations, and international registries to provide a unified 'pulse' of planetary health. The engineering challenge lay in the sheer volume and heterogeneity of the data—normalizing millions of records into a coherent, actionable narrative. We built a real-time analytics pipeline that processes incoming data and updates global heatmaps instantly, providing users with immediate feedback on carbon offset initiatives.",
+    methodology: "The architecture is centered around a robust Firebase backend that handles real-time data synchronization across thousands of clients. We integrated Google Earth Engine for historical satellite analysis and used D3.js to build complex, interactive data stories. The frontend is built with Next.js for its superior SSR capabilities, ensuring that data-heavy pages are crawlable and load quickly for users on low-bandwidth connections in developing regions. Every data point is traceable back to its source, ensuring the highest level of scientific integrity.",
+    impact: "The platform is currently utilized by 12 major non-profit organizations and 3 governmental bodies to track carbon neutrality progress. It has helped identify over 200 high-risk emission zones that were previously undocumented.",
     challenges: [
-      "Aggregation of multi-source environmental data sets",
-      "Dynamic D3.js visualizations",
-      "Automated outlier detection"
+      "Aggregation and normalization of multi-source environmental data sets with varying formats",
+      "Optimizing D3.js visualizations to handle datasets with 1M+ points in real-time",
+      "Automated outlier detection using custom statistical models",
+      "Ensuring offline data access for environmental researchers in remote areas"
     ],
-    tech: ["Next.js", "Firebase", "D3.js", "Python"],
+    tech: ["Next.js", "Firebase", "D3.js", "Python (FastAPI)", "Google Earth Engine"],
     image: "https://picsum.photos/seed/eco/1600/1000",
     color: "rgba(16, 185, 129, 0.05)",
     accent: "#10B981",
@@ -76,15 +79,16 @@ export const flagshipProjects = [
     title: "Stark Design",
     role: "Lead Engineer",
     desc: "A comprehensive design system and component library adopted by Fortune 500 product teams.",
-    longDesc: "Stark Design is more than a UI kit; it's a technical framework for consistency.",
-    methodology: "Implemented a strict architectural boundary between presentation logic and data handling.",
-    impact: "Reduced front-end development time by 30% across 5 global engineering departments.",
+    longDesc: "Stark Design is more than just a library of buttons; it is a technical ecosystem designed to scale design quality across massive organizations. It was built to solve the fragmentation of user experience that often occurs in enterprise-level software. The system includes a central token engine that manages colors, spacing, and typography across React, iOS, and Android platforms. We engineered the library with a focus on 'Zero-Runtime' performance, ensuring that the design system doesn't add unnecessary weight to the final product bundles.",
+    methodology: "We implemented an Atomic Design methodology, building from basic foundations up to complex organisms. The library is built with TypeScript for absolute type-safety and uses Radix UI as the accessible primitive layer. Our CI/CD pipeline includes automated visual regression testing using Playwright and detailed accessibility audits for every component. We also developed a custom CLI tool that allows developers to scaffold new features using the Stark architecture in seconds.",
+    impact: "Successfully reduced frontend development time by 30% across 5 global engineering departments. The system has become the gold standard for internal tooling, powering over 40 production applications for millions of users.",
     challenges: [
-      "Zero-runtime CSS architecture",
-      "Strict WCAG 2.2 Level AAA compliance",
-      "Automated visual regression testing"
+      "Maintaining backwards compatibility across multiple major version releases",
+      "Strict WCAG 2.2 Level AAA compliance for all UI components",
+      "Developing a zero-runtime CSS-in-JS architecture",
+      "Creating an automated documentation engine that syncs with Figma tokens"
     ],
-    tech: ["React", "Tailwind", "Radix UI", "Jest"],
+    tech: ["React", "TypeScript", "Tailwind", "Radix UI", "Playwright"],
     image: "https://picsum.photos/seed/stark/1600/1000",
     color: "rgba(255, 255, 255, 0.03)",
     accent: "#ffffff",
@@ -139,7 +143,8 @@ const ProjectCard = ({ project, index, onOpen }: { project: any, index: number, 
           
           <motion.div 
             style={{ rotateX: y, rotateY: x, perspective: 1500 }}
-            className="relative glass-accent p-0.5 md:p-1 rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-2xl transition-all duration-700 cursor-pointer"
+            className="relative glass-accent p-0.5 md:p-1 rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-2xl transition-all duration-700 cursor-none"
+            data-cursor="VIEW_CASE"
           >
             <div className="relative aspect-[16/9] overflow-hidden rounded-[calc(1rem-1px)] md:rounded-[calc(1.5rem-1px)]">
               <Image src={project.image} alt={project.title} fill className="object-cover" />
@@ -217,15 +222,15 @@ export const Projects = ({ limit = 0 }: { limit?: number }) => {
 
       {/* Case Study Preview Modal */}
       <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
-        <DialogContent className="max-w-5xl bg-background/95 backdrop-blur-3xl border-white/5 p-0 overflow-hidden rounded-[3rem] shadow-2xl">
+        <DialogContent className="max-w-5xl bg-background/95 backdrop-blur-3xl border-white/5 p-0 overflow-hidden rounded-[3rem] shadow-2xl outline-none z-[5000] cursor-none">
           <AnimatePresence>
             {selectedProject && (
-              <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
-                <div className="relative h-64 w-full overflow-hidden">
+              <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col max-h-[90vh]">
+                <div className="relative h-64 md:h-80 w-full shrink-0 overflow-hidden">
                   <Image src={selectedProject.image} alt={selectedProject.title} fill className="object-cover opacity-60" />
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-                  <button onClick={() => setSelectedProject(null)} className="absolute top-8 right-8 w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-colors z-30">
-                    <X className="w-6 h-6 text-white" />
+                  <button onClick={() => setSelectedProject(null)} className="absolute top-8 right-8 w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-colors z-[6000] group">
+                    <X className="w-6 h-6 text-white group-hover:rotate-90 transition-transform" />
                   </button>
                   <div className="absolute bottom-8 left-12 z-20">
                      <span className="text-primary font-black tracking-[0.4em] text-[10px] uppercase mb-1 block">{selectedProject.role}</span>
@@ -233,24 +238,33 @@ export const Projects = ({ limit = 0 }: { limit?: number }) => {
                   </div>
                 </div>
 
-                <div className="px-12 py-16 space-y-16 max-h-[70vh] overflow-y-auto custom-scrollbar">
-                  <div className="grid md:grid-cols-12 gap-20">
-                    <div className="md:col-span-7 space-y-12">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-3 text-primary"><Target className="w-4 h-4" /><h4 className="text-xs font-black uppercase tracking-[0.4em]">The Mission</h4></div>
-                        <p className="text-xl text-muted-foreground/90 font-body font-light leading-relaxed">{selectedProject.longDesc}</p>
-                      </div>
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-3 text-accent"><Code className="w-4 h-4" /><h4 className="text-xs font-black uppercase tracking-[0.4em]">Methodology</h4></div>
-                        <p className="text-lg text-muted-foreground/80 font-body border-l-2 border-accent/20 pl-8 italic">{selectedProject.methodology}</p>
-                      </div>
+                <div className="px-8 md:px-12 py-12 md:py-16 space-y-16 overflow-y-auto custom-scrollbar flex-1">
+                  <div className="grid md:grid-cols-12 gap-12 md:gap-20">
+                    <div className="md:col-span-7 space-y-16">
+                      {/* The Narrative */}
                       <div className="space-y-6">
-                        <h4 className="text-xs font-black uppercase tracking-[0.4em] text-white/40">Technical Hurdles</h4>
-                        <ul className="space-y-4">
+                        <div className="flex items-center gap-3 text-primary"><Target className="w-4 h-4" /><h4 className="text-xs font-black uppercase tracking-[0.4em]">The Architecture</h4></div>
+                        <p className="text-lg md:text-xl text-white/80 font-body font-light leading-relaxed first-letter:text-5xl first-letter:font-headline first-letter:font-black first-letter:text-primary first-letter:mr-3 first-letter:float-left">
+                          {selectedProject.longDesc}
+                        </p>
+                      </div>
+
+                      {/* Methodology */}
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-3 text-accent"><Code className="w-4 h-4" /><h4 className="text-xs font-black uppercase tracking-[0.4em]">Strategic Methodology</h4></div>
+                        <p className="text-lg text-white/60 font-body border-l-2 border-accent/20 pl-8 italic leading-relaxed">
+                          {selectedProject.methodology}
+                        </p>
+                      </div>
+
+                      {/* Technical Hurdles */}
+                      <div className="space-y-8">
+                        <h4 className="text-xs font-black uppercase tracking-[0.4em] text-white/40">Engineering Challenges</h4>
+                        <ul className="grid gap-6">
                           {selectedProject.challenges.map((c: string, i: number) => (
-                            <li key={i} className="flex gap-4 items-center group">
-                              <ShieldCheck className="w-4 h-4 text-primary" />
-                              <span className="text-muted-foreground/80 font-body">{c}</span>
+                            <li key={i} className="flex gap-6 items-start group">
+                              <div className="mt-1 w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_rgba(16,185,129,0.5)] group-hover:scale-150 transition-transform" />
+                              <span className="text-white/50 font-body leading-tight text-base md:text-lg">{c}</span>
                             </li>
                           ))}
                         </ul>
@@ -258,22 +272,40 @@ export const Projects = ({ limit = 0 }: { limit?: number }) => {
                     </div>
 
                     <div className="md:col-span-5 space-y-12">
-                      <div className="glass p-10 rounded-3xl border-white/5 space-y-8">
+                      <div className="glass p-10 rounded-[2rem] border-white/5 space-y-10">
                         <div>
-                          <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-4">Strategic Impact</h4>
-                          <p className="text-sm font-medium text-white/90 leading-relaxed bg-primary/5 p-6 rounded-2xl border border-primary/10">{selectedProject.impact}</p>
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Project Impact</h4>
+                          <div className="bg-primary/5 p-8 rounded-2xl border border-primary/10">
+                            <p className="text-sm md:text-base font-medium text-white/90 leading-relaxed italic">
+                              "{selectedProject.impact}"
+                            </p>
+                          </div>
                         </div>
+                        
                         <div>
-                          <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-4">Core Arsenal</h4>
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Core Arsenal</h4>
                           <div className="flex flex-wrap gap-2">
                             {selectedProject.tech.map((t: string) => (
-                              <span key={t} className="px-4 py-2 rounded-xl bg-white/5 text-[10px] font-bold text-white/60">{t}</span>
+                              <span key={t} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[10px] font-bold text-white/60 uppercase tracking-widest">{t}</span>
                             ))}
                           </div>
                         </div>
+
+                        <div className="h-px bg-white/5" />
+
+                        <div className="flex items-center justify-between px-2">
+                          <span className="text-[9px] font-black text-white/20 tracking-[0.4em] uppercase">STATUS: DEPLOYED</span>
+                          <div className="flex gap-4">
+                             <Github className="w-5 h-5 text-white/20 hover:text-white transition-colors cursor-pointer" />
+                             <ExternalLink className="w-5 h-5 text-white/20 hover:text-white transition-colors cursor-pointer" />
+                          </div>
+                        </div>
                       </div>
-                      <Button asChild className="w-full py-10 rounded-full bg-white text-black hover:bg-primary transition-all font-black uppercase tracking-[0.3em]">
-                        <a href={selectedProject.liveUrl} target="_blank" rel="noopener noreferrer">Launch Product <ExternalLink className="w-5 h-5 ml-4" /></a>
+
+                      <Button asChild className="w-full py-10 rounded-[2rem] bg-white text-black hover:bg-primary transition-all font-black uppercase tracking-[0.3em] shadow-2xl group">
+                        <a href={selectedProject.liveUrl} target="_blank" rel="noopener noreferrer">
+                          Launch Product <ArrowUpRight className="w-5 h-5 ml-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                        </a>
                       </Button>
                     </div>
                   </div>
