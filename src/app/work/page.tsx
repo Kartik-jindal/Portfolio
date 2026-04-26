@@ -9,7 +9,7 @@ import { Projects } from '@/components/portfolio/projects';
 import { ArrowUpRight, Github, Code2, Globe, Cpu, X, ExternalLink, Box, Terminal, Activity, Zap, Shield, Database, Sparkles, Binary, Info } from 'lucide-react';
 import Image from 'next/image';
 import { db } from '@/lib/firebase/config';
-import { collection, query, where, orderBy, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import {
   Dialog,
   DialogContent,
@@ -29,17 +29,20 @@ export default function WorkPage() {
         const configSnap = await getDoc(doc(db, 'site_config', 'global'));
         if (configSnap.exists()) setConfig(configSnap.data());
 
-        // Get Experiments
+        // Get Experiments - Simple query to avoid composite index requirements
         const q = query(
           collection(db, 'projects'),
-          where('status', '==', 'published'),
-          where('type', '==', 'EXPERIMENT'),
-          orderBy('order', 'asc')
+          where('status', '==', 'published')
         );
         const snap = await getDocs(q);
-        setExperiments(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        const data = snap.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .filter((p: any) => p.type === 'EXPERIMENT')
+          .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+        
+        setExperiments(data);
       } catch (err) {
-        console.error(err);
+        console.error("Work Page Fetch Error:", err);
       } finally {
         setLoading(false);
       }
@@ -76,7 +79,7 @@ export default function WorkPage() {
         <Projects />
       </section>
 
-      {config?.visibility?.showExperiments && experiments.length > 0 && (
+      {config?.visibility?.showExperiments && (
         <section className="py-32 px-6 bg-white/[0.02]">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
@@ -89,53 +92,63 @@ export default function WorkPage() {
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {experiments.map((project, i) => (
-                <motion.div
-                  key={project.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  onClick={() => setSelectedProject(project)}
-                  className="glass p-8 rounded-3xl border-white/5 hover:border-primary/30 transition-all duration-500 group relative flex flex-col justify-between min-h-[480px] cursor-none"
-                >
-                  <div className="space-y-6">
-                    <div className="flex justify-between items-start">
-                      <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-primary transition-colors duration-500">
-                        <Binary className="w-6 h-6 text-primary group-hover:text-black transition-colors" />
+            {loading ? (
+              <div className="h-64 flex items-center justify-center">
+                <div className="w-2 h-2 rounded-full bg-primary animate-ping" />
+              </div>
+            ) : experiments.length === 0 ? (
+              <div className="text-center py-20 text-white/20 uppercase tracking-[0.5em] font-black">
+                The experimental lab is currently empty.
+              </div>
+            ) : (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {experiments.map((project, i) => (
+                  <motion.div
+                    key={project.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    onClick={() => setSelectedProject(project)}
+                    className="glass p-8 rounded-3xl border-white/5 hover:border-primary/30 transition-all duration-500 group relative flex flex-col justify-between min-h-[480px] cursor-none"
+                  >
+                    <div className="space-y-6">
+                      <div className="flex justify-between items-start">
+                        <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-primary transition-colors duration-500">
+                          <Binary className="w-6 h-6 text-primary group-hover:text-black transition-colors" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/20">{project.type}</span>
                       </div>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white/20">{project.type}</span>
-                    </div>
-                    
-                    <div className="relative aspect-video rounded-xl overflow-hidden mb-8 border border-white/5 shadow-2xl">
-                      <Image 
-                        src={project.image || 'https://picsum.photos/seed/placeholder/600/400'} 
-                        alt={project.title} 
-                        fill 
-                        className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
-                      />
+                      
+                      <div className="relative aspect-video rounded-xl overflow-hidden mb-8 border border-white/5 shadow-2xl">
+                        <Image 
+                          src={project.image || 'https://picsum.photos/seed/placeholder/600/400'} 
+                          alt={project.title} 
+                          fill 
+                          className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                        />
+                      </div>
+
+                      <div className="space-y-3">
+                        <h3 className="text-2xl font-headline font-bold text-white group-hover:text-primary transition-colors">{project.title}</h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-4">{project.desc}</p>
+                      </div>
                     </div>
 
-                    <div className="space-y-3">
-                      <h3 className="text-2xl font-headline font-bold text-white group-hover:text-primary transition-colors">{project.title}</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed line-clamp-4">{project.desc}</p>
+                    <div className="space-y-4 pt-6 mt-auto">
+                      <div className="flex flex-wrap gap-2">
+                        {project.tech?.map((t: string) => (
+                          <span key={t} className="text-[9px] font-bold text-white/30 uppercase tracking-widest">{t}</span>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors">
+                        Access Lab Notes <ArrowUpRight className="w-3 h-3" />
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="space-y-4 pt-6 mt-auto">
-                    <div className="flex flex-wrap gap-2">
-                      {project.tech?.map((t: string) => (
-                        <span key={t} className="text-[9px] font-bold text-white/30 uppercase tracking-widest">{t}</span>
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors">
-                      Access Lab Notes <ArrowUpRight className="w-3 h-3" />
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -175,7 +188,7 @@ export default function WorkPage() {
                             <h4 className="text-[10px] font-black uppercase tracking-[0.5em]">Architectural Narrative</h4>
                           </div>
                           <div className="prose prose-invert max-w-none">
-                            <p className="text-white/80 text-lg md:text-xl leading-relaxed font-body font-light first-letter:text-5xl first-letter:font-headline first-letter:font-black first-letter:text-primary first-letter:mr-3 first-letter:float-left">
+                            <p className="text-white/80 text-lg md:text-xl leading-relaxed font-body font-light first-letter:text-5xl first-letter:font-headline first-letter:font-black first-letter:text-primary first-letter:mr-3 first-letter:float-left break-words">
                               {selectedProject.longDesc || selectedProject.desc}
                             </p>
                           </div>

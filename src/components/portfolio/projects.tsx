@@ -8,7 +8,7 @@ import { Github, ArrowUpRight, X, ExternalLink, Target, Code } from 'lucide-reac
 import Image from 'next/image';
 import Link from 'next/link';
 import { db } from '@/lib/firebase/config';
-import { collection, query, where, orderBy, getDocs, limit as firestoreLimit } from 'firebase/firestore';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import {
   Dialog,
   DialogContent,
@@ -109,23 +109,39 @@ const ProjectCard = ({ project, index, onOpen }: { project: any, index: number, 
 export const Projects = ({ initialData, limit = 0 }: { initialData?: any[], limit?: number }) => {
   const [projects, setProjects] = useState<any[]>(initialData || []);
   const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [loading, setLoading] = useState(!initialData);
 
   useEffect(() => {
     if (!initialData) {
       const fetchProjects = async () => {
-        const q = query(
-          collection(db, 'projects'),
-          where('status', '==', 'published'),
-          where('type', '==', 'FLAGSHIP'),
-          orderBy('order', 'asc'),
-          ...(limit > 0 ? [firestoreLimit(limit)] : [])
-        );
-        const snap = await getDocs(q);
-        setProjects(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        try {
+          // Simple query to avoid composite index requirements
+          const q = query(
+            collection(db, 'projects'),
+            where('status', '==', 'published')
+          );
+          const snap = await getDocs(q);
+          const data = snap.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter((p: any) => p.type === 'FLAGSHIP')
+            .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+          
+          setProjects(limit > 0 ? data.slice(0, limit) : data);
+        } catch (err) {
+          console.error("Projects Fetch Error:", err);
+        } finally {
+          setLoading(false);
+        }
       };
       fetchProjects();
     }
   }, [initialData, limit]);
+
+  if (loading) return (
+    <div className="h-64 flex items-center justify-center">
+      <div className="w-2 h-2 rounded-full bg-primary animate-ping" />
+    </div>
+  );
 
   return (
     <section id="work" className="relative py-24 md:py-48 bg-transparent">
@@ -142,12 +158,18 @@ export const Projects = ({ initialData, limit = 0 }: { initialData?: any[], limi
       </div>
 
       <div className="space-y-12">
-        {projects.map((project, index) => (
-          <ProjectCard key={project.id} project={project} index={index} onOpen={setSelectedProject} />
-        ))}
+        {projects.length === 0 ? (
+          <div className="text-center py-20 text-white/20 uppercase tracking-[0.5em] font-black">
+            No flagship builds discovered yet.
+          </div>
+        ) : (
+          projects.map((project, index) => (
+            <ProjectCard key={project.id} project={project} index={index} onOpen={setSelectedProject} />
+          ))
+        )}
       </div>
 
-      {limit > 0 && (
+      {limit > 0 && projects.length > 0 && (
         <div className="mt-24 flex justify-center">
           <Link href="/work">
             <Button variant="outline" size="lg" className="rounded-full px-16 py-8 text-[12px] font-black uppercase tracking-[0.4em] border-white/10 hover:bg-primary hover:text-black transition-all">

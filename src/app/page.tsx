@@ -10,7 +10,7 @@ import { Footer } from '@/components/portfolio/footer';
 import { ScrollIndicator } from '@/components/portfolio/scroll-indicator';
 import { IntroScreen } from '@/components/portfolio/intro-screen';
 import { db } from '@/lib/firebase/config';
-import { doc, getDoc, collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import type { Metadata } from 'next';
 
 async function getGlobalConfig() {
@@ -81,14 +81,15 @@ async function getContactData() {
 
 async function getProjects(count: number) {
   try {
+    // We remove orderBy from query to avoid composite index requirements
     const q = query(
       collection(db, 'projects'),
-      where('status', '==', 'published'),
-      orderBy('order', 'asc'),
-      limit(count)
+      where('status', '==', 'published')
     );
     const snap = await getDocs(q);
-    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    // Sort in memory instead
+    return data.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)).slice(0, count);
   } catch (err) {
     console.error("Firebase Error (Projects):", err);
     return [];
@@ -97,9 +98,10 @@ async function getProjects(count: number) {
 
 async function getExperience() {
   try {
-    const q = query(collection(db, 'experience'), orderBy('order', 'asc'));
+    const q = collection(db, 'experience');
     const snap = await getDocs(q);
-    return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return data.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
   } catch (err) {
     console.error("Firebase Error (Experience):", err);
     return [];
