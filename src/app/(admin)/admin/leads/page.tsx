@@ -1,10 +1,11 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase/config';
 import { collection, query, orderBy, getDocs, updateDoc, doc, deleteDoc } from 'firebase/firestore';
-import { motion } from 'framer-motion';
-import { Mail, Trash2, CheckCircle2, Circle, Inbox, Clock } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, Trash2, CheckCircle2, Circle, Inbox, Clock, User, Shield, Globe, Terminal, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -25,7 +26,7 @@ export default function LeadsAdminPage() {
       const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setLeads(data);
     } catch (error) {
-      console.error(error);
+      console.error("Leads Fetch Error:", error);
     } finally {
       setLoading(false);
     }
@@ -36,105 +37,148 @@ export default function LeadsAdminPage() {
     try {
       await updateDoc(doc(db, 'contact_leads', lead.id), { status: nextStatus });
       setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, status: nextStatus } : l));
+      toast({ title: 'Status Updated', description: `Payload marked as ${nextStatus}` });
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Error', description: error.message });
+      toast({ variant: 'destructive', title: 'Update Failed', description: error.message });
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Archive this lead permanently?')) return;
+    if (!confirm('Permanently archive this mission lead?')) return;
     try {
       await deleteDoc(doc(db, 'contact_leads', id));
       setLeads(prev => prev.filter(l => l.id !== id));
-      toast({ title: 'Success', description: 'Lead archived' });
+      toast({ title: 'Lead Purged', description: 'Entry removed from database' });
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Error', description: error.message });
+      toast({ variant: 'destructive', title: 'Action Denied', description: error.message });
     }
   };
 
   return (
-    <div className="space-y-10">
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-2">
-          <span className="text-primary font-black uppercase tracking-[0.6em] text-[10px]">Communication Stream</span>
-          <h1 className="text-5xl font-headline font-black italic tracking-tighter text-white">Contact Leads.</h1>
+    <div className="space-y-12">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div className="space-y-3">
+          <span className="text-primary font-black uppercase tracking-[0.6em] text-[10px]">Transmission Inbox</span>
+          <h1 className="text-6xl font-headline font-black italic tracking-tighter text-white leading-none">Payload Logs.</h1>
         </div>
-        <div className="flex items-center gap-4 px-6 py-3 rounded-2xl glass border-white/5">
-          <Inbox className="w-4 h-4 text-primary" />
-          <span className="text-[10px] font-black uppercase tracking-widest">{leads.length} Total Messages</span>
+        <div className="flex items-center gap-6">
+          <div className="px-8 py-4 rounded-2xl glass border-white/5 flex items-center gap-4">
+             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
+                <Inbox className="w-5 h-5 text-primary" />
+             </div>
+             <div>
+                <div className="text-2xl font-headline font-bold text-white leading-none">{leads.length}</div>
+                <span className="text-[8px] font-black uppercase tracking-widest text-white/30">Active Messages</span>
+             </div>
+          </div>
         </div>
       </header>
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         {loading ? (
-          <div className="h-64 flex items-center justify-center">
-            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <div className="h-96 flex items-center justify-center">
+            <div className="w-2 h-2 rounded-full bg-primary animate-ping" />
           </div>
         ) : leads.length === 0 ? (
-          <div className="glass p-20 rounded-[2.5rem] border-white/5 text-center space-y-4">
-            <Mail className="w-12 h-12 text-white/10 mx-auto" />
-            <p className="text-white/40 uppercase font-black tracking-widest">Inbox Zero. Well done.</p>
+          <div className="glass p-32 rounded-[3rem] border-white/5 text-center space-y-6">
+            <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/10">
+              <Shield className="w-8 h-8 text-white/20" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-2xl font-headline font-bold text-white/60 italic">Inbox Zero.</h3>
+              <p className="text-white/20 uppercase font-black tracking-[0.4em] text-[9px]">The channel is currently silent</p>
+            </div>
           </div>
         ) : (
-          leads.map((lead, i) => (
-            <motion.div
-              key={lead.id}
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.05 }}
-              className={`glass p-8 rounded-[2rem] border-white/5 hover:border-primary/20 transition-all relative overflow-hidden ${lead.status === 'new' ? 'ring-1 ring-primary/20' : ''}`}
-            >
-              <div className="flex flex-col md:flex-row gap-10">
-                <div className="md:w-1/3 space-y-6">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3 mb-4">
-                      {lead.status === 'new' ? (
-                        <Badge className="bg-primary text-black font-black uppercase tracking-widest text-[8px] h-5">New</Badge>
-                      ) : (
-                        <Badge variant="outline" className="border-white/10 text-white/30 font-black uppercase tracking-widest text-[8px] h-5">Read</Badge>
-                      )}
-                      <span className="text-[9px] uppercase font-black tracking-widest text-white/20 flex items-center gap-2">
-                        <Clock className="w-3 h-3" />
-                        {lead.createdAt?.toDate ? new Date(lead.createdAt.toDate()).toLocaleString() : 'Recent'}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-bold text-white leading-tight">{lead.name}</h3>
-                    <p className="text-primary text-xs font-bold font-mono tracking-tighter">{lead.email}</p>
+          <div className="grid gap-6">
+            {leads.map((lead, i) => (
+              <motion.div
+                key={lead.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className={`glass p-10 rounded-[2.5rem] border-white/5 hover:border-primary/20 transition-all group relative overflow-hidden ${lead.status === 'new' ? 'ring-1 ring-primary/30' : ''}`}
+              >
+                {lead.status === 'new' && (
+                  <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <Terminal className="w-24 h-24 text-primary" />
                   </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="rounded-xl border-white/10 hover:bg-white/5 text-[10px] font-black uppercase tracking-widest h-10 px-4"
-                      onClick={() => toggleStatus(lead)}
-                    >
-                      {lead.status === 'read' ? <Circle className="w-3 h-3 mr-2" /> : <CheckCircle2 className="w-3 h-3 mr-2" />}
-                      Mark {lead.status === 'read' ? 'Unread' : 'Read'}
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="w-10 h-10 rounded-xl hover:bg-destructive/10 text-white/40 hover:text-destructive"
-                      onClick={() => handleDelete(lead.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
+                )}
 
-                <div className="md:w-2/3 space-y-4">
-                  <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 h-full">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-white/20 mb-3 block">Message Payload:</span>
-                    <h4 className="text-sm font-bold text-white mb-4 underline underline-offset-8 decoration-primary/30">{lead.subject || 'Inquiry'}</h4>
-                    <p className="text-sm text-white/60 leading-relaxed font-light italic">
-                      "{lead.message}"
-                    </p>
+                <div className="flex flex-col lg:flex-row gap-12 relative z-10">
+                  <div className="lg:w-1/3 space-y-8">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-4">
+                        {lead.status === 'new' ? (
+                          <Badge className="bg-primary text-black font-black uppercase tracking-[0.2em] text-[8px] px-3 py-1.5 rounded-md animate-pulse">New_Payload</Badge>
+                        ) : (
+                          <Badge variant="outline" className="border-white/10 text-white/30 font-black uppercase tracking-[0.2em] text-[8px] px-3 py-1.5 rounded-md">Logged</Badge>
+                        )}
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/20 flex items-center gap-2">
+                          <Clock className="w-3.5 h-3.5" />
+                          {lead.createdAt?.toDate ? new Date(lead.createdAt.toDate()).toLocaleString() : 'Just Now'}
+                        </span>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <h3 className="text-3xl font-bold text-white leading-tight group-hover:text-primary transition-colors">{lead.name}</h3>
+                        <p className="text-primary text-xs font-black font-mono tracking-tight">{lead.email}</p>
+                      </div>
+                    </div>
+
+                    <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 space-y-4">
+                       <span className="text-[8px] font-black uppercase tracking-widest text-white/30 block border-b border-white/5 pb-3">Client Metadata</span>
+                       <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                             <span className="text-[8px] font-bold text-white/20 uppercase block">Platform</span>
+                             <div className="text-[10px] font-black text-white/60 truncate">{lead.metadata?.platform || 'Unknown'}</div>
+                          </div>
+                          <div className="space-y-1">
+                             <span className="text-[8px] font-bold text-white/20 uppercase block">User Agent</span>
+                             <div className="text-[10px] font-black text-white/60 truncate" title={lead.metadata?.userAgent}>Agent_Client</div>
+                          </div>
+                       </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <Button 
+                        variant="outline" 
+                        className="flex-1 rounded-xl border-white/5 bg-white/5 hover:bg-primary hover:text-black text-[10px] font-black uppercase tracking-widest h-12 transition-all"
+                        onClick={() => toggleStatus(lead)}
+                      >
+                        {lead.status === 'read' ? <Circle className="w-4 h-4 mr-2" /> : <CheckCircle2 className="w-4 h-4 mr-2" />}
+                        Mark {lead.status === 'read' ? 'Unread' : 'Read'}
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="w-12 h-12 rounded-xl hover:bg-destructive/10 text-white/20 hover:text-destructive transition-all"
+                        onClick={() => handleDelete(lead.id)}
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="lg:w-2/3">
+                    <div className="h-full p-10 rounded-[2rem] bg-white/[0.01] border border-white/5 space-y-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                           <Globe className="w-4 h-4 text-primary/40" />
+                           <h4 className="text-lg font-headline font-bold text-white italic">{lead.subject || 'Mission Inquiry'}</h4>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-white/10" />
+                      </div>
+                      <div className="w-full h-px bg-gradient-to-r from-white/10 to-transparent" />
+                      <p className="text-md text-white/60 leading-relaxed font-light italic whitespace-pre-wrap">
+                        "{lead.message}"
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          ))
+              </motion.div>
+            ))}
+          </div>
         )}
       </div>
     </div>
