@@ -1,10 +1,9 @@
-
 import { MetadataRoute } from 'next';
 import { db } from '@/lib/firebase/config';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://kartikjindal.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com';
 
   // Fetch blog posts for sitemap
   let blogRoutes: any[] = [];

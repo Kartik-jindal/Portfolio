@@ -39,7 +39,7 @@ export const Footer = ({ config, footerLayout }: FooterProps) => {
   return (
     <footer className="relative py-24 px-8 border-t border-white/10 bg-transparent overflow-hidden">
       <div className="max-w-[1700px] mx-auto relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 md:gap-24 lg:gap-40 pt-12 pb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 md:gap-24 lg:gap-40 pt-12 pb-2">
           {/* Brand Bio */}
           <div className="lg:col-span-4 space-y-10">
             <div className="space-y-6">
@@ -89,17 +89,17 @@ export const Footer = ({ config, footerLayout }: FooterProps) => {
           <div className="lg:col-span-5 space-y-10">
             <h4 className="text-md uppercase tracking-[0.6em] font-black text-white/70">Say Hello</h4>
             <div className="space-y-10 max-w-full">
-              <a href={`mailto:${socials.email || 'hello@kartikjindal.com'}`} className="block group max-w-full">
+              <a href={`mailto:${socials.email || 'kartikjindal2003@gmail.com'}`} className="block group max-w-full">
                 <span className="text-sm uppercase tracking-widest text-primary font-black mb-3 block">General Enquiries</span>
                 <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white font-headline border-b border-white/40 group-hover:border-primary transition-colors inline-block pb-1 break-all overflow-hidden leading-tight">
                   {socials.email || 'hello@kartikjindal.com'}
                 </span>
               </a>
-              <div className="pt-4 flex flex-col gap-4">
-                <Link href="/blog" className="inline-flex items-center justify-center gap-3 text-xs uppercase tracking-[0.3em] font-black text-primary hover:text-white transition-colors py-5 px-10 rounded-full border border-primary/30 glass">
+              <div className="pt-4 flex max-w-xl flex-col gap-4">
+                <Link href="/blog" className="inline-flex items-center justify-center gap-3 text-xs uppercase tracking-[0.3em] font-black text-primary hover:text-white transition-colors py-5 px-6 rounded-full border border-primary/30 glass">
                   Visit the Journal
                 </Link>
-                <Link href="/work" className="inline-flex items-center justify-center gap-3 text-xs uppercase tracking-[0.3em] font-black text-white/80 hover:text-white transition-colors py-5 px-10 rounded-full border border-white/20 glass">
+                <Link href="/work" className="inline-flex items-center justify-center gap-3 text-xs uppercase tracking-[0.3em] font-black text-white/80 hover:text-white transition-colors py-5 px-6 rounded-full border border-white/20 glass">
                   View Full Portfolio
                 </Link>
               </div>

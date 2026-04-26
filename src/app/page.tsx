@@ -1,4 +1,3 @@
-
 import { Navbar } from '@/components/portfolio/navbar';
 import { Hero } from '@/components/portfolio/hero';
 import { About } from '@/components/portfolio/about';
@@ -160,6 +159,8 @@ export default async function Home() {
   const experiences = await getExperience();
   const testimonials = await getTestimonials();
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com';
+
   const visibility = config?.visibility || {
     showTestimonials: true,
     showExperience: true,
@@ -188,7 +189,7 @@ export default async function Home() {
             "@type": "Person",
             "name": "Kartik Jindal",
             "jobTitle": "Full Stack Architect",
-            "url": "https://kartikjindal.com",
+            "url": baseUrl,
             "sameAs": [
               config?.socials?.github,
               config?.socials?.linkedin,
