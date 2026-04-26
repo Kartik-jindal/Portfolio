@@ -4,30 +4,22 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { Save, Layers, List, AlignLeft, Plus, Trash2, Globe } from 'lucide-react';
+import { Save, Layers, List, AlignLeft, Plus, Trash2, Globe, GripVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { motion, Reorder } from 'framer-motion';
 
 export default function InterfaceAdminPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [navData, setNavData] = useState<any>({
-    navItems: [
-      { label: 'Works', href: '/work' },
-      { label: 'Vision', href: '/#about' },
-      { label: 'Timeline', href: '/#experience' },
-      { label: 'Journal', href: '/blog' },
-      { label: 'Connect', href: '/#contact' }
-    ]
-  });
-  const [footerData, setFooterData] = useState<any>({
-    bio: 'Fusing architectural precision with digital soul to build the next generation of web experiences.',
-    est: 'EST. 2025'
-  });
+  const [navItems, setNavItems] = useState<any[]>([]);
+  const [footerLinks, setFooterLinks] = useState<any[]>([]);
+  const [footerBio, setFooterBio] = useState('');
+  const [footerEst, setFooterEst] = useState('');
 
   const { toast } = useToast();
 
@@ -35,10 +27,32 @@ export default function InterfaceAdminPage() {
     const fetchData = async () => {
       try {
         const navSnap = await getDoc(doc(db, 'site_config', 'navbar'));
-        if (navSnap.exists()) setNavData(navSnap.data());
+        if (navSnap.exists()) {
+          setNavItems(navSnap.data().navItems || []);
+        } else {
+          setNavItems([
+            { id: '1', label: 'Works', href: '/work' },
+            { id: '2', label: 'Vision', href: '/#about' },
+            { id: '3', label: 'Timeline', href: '/#experience' },
+            { id: '4', label: 'Journal', href: '/blog' },
+            { id: '5', label: 'Connect', href: '/#contact' }
+          ]);
+        }
 
         const footerSnap = await getDoc(doc(db, 'site_config', 'footer'));
-        if (footerSnap.exists()) setFooterData(footerSnap.data());
+        if (footerSnap.exists()) {
+          const data = footerSnap.data();
+          setFooterBio(data.bio || '');
+          setFooterEst(data.est || '');
+          setFooterLinks(data.footerLinks || []);
+        } else {
+          setFooterLinks([
+            { id: 'f1', label: 'Home', href: '/' },
+            { id: 'f2', label: 'Selected Work', href: '/work' },
+            { id: 'f3', label: 'About Story', href: '/#about' },
+            { id: 'f4', label: 'Journal', href: '/blog' }
+          ]);
+        }
       } catch (error) {
         console.error(error);
       } finally {
@@ -51,8 +65,12 @@ export default function InterfaceAdminPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await setDoc(doc(db, 'site_config', 'navbar'), navData);
-      await setDoc(doc(db, 'site_config', 'footer'), footerData);
+      await setDoc(doc(db, 'site_config', 'navbar'), { navItems });
+      await setDoc(doc(db, 'site_config', 'footer'), { 
+        bio: footerBio, 
+        est: footerEst,
+        footerLinks 
+      });
       toast({ title: 'Interface Sync', description: 'Global layout parameters committed.' });
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Sync Failed', description: error.message });
@@ -62,19 +80,29 @@ export default function InterfaceAdminPage() {
   };
 
   const addNavItem = () => {
-    setNavData({ ...navData, navItems: [...navData.navItems, { label: 'New Link', href: '#' }] });
+    const id = Math.random().toString(36).substring(7);
+    setNavItems([...navItems, { id, label: 'New Link', href: '#' }]);
   };
 
-  const removeNavItem = (idx: number) => {
-    const items = [...navData.navItems];
-    items.splice(idx, 1);
-    setNavData({ ...navData, navItems: items });
+  const removeNavItem = (id: string) => {
+    setNavItems(navItems.filter(item => item.id !== id));
   };
 
-  const updateNavItem = (idx: number, field: string, val: string) => {
-    const items = [...navData.navItems];
-    items[idx][field] = val;
-    setNavData({ ...navData, navItems: items });
+  const updateNavItem = (id: string, field: string, val: string) => {
+    setNavItems(navItems.map(item => item.id === id ? { ...item, [field]: val } : item));
+  };
+
+  const addFooterLink = () => {
+    const id = Math.random().toString(36).substring(7);
+    setFooterLinks([...footerLinks, { id, label: 'New Link', href: '#' }]);
+  };
+
+  const removeFooterLink = (id: string) => {
+    setFooterLinks(footerLinks.filter(item => item.id !== id));
+  };
+
+  const updateFooterLink = (id: string, field: string, val: string) => {
+    setFooterLinks(footerLinks.map(item => item.id === id ? { ...item, [field]: val } : item));
   };
 
   if (loading) return <div className="h-96 flex items-center justify-center"><div className="w-2 h-2 bg-primary animate-ping rounded-full" /></div>;
@@ -109,44 +137,84 @@ export default function InterfaceAdminPage() {
               </Button>
             </div>
             
-            <div className="space-y-4">
-              {navData.navItems?.map((item: any, i: number) => (
-                <div key={i} className="grid grid-cols-12 gap-4 items-center p-4 rounded-2xl bg-white/5 border border-white/5 group hover:border-primary/20 transition-all">
+            <Reorder.Group axis="y" values={navItems} onReorder={setNavItems} className="space-y-4">
+              {navItems.map((item) => (
+                <Reorder.Item 
+                  key={item.id} 
+                  value={item}
+                  className="grid grid-cols-12 gap-4 items-center p-4 rounded-2xl bg-white/5 border border-white/5 group hover:border-primary/20 transition-all cursor-grab active:cursor-grabbing"
+                >
+                  <div className="col-span-1 flex items-center justify-center text-white/20">
+                    <GripVertical className="w-5 h-5" />
+                  </div>
                   <div className="col-span-5 space-y-1">
                     <Label className="text-[8px] uppercase font-black text-white/30 ml-2">Label</Label>
-                    <Input value={item.label} onChange={e => updateNavItem(i, 'label', e.target.value)} className="bg-transparent border-white/5 h-10 text-xs font-bold" />
+                    <Input value={item.label} onChange={e => updateNavItem(item.id, 'label', e.target.value)} className="bg-transparent border-white/5 h-10 text-xs font-bold" />
                   </div>
-                  <div className="col-span-5 space-y-1">
+                  <div className="col-span-4 space-y-1">
                     <Label className="text-[8px] uppercase font-black text-white/30 ml-2">Path / URL</Label>
-                    <Input value={item.href} onChange={e => updateNavItem(i, 'href', e.target.value)} className="bg-transparent border-white/5 h-10 text-xs font-mono" />
+                    <Input value={item.href} onChange={e => updateNavItem(item.id, 'href', e.target.value)} className="bg-transparent border-white/5 h-10 text-xs font-mono" />
                   </div>
                   <div className="col-span-2 flex justify-end pt-4">
-                    <Button onClick={() => removeNavItem(i)} variant="ghost" size="icon" className="w-10 h-10 rounded-xl hover:bg-destructive/10 text-white/20 hover:text-destructive">
+                    <Button onClick={() => removeNavItem(item.id)} variant="ghost" size="icon" className="w-10 h-10 rounded-xl hover:bg-destructive/10 text-white/20 hover:text-destructive">
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
-                </div>
+                </Reorder.Item>
               ))}
-            </div>
+            </Reorder.Group>
           </div>
 
           {/* Footer Editor */}
-          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
+          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-10">
             <div className="flex items-center gap-4 text-primary">
               <AlignLeft className="w-6 h-6" />
               <h3 className="text-lg font-headline font-black italic tracking-tight">Footer Identity</h3>
             </div>
+            
             <div className="space-y-6">
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Brand Bio</Label>
-                <Textarea value={footerData.bio} onChange={e => setFooterData({ ...footerData, bio: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" />
+                <Textarea value={footerBio} onChange={e => setFooterBio(e.target.value)} className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" />
               </div>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Establishment Mark</Label>
-                  <Input value={footerData.est} onChange={e => setFooterData({ ...footerData, est: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
-                </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Establishment Mark</Label>
+                <Input value={footerEst} onChange={e => setFooterEst(e.target.value)} className="bg-white/5 border-white/5 rounded-xl h-14" />
               </div>
+            </div>
+
+            <div className="space-y-6 pt-6 border-t border-white/5">
+              <div className="flex items-center justify-between">
+                <h4 className="text-[10px] uppercase font-black tracking-widest text-white/40">Footer Links</h4>
+                <Button onClick={addFooterLink} variant="outline" size="sm" className="h-8 rounded-lg border-white/10 text-[9px] uppercase font-black tracking-widest">
+                  <Plus className="w-3 h-3 mr-1" /> Add Link
+                </Button>
+              </div>
+
+              <Reorder.Group axis="y" values={footerLinks} onReorder={setFooterLinks} className="space-y-3">
+                {footerLinks.map((link) => (
+                  <Reorder.Item 
+                    key={link.id} 
+                    value={link}
+                    className="grid grid-cols-12 gap-3 items-center p-3 rounded-xl bg-white/[0.02] border border-white/5 group hover:border-primary/20 transition-all cursor-grab active:cursor-grabbing"
+                  >
+                    <div className="col-span-1 flex items-center justify-center text-white/10">
+                      <GripVertical className="w-4 h-4" />
+                    </div>
+                    <div className="col-span-5">
+                      <Input value={link.label} onChange={e => updateFooterLink(link.id, 'label', e.target.value)} className="bg-transparent border-none h-8 text-[10px] font-bold" placeholder="Label" />
+                    </div>
+                    <div className="col-span-4">
+                      <Input value={link.href} onChange={e => updateFooterLink(link.id, 'href', e.target.value)} className="bg-transparent border-none h-8 text-[10px] font-mono" placeholder="URL" />
+                    </div>
+                    <div className="col-span-2 flex justify-end">
+                      <Button onClick={() => removeFooterLink(link.id)} variant="ghost" size="icon" className="w-8 h-8 rounded-lg hover:bg-destructive/10 text-white/20 hover:text-destructive">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </Reorder.Item>
+                ))}
+              </Reorder.Group>
             </div>
           </div>
         </div>
@@ -158,14 +226,14 @@ export default function InterfaceAdminPage() {
               <h3 className="text-[10px] font-black uppercase tracking-widest">Interface Logic</h3>
             </div>
             <p className="text-xs text-white/40 leading-relaxed font-bold italic">
-              Changes here update the structural navigation of the entire application. The Footer Brand Bio is optimized for a maximum of 150 characters to maintain grid stability.
+              Drag the grip handles to adjust positioning. Changes update the structural navigation of the entire application immediately upon sync.
             </p>
             <div className="pt-6 border-t border-white/5 space-y-4">
                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5">
                   <span className="text-[9px] font-black uppercase text-white/20 tracking-widest block mb-4">Nav Preview</span>
                   <div className="flex flex-wrap gap-2">
-                    {navData.navItems?.map((item: any, i: number) => (
-                      <span key={i} className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest text-white/60">
+                    {navItems?.map((item: any) => (
+                      <span key={item.id} className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest text-white/60">
                         {item.label}
                       </span>
                     ))}
@@ -180,7 +248,7 @@ export default function InterfaceAdminPage() {
                 <span className="text-[10px] font-black uppercase tracking-widest">Global Resilience</span>
              </div>
              <p className="text-xs text-white/60 font-light leading-relaxed">
-               The Navbar automatically handles scroll-detection and transparency. Footer social links are managed separately via the <Link href="/admin/settings" className="text-primary hover:underline">Global Settings</Link> portal.
+               The Navbar automatically handles scroll-detection. Footer social links are managed separately via the <Link href="/admin/settings" className="text-primary hover:underline">Global Settings</Link> portal.
              </p>
           </div>
         </div>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -19,8 +20,12 @@ export const Footer = ({ config, footerLayout }: FooterProps) => {
   useEffect(() => {
     if (!footerLayout) {
       const fetchFooter = async () => {
-        const docSnap = await getDoc(doc(db, 'site_config', 'footer'));
-        if (docSnap.exists()) setLayout(docSnap.data());
+        try {
+          const docSnap = await getDoc(doc(db, 'site_config', 'footer'));
+          if (docSnap.exists()) setLayout(docSnap.data());
+        } catch (e) {
+          console.error("Footer Fetch Error:", e);
+        }
       };
       fetchFooter();
     }
@@ -35,6 +40,12 @@ export const Footer = ({ config, footerLayout }: FooterProps) => {
 
   const footerBio = layout?.bio || 'Fusing architectural precision with digital soul to build the next generation of web experiences.';
   const estMark = layout?.est || 'EST. 2025';
+  const footerLinks = layout?.footerLinks || [
+    { label: 'Home', href: '/' },
+    { label: 'Selected Work', href: '/work' },
+    { label: 'About Story', href: '/#about' },
+    { label: 'Journal', href: '/blog' }
+  ];
 
   return (
     <footer className="relative py-24 px-8 border-t border-white/10 bg-transparent overflow-hidden">
@@ -69,13 +80,8 @@ export const Footer = ({ config, footerLayout }: FooterProps) => {
           <div className="lg:col-span-3 space-y-10">
             <h4 className="text-md uppercase tracking-[0.6em] font-black text-white/70">Navigation</h4>
             <ul className="space-y-6 font-body">
-              {[
-                { label: 'Home', href: '/' },
-                { label: 'Selected Work', href: '/work' },
-                { label: 'About Story', href: '/#about' },
-                { label: 'Journal', href: '/blog' }
-              ].map((item) => (
-                <li key={item.label}>
+              {footerLinks.map((item: any, i: number) => (
+                <li key={i}>
                   <Link href={item.href} className="text-white hover:text-primary transition-all flex items-center gap-3 group text-xl md:text-2xl">
                     {item.label}
                     <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
