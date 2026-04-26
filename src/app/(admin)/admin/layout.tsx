@@ -17,7 +17,9 @@ import {
   ChevronRight,
   Briefcase,
   Quote,
-  User
+  User,
+  Zap,
+  Layers
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -59,11 +61,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { label: 'Overview', href: '/admin', icon: LayoutDashboard },
+    { label: 'Hero Section', href: '/admin/hero', icon: Zap },
     { label: 'Projects', href: '/admin/projects', icon: FolderKanban },
     { label: 'Journal', href: '/admin/blog', icon: FileText },
     { label: 'About Story', href: '/admin/about', icon: User },
     { label: 'Experience', href: '/admin/experience', icon: Briefcase },
     { label: 'Voices', href: '/admin/testimonials', icon: Quote },
+    { label: 'Layout Config', href: '/admin/interface', icon: Layers },
     { label: 'Leads', href: '/admin/leads', icon: Users },
     { label: 'Settings', href: '/admin/settings', icon: Settings },
   ];

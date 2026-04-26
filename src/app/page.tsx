@@ -23,6 +23,39 @@ async function getGlobalConfig() {
   }
 }
 
+async function getHeroData() {
+  try {
+    const docRef = doc(db, 'site_config', 'hero');
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? docSnap.data() : null;
+  } catch (err) {
+    console.error("Firebase Error (Hero):", err);
+    return null;
+  }
+}
+
+async function getNavbarData() {
+  try {
+    const docRef = doc(db, 'site_config', 'navbar');
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? docSnap.data() : null;
+  } catch (err) {
+    console.error("Firebase Error (Navbar):", err);
+    return null;
+  }
+}
+
+async function getFooterData() {
+  try {
+    const docRef = doc(db, 'site_config', 'footer');
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? docSnap.data() : null;
+  } catch (err) {
+    console.error("Firebase Error (Footer):", err);
+    return null;
+  }
+}
+
 async function getAboutData() {
   try {
     const docRef = doc(db, 'site_config', 'about');
@@ -104,6 +137,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
   const config = await getGlobalConfig();
+  const heroData = await getHeroData();
+  const navData = await getNavbarData();
+  const footerLayout = await getFooterData();
   const aboutData = await getAboutData();
   const initialProjects = await getProjects(3);
   const experiences = await getExperience();
@@ -117,15 +153,15 @@ export default async function Home() {
 
   return (
     <main className="relative">
-      <Navbar resumeUrl={config?.resume?.fileUrl} />
+      <Navbar navConfig={navData} resumeUrl={config?.resume?.fileUrl} />
       <ScrollIndicator />
-      <Hero />
+      <Hero initialData={heroData} />
       <About initialData={aboutData} />
       <Projects initialData={initialProjects} limit={3} />
       {visibility.showExperience && <Experience initialData={experiences} />}
       {visibility.showTestimonials && <Testimonials initialData={testimonials} />}
       <Contact />
-      <Footer config={config} />
+      <Footer config={config} footerLayout={footerLayout} />
       
       {/* Structured Data (JSON-LD) */}
       <script

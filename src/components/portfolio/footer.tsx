@@ -1,24 +1,41 @@
 
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Github, Twitter, Linkedin, Instagram, ExternalLink, Mail } from 'lucide-react';
 import Link from 'next/link';
+import { db } from '@/lib/firebase/config';
+import { doc, getDoc } from 'firebase/firestore';
 
 interface FooterProps {
   config?: any;
+  footerLayout?: any;
 }
 
-export const Footer = ({ config }: FooterProps) => {
+export const Footer = ({ config, footerLayout }: FooterProps) => {
+  const [layout, setLayout] = useState(footerLayout);
   const socials = config?.socials || {};
   
+  useEffect(() => {
+    if (!footerLayout) {
+      const fetchFooter = async () => {
+        const docSnap = await getDoc(doc(db, 'site_config', 'footer'));
+        if (docSnap.exists()) setLayout(docSnap.data());
+      };
+      fetchFooter();
+    }
+  }, [footerLayout]);
+
   const socialItems = [
     { icon: Github, href: socials.github },
     { icon: Twitter, href: socials.twitter },
     { icon: Linkedin, href: socials.linkedin },
     { icon: Instagram, href: socials.instagram }
   ].filter(item => item.href);
+
+  const footerBio = layout?.bio || 'Fusing architectural precision with digital soul to build the next generation of web experiences.';
+  const estMark = layout?.est || 'EST. 2025';
 
   return (
     <footer className="relative py-12 px-6 border-t border-white/10 bg-transparent overflow-hidden">
@@ -29,7 +46,7 @@ export const Footer = ({ config }: FooterProps) => {
             <div className="space-y-6">
               <h3 className="text-4xl md:text-6xl font-headline font-bold italic tracking-tighter text-white">Kartik Jindal.</h3>
               <p className="text-muted-foreground max-w-md text-xl md:text-2xl font-light leading-relaxed font-body">
-                Fusing architectural precision with digital soul to build the next generation of web experiences.
+                {footerBio}
               </p>
             </div>
             
@@ -95,7 +112,7 @@ export const Footer = ({ config }: FooterProps) => {
           <div className="flex items-center gap-8">
             <span>&copy; {new Date().getFullYear()} Kartik Jindal</span>
             <span className="hidden md:block w-1 h-1 rounded-full bg-white/30" />
-            <span className="hidden md:block">EST. 2025</span>
+            <span className="hidden md:block">{estMark}</span>
           </div>
           <div className="flex gap-12">
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>

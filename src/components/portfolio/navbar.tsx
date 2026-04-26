@@ -5,14 +5,18 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
+import { db } from '@/lib/firebase/config';
+import { doc, getDoc } from 'firebase/firestore';
 
 interface NavbarProps {
   resumeUrl?: string;
+  navConfig?: any;
 }
 
-export const Navbar = ({ resumeUrl }: NavbarProps) => {
+export const Navbar = ({ resumeUrl, navConfig }: NavbarProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [config, setConfig] = useState(navConfig);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -20,7 +24,17 @@ export const Navbar = ({ resumeUrl }: NavbarProps) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navItems = [
+  useEffect(() => {
+    if (!navConfig) {
+      const fetchNav = async () => {
+        const docSnap = await getDoc(doc(db, 'site_config', 'navbar'));
+        if (docSnap.exists()) setConfig(docSnap.data());
+      };
+      fetchNav();
+    }
+  }, [navConfig]);
+
+  const navItems = config?.navItems || [
     { label: "Works", href: "/work" },
     { label: "Vision", href: "/#about" },
     { label: "Timeline", href: "/#experience" },
@@ -48,7 +62,7 @@ export const Navbar = ({ resumeUrl }: NavbarProps) => {
             animate={{ opacity: 1, y: 0 }}
             className={`flex items-center gap-1 px-3 py-2 rounded-full transition-all duration-700 glass ${isScrolled ? 'opacity-100' : 'opacity-100'}`}
           >
-            {navItems.map((item) => (
+            {navItems.map((item: any) => (
               <Link
                 key={item.label}
                 href={item.href}
@@ -97,7 +111,7 @@ export const Navbar = ({ resumeUrl }: NavbarProps) => {
               <X className="w-8 h-8" />
             </button>
             <div className="flex flex-col items-center gap-8">
-              {navItems.map((item, i) => (
+              {navItems.map((item: any, i: number) => (
                 <Link
                   key={item.label}
                   href={item.href}
