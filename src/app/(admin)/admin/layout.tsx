@@ -14,8 +14,7 @@ import {
   LogOut,
   Menu,
   X,
-  ChevronRight,
-  ShieldAlert
+  ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -111,8 +110,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <div className="p-4 mt-auto">
           <button 
-            onClick={() => {
-              signOut();
+            onClick={async () => {
+              await signOut();
               router.push('/');
             }}
             className="w-full flex items-center gap-4 px-4 py-3 text-white/40 hover:text-destructive hover:bg-destructive/5 rounded-xl transition-all border border-transparent"
@@ -124,7 +123,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </motion.aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto relative bg-grain">
+      <main className="flex-1 overflow-y-auto relative">
+        {/* Grain Overlay - Applied as a child to avoid affecting main container opacity */}
+        <div className="absolute inset-0 bg-grain pointer-events-none opacity-[0.03] z-0" />
+        
         <header className="h-20 border-b border-white/5 flex items-center justify-between px-10 bg-[#050505]/50 backdrop-blur-xl sticky top-0 z-40">
           <div className="flex items-center gap-4">
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">System Status:</span>
@@ -136,16 +138,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           <div className="flex items-center gap-6">
              <div className="flex flex-col items-end">
-               <span className="text-xs font-bold text-white">{user.email}</span>
+               <span className="text-xs font-bold text-white">{user?.email}</span>
                <span className="text-[9px] uppercase font-black tracking-widest text-white/30">{role}</span>
              </div>
              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
-                <span className="text-xs font-black text-primary">{user.email?.charAt(0).toUpperCase()}</span>
+                <span className="text-xs font-black text-primary">{user?.email?.charAt(0).toUpperCase()}</span>
              </div>
           </div>
         </header>
 
-        <div className="p-10 max-w-7xl mx-auto">
+        <div className="p-10 max-w-7xl mx-auto relative z-10">
           <AnimatePresence mode="wait">
             <motion.div
               key={pathname}
