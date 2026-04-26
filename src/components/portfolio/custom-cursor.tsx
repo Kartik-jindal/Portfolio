@@ -1,7 +1,9 @@
+
 "use client";
 
 import React, { useEffect, useState } from 'react';
 import { motion, useSpring, useMotionValue } from 'framer-motion';
+import { createPortal } from 'react-dom';
 
 export const CustomCursor = () => {
   const [mounted, setMounted] = useState(false);
@@ -74,10 +76,10 @@ export const CustomCursor = () => {
     }
   };
 
-  return (
-    <>
+  const cursorContent = (
+    <div className="fixed inset-0 pointer-events-none z-[999999999]">
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[100000000] hidden lg:flex items-center justify-center overflow-hidden"
+        className="fixed top-0 left-0 flex items-center justify-center overflow-hidden"
         animate={cursorVariant}
         variants={variants}
         style={{
@@ -95,7 +97,7 @@ export const CustomCursor = () => {
         )}
       </motion.div>
       <motion.div 
-        className="fixed top-0 left-0 w-1.5 h-1.5 bg-primary rounded-full pointer-events-none z-[100000001] hidden lg:block"
+        className="fixed top-0 left-0 w-1.5 h-1.5 bg-primary rounded-full"
         style={{
           x: mouseX,
           y: mouseY,
@@ -103,6 +105,8 @@ export const CustomCursor = () => {
           translateY: "-50%",
         }}
       />
-    </>
+    </div>
   );
+
+  return createPortal(cursorContent, document.body);
 };
