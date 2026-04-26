@@ -61,26 +61,26 @@ export const SeoHud = ({ title = '', description = '', keywords = '', ogImage = 
   };
 
   return (
-    <div className="glass p-8 rounded-[2.5rem] border-white/5 space-y-8 relative overflow-hidden">
-      <div className="absolute top-0 right-0 p-8 opacity-5">
-        <ShieldCheck className="w-24 h-24 text-primary" />
+    <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10 relative overflow-hidden">
+      <div className="absolute top-0 right-0 p-10 opacity-5">
+        <ShieldCheck className="w-28 h-28 text-primary" />
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-5">
         <div className="flex items-center justify-between">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">SEO Health Index</h3>
-          <span className={`text-2xl font-headline font-black italic ${score > 70 ? 'text-primary' : 'text-yellow-500'}`}>{score}<span className="text-white/20 text-xs not-italic font-sans">/100</span></span>
+          <h3 className="text-[13px] font-black uppercase tracking-[0.4em] text-white/40">SEO Health Index</h3>
+          <span className={`text-3xl font-headline font-black italic ${score > 70 ? 'text-primary' : 'text-yellow-500'}`}>{score}<span className="text-white/20 text-sm not-italic font-sans">/100</span></span>
         </div>
-        <Progress value={score} className="h-1 bg-white/5" />
+        <Progress value={score} className="h-1.5 bg-white/5" />
       </div>
 
-      <div className="grid gap-6">
-        <div className="space-y-2">
-          <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest">
+      <div className="grid gap-8">
+        <div className="space-y-3">
+          <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-widest">
             <span className="text-white/40">Title Tags</span>
             <span className={getTitleStatus().color}>{getTitleStatus().label}</span>
           </div>
-          <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+          <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
             <div 
               className={`h-full transition-all duration-1000 ${getTitleStatus().color.replace('text', 'bg')}`}
               style={{ width: `${Math.min(100, ((title || '').length / 70) * 100)}%` }}
@@ -88,12 +88,12 @@ export const SeoHud = ({ title = '', description = '', keywords = '', ogImage = 
           </div>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest">
+        <div className="space-y-3">
+          <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-widest">
             <span className="text-white/40">Meta Description</span>
             <span className={getDescStatus().color}>{getDescStatus().label}</span>
           </div>
-          <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+          <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
             <div 
               className={`h-full transition-all duration-1000 ${getDescStatus().color.replace('text', 'bg')}`}
               style={{ width: `${Math.min(100, ((description || '').length / 180) * 100)}%` }}
@@ -101,14 +101,14 @@ export const SeoHud = ({ title = '', description = '', keywords = '', ogImage = 
           </div>
         </div>
 
-        <div className="pt-4 border-t border-white/5 space-y-4">
-          <div className="flex items-center gap-3">
-             {(keywords || '').split(',').filter(k => k.trim()).length >= 3 ? <CheckCircle2 className="w-3 h-3 text-green-500" /> : <AlertTriangle className="w-3 h-3 text-yellow-500" />}
-             <span className="text-[8px] font-black uppercase tracking-widest text-white/40">Keyword Density</span>
+        <div className="pt-6 border-t border-white/5 space-y-5">
+          <div className="flex items-center gap-4">
+             {(keywords || '').split(',').filter(k => k.trim()).length >= 3 ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <AlertTriangle className="w-4 h-4 text-yellow-500" />}
+             <span className="text-[11px] font-black uppercase tracking-widest text-white/40">Keyword Density</span>
           </div>
-          <div className="flex items-center gap-3">
-             {ogImage ? <CheckCircle2 className="w-3 h-3 text-green-500" /> : <Info className="w-3 h-3 text-white/20" />}
-             <span className="text-[8px] font-black uppercase tracking-widest text-white/40">Social Graph Image</span>
+          <div className="flex items-center gap-4">
+             {ogImage ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Info className="w-4 h-4 text-white/20" />}
+             <span className="text-[11px] font-black uppercase tracking-widest text-white/40">Social Graph Image</span>
           </div>
         </div>
       </div>

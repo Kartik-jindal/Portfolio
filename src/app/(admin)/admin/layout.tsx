@@ -44,7 +44,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <motion.div
           animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.6, 0.3] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="text-primary font-black text-sm tracking-[1em] uppercase"
+          className="text-primary font-black text-base tracking-[1em] uppercase"
         >
           AUTHENTICATING...
         </motion.div>
@@ -81,12 +81,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Admin Sidebar */}
       <motion.aside
         initial={false}
-        animate={{ width: isSidebarOpen ? 280 : 80 }}
+        animate={{ width: isSidebarOpen ? 300 : 90 }}
         className="bg-[#0a0a0a] border-r border-white/5 flex flex-col relative z-50"
       >
         <div className="p-8 flex items-center justify-between">
           <Link href="/admin">
-            <div className={`font-headline font-black italic text-3xl tracking-tighter transition-opacity ${!isSidebarOpen && 'opacity-0'}`}>
+            <div className={`font-headline font-black italic text-4xl tracking-tighter transition-opacity ${!isSidebarOpen && 'opacity-0'}`}>
               Admin<span className="text-primary">.</span>
             </div>
           </Link>
@@ -94,7 +94,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="p-2 hover:bg-white/5 rounded-lg transition-colors text-white/40 hover:text-primary"
           >
-            {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
 
@@ -104,16 +104,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             return (
               <Link key={item.label} href={item.href}>
                 <div className={`
-                  flex items-center gap-4 px-4 py-3 rounded-xl transition-all group relative
+                  flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all group relative
                   ${isActive ? 'bg-primary/10 text-primary border border-primary/20' : 'text-white/40 hover:text-white hover:bg-white/5 border border-transparent'}
                 `}>
-                  <item.icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary' : 'group-hover:text-primary'}`} />
+                  <item.icon className={`w-6 h-6 shrink-0 ${isActive ? 'text-primary' : 'group-hover:text-primary'}`} />
                   {isSidebarOpen && (
-                    <span className="text-sm font-black uppercase tracking-widest">{item.label}</span>
+                    <span className="text-base font-black uppercase tracking-widest">{item.label}</span>
                   )}
                   {isActive && isSidebarOpen && (
                     <motion.div layoutId="activeNav" className="absolute right-4">
-                      <ChevronRight className="w-4 h-4" />
+                      <ChevronRight className="w-5 h-5" />
                     </motion.div>
                   )}
                 </div>
@@ -128,10 +128,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               await signOut();
               router.push('/');
             }}
-            className="w-full flex items-center gap-4 px-4 py-3 text-white/40 hover:text-destructive hover:bg-destructive/5 rounded-xl transition-all border border-transparent"
+            className="w-full flex items-center gap-4 px-4 py-4 text-white/40 hover:text-destructive hover:bg-destructive/5 rounded-xl transition-all border border-transparent"
           >
-            <LogOut className="w-5 h-5 shrink-0" />
-            {isSidebarOpen && <span className="text-sm font-black uppercase tracking-widest">Terminate Session</span>}
+            <LogOut className="w-6 h-6 shrink-0" />
+            {isSidebarOpen && <span className="text-base font-black uppercase tracking-widest">Terminate Session</span>}
           </button>
         </div>
       </motion.aside>
@@ -140,22 +140,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <main className="flex-1 overflow-y-auto relative">
         <div className="absolute inset-0 bg-grain pointer-events-none opacity-[0.03] z-0" />
         
-        <header className="h-20 border-b border-white/5 flex items-center justify-between px-10 bg-[#050505]/50 backdrop-blur-xl sticky top-0 z-40">
+        <header className="h-24 border-b border-white/5 flex items-center justify-between px-10 bg-[#050505]/50 backdrop-blur-xl sticky top-0 z-40">
           <div className="flex items-center gap-4">
-            <span className="text-[12px] font-black uppercase tracking-[0.4em] text-white/20">System Status:</span>
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              <span className="text-[12px] font-black uppercase tracking-widest text-primary">Live_Operational</span>
+            <span className="text-[14px] font-black uppercase tracking-[0.4em] text-white/20">System Status:</span>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <span className="text-[14px] font-black uppercase tracking-widest text-primary">Live_Operational</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-8">
              <div className="flex flex-col items-end">
-               <span className="text-sm font-bold text-white">{user?.email}</span>
-               <span className="text-[11px] uppercase font-black tracking-widest text-white/30">{role}</span>
+               <span className="text-base font-bold text-white">{user?.email}</span>
+               <span className="text-[13px] uppercase font-black tracking-widest text-white/30">{role}</span>
              </div>
-             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
-                <span className="text-sm font-black text-primary">{user?.email?.charAt(0).toUpperCase()}</span>
+             <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+                <span className="text-lg font-black text-primary">{user?.email?.charAt(0).toUpperCase()}</span>
              </div>
           </div>
         </header>

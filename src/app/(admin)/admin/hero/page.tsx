@@ -53,91 +53,91 @@ export default function HeroAdminPage() {
     }
   };
 
-  if (loading) return <div className="h-96 flex items-center justify-center"><div className="w-2 h-2 bg-primary animate-ping rounded-full" /></div>;
+  if (loading) return <div className="h-96 flex items-center justify-center"><div className="w-2.5 h-2.5 bg-primary animate-ping rounded-full" /></div>;
 
   return (
-    <div className="space-y-10 pb-20">
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-2">
-          <span className="text-primary font-black uppercase tracking-[0.6em] text-[12px]">Brand Entrance</span>
-          <h1 className="text-5xl font-headline font-black italic tracking-tighter text-white">Hero Commander.</h1>
+    <div className="space-y-12 pb-20">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div className="space-y-4">
+          <span className="text-primary font-black uppercase tracking-[0.6em] text-[14px]">Brand Entrance</span>
+          <h1 className="text-6xl font-headline font-black italic tracking-tighter text-white">Hero Commander.</h1>
         </div>
         <Button 
           onClick={handleSubmit}
           disabled={saving}
-          className="h-14 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-8 group text-sm"
+          className="h-16 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-10 group text-base"
         >
-          {saving ? 'Syncing...' : 'Sync Hero'} <Save className="w-6 h-6 ml-2 group-hover:scale-110 transition-transform" />
+          {saving ? 'Syncing...' : 'Sync Hero'} <Save className="w-7 h-7 ml-3 group-hover:scale-110 transition-transform" />
         </Button>
       </header>
 
       <div className="grid lg:grid-cols-12 gap-10">
         <div className="lg:col-span-8 space-y-10">
           {/* Main Copy */}
-          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
-            <div className="flex items-center gap-4 text-primary">
-              <Type className="w-7 h-7" />
-              <h3 className="text-xl font-headline font-black italic tracking-tight">Core Copy</h3>
+          <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
+            <div className="flex items-center gap-5 text-primary">
+              <Type className="w-8 h-8" />
+              <h3 className="text-2xl font-headline font-black italic tracking-tight">Core Copy</h3>
             </div>
             
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <Label className="text-[12px] uppercase font-black tracking-widest text-white/40">Badge Label</Label>
-                <Input value={formData.badge} onChange={e => setFormData({ ...formData, badge: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-base" placeholder="Full Stack Architect" />
+            <div className="space-y-8">
+              <div className="space-y-3">
+                <Label className="text-[14px] uppercase font-black tracking-widest text-white/40">Badge Label</Label>
+                <Input value={formData.badge} onChange={e => setFormData({ ...formData, badge: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" placeholder="Full Stack Architect" />
               </div>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label className="text-[12px] uppercase font-black tracking-widest text-white/40">Title Main (Solid)</Label>
-                  <Input value={formData.titleMain} onChange={e => setFormData({ ...formData, titleMain: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-base" />
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <Label className="text-[14px] uppercase font-black tracking-widest text-white/40">Title Main (Solid)</Label>
+                  <Input value={formData.titleMain} onChange={e => setFormData({ ...formData, titleMain: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" />
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-[12px] uppercase font-black tracking-widest text-white/40">Title Highlight (Outline)</Label>
-                  <Input value={formData.titleHighlight} onChange={e => setFormData({ ...formData, titleHighlight: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-base" />
+                <div className="space-y-3">
+                  <Label className="text-[14px] uppercase font-black tracking-widest text-white/40">Title Highlight (Outline)</Label>
+                  <Input value={formData.titleHighlight} onChange={e => setFormData({ ...formData, titleHighlight: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label className="text-[12px] uppercase font-black tracking-widest text-white/40">Narrative Subheadline</Label>
-                <Textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[140px] text-lg" />
+              <div className="space-y-3">
+                <Label className="text-[14px] uppercase font-black tracking-widest text-white/40">Narrative Subheadline</Label>
+                <Textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[160px] text-xl leading-relaxed" />
               </div>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
-            <div className="flex items-center gap-4 text-primary">
-              <Zap className="w-7 h-7" />
-              <h3 className="text-xl font-headline font-black italic tracking-tight">Call to Action</h3>
+          <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
+            <div className="flex items-center gap-5 text-primary">
+              <Zap className="w-8 h-8" />
+              <h3 className="text-2xl font-headline font-black italic tracking-tight">Call to Action</h3>
             </div>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label className="text-[12px] uppercase font-black tracking-widest text-white/40">Primary Button</Label>
-                <Input value={formData.ctaPrimary} onChange={e => setFormData({ ...formData, ctaPrimary: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-base" />
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <Label className="text-[14px] uppercase font-black tracking-widest text-white/40">Primary Button</Label>
+                <Input value={formData.ctaPrimary} onChange={e => setFormData({ ...formData, ctaPrimary: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" />
               </div>
-              <div className="space-y-2">
-                <Label className="text-[12px] uppercase font-black tracking-widest text-white/40">Secondary Button</Label>
-                <Input value={formData.ctaSecondary} onChange={e => setFormData({ ...formData, ctaSecondary: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-base" />
+              <div className="space-y-3">
+                <Label className="text-[14px] uppercase font-black tracking-widest text-white/40">Secondary Button</Label>
+                <Input value={formData.ctaSecondary} onChange={e => setFormData({ ...formData, ctaSecondary: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" />
               </div>
             </div>
           </div>
         </div>
 
         <div className="lg:col-span-4">
-          <div className="glass p-8 rounded-[2rem] border-white/5 space-y-6">
-            <div className="flex items-center gap-3 text-primary">
-              <Sparkles className="w-5 h-5" />
-              <h3 className="text-[12px] font-black uppercase tracking-widest">Live Preview Notes</h3>
+          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
+            <div className="flex items-center gap-4 text-primary">
+              <Sparkles className="w-6 h-6" />
+              <h3 className="text-[14px] font-black uppercase tracking-widest">Live Preview Notes</h3>
             </div>
-            <p className="text-sm text-white/40 leading-relaxed font-bold italic">
+            <p className="text-base text-white/40 leading-relaxed font-bold italic">
               Changes to the Hero section will affect the initial impact of your portfolio. Ensure the "Main Title" and "Highlight Title" create a balanced visual hierarchy.
             </p>
-            <div className="pt-6 border-t border-white/5 space-y-4">
-               <div className="p-4 rounded-xl bg-primary/10 border border-primary/20">
-                  <span className="text-[10px] font-black uppercase text-primary tracking-widest block mb-2">Primary CTA</span>
-                  <div className="h-12 rounded-lg bg-primary flex items-center justify-center text-black text-[12px] font-black uppercase">{formData.ctaPrimary}</div>
+            <div className="pt-8 border-t border-white/5 space-y-6">
+               <div className="p-6 rounded-2xl bg-primary/10 border border-primary/20">
+                  <span className="text-[12px] font-black uppercase text-primary tracking-widest block mb-4">Primary CTA</span>
+                  <div className="h-14 rounded-xl bg-primary flex items-center justify-center text-black text-[14px] font-black uppercase">{formData.ctaPrimary}</div>
                </div>
-               <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-[10px] font-black uppercase text-white/40 tracking-widest block mb-2">Secondary CTA</span>
-                  <div className="h-12 rounded-lg border border-white/20 flex items-center justify-center text-white text-[12px] font-black uppercase">{formData.ctaSecondary}</div>
+               <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                  <span className="text-[12px] font-black uppercase text-white/40 tracking-widest block mb-4">Secondary CTA</span>
+                  <div className="h-14 rounded-xl border border-white/20 flex items-center justify-center text-white text-[14px] font-black uppercase">{formData.ctaSecondary}</div>
                </div>
             </div>
           </div>
