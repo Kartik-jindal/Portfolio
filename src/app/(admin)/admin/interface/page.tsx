@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -28,7 +27,12 @@ export default function InterfaceAdminPage() {
       try {
         const navSnap = await getDoc(doc(db, 'site_config', 'navbar'));
         if (navSnap.exists()) {
-          setNavItems(navSnap.data().navItems || []);
+          const items = navSnap.data().navItems || [];
+          // Ensure stable IDs for Reorder logic
+          setNavItems(items.map((item: any, i: number) => ({
+            ...item,
+            id: item.id || `nav-${i}-${Math.random().toString(36).substring(2, 7)}`
+          })));
         } else {
           setNavItems([
             { id: '1', label: 'Works', href: '/work' },
@@ -44,7 +48,12 @@ export default function InterfaceAdminPage() {
           const data = footerSnap.data();
           setFooterBio(data.bio || '');
           setFooterEst(data.est || '');
-          setFooterLinks(data.footerLinks || []);
+          const fLinks = data.footerLinks || [];
+          // Ensure stable IDs for Reorder logic
+          setFooterLinks(fLinks.map((link: any, i: number) => ({
+            ...link,
+            id: link.id || `footer-${i}-${Math.random().toString(36).substring(2, 7)}`
+          })));
         } else {
           setFooterLinks([
             { id: 'f1', label: 'Home', href: '/' },
@@ -54,7 +63,7 @@ export default function InterfaceAdminPage() {
           ]);
         }
       } catch (error) {
-        console.error(error);
+        console.error("Interface Fetch Error:", error);
       } finally {
         setLoading(false);
       }
@@ -80,7 +89,7 @@ export default function InterfaceAdminPage() {
   };
 
   const addNavItem = () => {
-    const id = Math.random().toString(36).substring(7);
+    const id = `nav-${Math.random().toString(36).substring(2, 9)}`;
     setNavItems([...navItems, { id, label: 'New Link', href: '#' }]);
   };
 
@@ -93,7 +102,7 @@ export default function InterfaceAdminPage() {
   };
 
   const addFooterLink = () => {
-    const id = Math.random().toString(36).substring(7);
+    const id = `f-${Math.random().toString(36).substring(2, 9)}`;
     setFooterLinks([...footerLinks, { id, label: 'New Link', href: '#' }]);
   };
 
@@ -138,9 +147,9 @@ export default function InterfaceAdminPage() {
             </div>
             
             <Reorder.Group axis="y" values={navItems} onReorder={setNavItems} className="space-y-4">
-              {navItems.map((item) => (
+              {navItems.map((item, index) => (
                 <Reorder.Item 
-                  key={item.id} 
+                  key={item.id || `nav-key-${index}`} 
                   value={item}
                   className="grid grid-cols-12 gap-4 items-center p-4 rounded-2xl bg-white/5 border border-white/5 group hover:border-primary/20 transition-all cursor-grab active:cursor-grabbing"
                 >
@@ -192,9 +201,9 @@ export default function InterfaceAdminPage() {
               </div>
 
               <Reorder.Group axis="y" values={footerLinks} onReorder={setFooterLinks} className="space-y-3">
-                {footerLinks.map((link) => (
+                {footerLinks.map((link, index) => (
                   <Reorder.Item 
-                    key={link.id} 
+                    key={link.id || `footer-key-${index}`} 
                     value={link}
                     className="grid grid-cols-12 gap-3 items-center p-3 rounded-xl bg-white/[0.02] border border-white/5 group hover:border-primary/20 transition-all cursor-grab active:cursor-grabbing"
                   >
@@ -232,8 +241,8 @@ export default function InterfaceAdminPage() {
                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5">
                   <span className="text-[9px] font-black uppercase text-white/20 tracking-widest block mb-4">Nav Preview</span>
                   <div className="flex flex-wrap gap-2">
-                    {navItems?.map((item: any) => (
-                      <span key={item.id} className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest text-white/60">
+                    {navItems?.map((item: any, index: number) => (
+                      <span key={item.id || `preview-${index}`} className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest text-white/60">
                         {item.label}
                       </span>
                     ))}
