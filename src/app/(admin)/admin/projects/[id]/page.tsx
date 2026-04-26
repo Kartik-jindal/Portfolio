@@ -250,7 +250,7 @@ export default function EditProjectPage() {
                   <Button onClick={addTech} variant="outline" className="h-10 w-10 rounded-xl border-white/10">+</Button>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {formData.tech?.map(t => (
+                  {formData.tech?.map(t  => (
                     <span key={t} className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary flex items-center gap-2">
                       {t} <button onClick={() => setFormData({ ...formData, tech: formData.tech.filter((x: string) => x !== t) })}><Plus className="w-3 h-3 rotate-45" /></button>
                     </span>

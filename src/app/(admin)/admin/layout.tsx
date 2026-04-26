@@ -14,7 +14,9 @@ import {
   LogOut,
   Menu,
   X,
-  ChevronRight
+  ChevronRight,
+  Briefcase,
+  Quote
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -58,6 +60,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { label: 'Overview', href: '/admin', icon: LayoutDashboard },
     { label: 'Projects', href: '/admin/projects', icon: FolderKanban },
     { label: 'Journal', href: '/admin/blog', icon: FileText },
+    { label: 'Experience', href: '/admin/experience', icon: Briefcase },
+    { label: 'Voices', href: '/admin/testimonials', icon: Quote },
     { label: 'Leads', href: '/admin/leads', icon: Users },
     { label: 'Settings', href: '/admin/settings', icon: Settings },
   ];
@@ -86,7 +90,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <nav className="flex-1 px-4 space-y-2 py-4">
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
             return (
               <Link key={item.label} href={item.href}>
                 <div className={`
@@ -124,7 +128,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto relative">
-        {/* Grain Overlay - Applied as a child to avoid affecting main container opacity */}
         <div className="absolute inset-0 bg-grain pointer-events-none opacity-[0.03] z-0" />
         
         <header className="h-20 border-b border-white/5 flex items-center justify-between px-10 bg-[#050505]/50 backdrop-blur-xl sticky top-0 z-40">
