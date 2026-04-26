@@ -144,16 +144,20 @@ const ProjectCard = ({ project, index, onOpen }: { project: any, index: number, 
           <motion.div 
             style={{ rotateX: y, rotateY: x, perspective: 1500 }}
             className="relative glass-accent p-0.5 md:p-1 rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-2xl transition-all duration-700 cursor-none"
-            data-cursor="VIEW_CASE"
+            data-cursor="View"
           >
             <div className="relative aspect-[16/9] overflow-hidden rounded-[calc(1rem-1px)] md:rounded-[calc(1.5rem-1px)]">
               <Image src={project.image} alt={project.title} fill className="object-cover" />
               <AnimatePresence>
                 {isHovered && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/30 backdrop-blur-[2px] hidden md:flex items-center justify-center">
-                    <Button className="rounded-full px-10 py-7 bg-white text-black hover:bg-primary transition-all font-black uppercase tracking-[0.2em] text-[12px]">
-                      Case Study <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
+                  <motion.div 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }} 
+                    exit={{ opacity: 0 }} 
+                    className="absolute inset-0 bg-black/30 backdrop-blur-[2px] hidden md:flex items-center justify-center transition-all duration-500"
+                  >
+                    {/* Hover text removed for cleaner aesthetic; Custom cursor provides the label */}
+                    <ArrowRight className="w-8 h-8 text-white/50 group-hover:text-white transition-all scale-75 group-hover:scale-100" />
                   </motion.div>
                 )}
               </AnimatePresence>
