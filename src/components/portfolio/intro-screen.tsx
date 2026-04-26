@@ -19,10 +19,10 @@ export const IntroScreen = () => {
       setStage(2);
     }, 5000);
 
-    // Completely remove after animation finishes (6s)
+    // Completely remove after animation finishes (8s)
     const timer3 = setTimeout(() => {
       setIsVisible(false);
-    }, 6000);
+    }, 8000);
 
     return () => {
       clearTimeout(timer1);
@@ -119,7 +119,7 @@ export const IntroScreen = () => {
                            <motion.span
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: (i * 0.4) + 0.5, duration: 0.8 }}
+                            transition={{ delay: (i * 0.4) + 0.5, duration: 0.4 }}
                             className="text-primary font-black text-[10px] md:text-xs tracking-[0.4em] uppercase"
                            >
                             {item.label}
@@ -143,7 +143,7 @@ export const IntroScreen = () => {
               <motion.span
                 animate={{ opacity: [0.3, 1, 0.3] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
-                className="text-[9px] md:text-[10px] text-white/50 font-bold tracking-[0.3em]"
+                className="text-[9px] md:text-[10px] text-white/50 font-bold tracking-[0.4em]"
               >
                 LOADING...
               </motion.span>
