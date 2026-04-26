@@ -1,9 +1,9 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
+import Link from 'next/link';
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -16,38 +16,41 @@ export const Navbar = () => {
   }, []);
 
   const navItems = [
-    { label: "Works", href: "#work" },
-    { label: "Vision", href: "#about" },
-    { label: "Timeline", href: "#experience" },
-    { label: "Connect", href: "#contact" },
+    { label: "Works", href: "/#work" },
+    { label: "Vision", href: "/#about" },
+    { label: "Timeline", href: "/#experience" },
+    { label: "Journal", href: "/blog" },
+    { label: "Connect", href: "/#contact" },
   ];
 
   return (
     <header className="fixed top-0 left-0 w-full z-[100] pointer-events-none">
       <div className="max-w-[1700px] mx-auto px-8 py-8 md:py-8 flex justify-between items-center pointer-events-auto">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="text-2xl md:text-3xl font-headline  font-black tracking-tighter cursor-pointer group"
-        >
-          K<span className="text-primary italic group-hover:translate-x-1 inline-block transition-transform">J.</span>
-        </motion.div>
+        <Link href="/">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="text-2xl md:text-3xl font-headline font-black tracking-tighter cursor-pointer group"
+          >
+            K<span className="text-primary italic group-hover:translate-x-1 inline-block transition-transform">J.</span>
+          </motion.div>
+        </Link>
 
         {/* Desktop Nav - Floating Dock */}
         <div className="hidden md:flex items-center gap-6">
           <motion.nav 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`flex items-center gap-1 px-3 py-2 rounded-full transition-all duration-700 glass ${isScrolled ? 'opacity-100' : 'opacity-0 -translate-y-4'}`}
+            className={`flex items-center gap-1 px-3 py-2 rounded-full transition-all duration-700 glass ${isScrolled ? 'opacity-100' : 'opacity-100'}`}
           >
             {navItems.map((item) => (
-              <a
+              <Link
                 key={item.label}
                 href={item.href}
                 className="px-6 py-2 text-[14px] uppercase tracking-[0.5em] font-black text-muted-foreground hover:text-primary transition-colors hover:bg-primary/5 rounded-full"
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </motion.nav>
 
@@ -86,17 +89,20 @@ export const Navbar = () => {
             </button>
             <div className="flex flex-col items-center gap-8">
               {navItems.map((item, i) => (
-                <motion.a
+                <Link
                   key={item.label}
                   href={item.href}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }}
                   onClick={() => setIsMenuOpen(false)}
-                  className="text-7xl font-headline font-bold text-white hover:text-primary transition-colors italic tracking-tighter"
                 >
-                  {item.label}
-                </motion.a>
+                  <motion.span
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    className="text-7xl font-headline font-bold text-white hover:text-primary transition-colors italic tracking-tighter block text-center"
+                  >
+                    {item.label}
+                  </motion.span>
+                </Link>
               ))}
             </div>
           </motion.div>

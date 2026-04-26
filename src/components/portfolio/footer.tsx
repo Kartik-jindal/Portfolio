@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Github, Twitter, Linkedin, Instagram, ExternalLink } from 'lucide-react';
+import Link from 'next/link';
 
 export const Footer = () => {
   return (
@@ -39,12 +40,17 @@ export const Footer = () => {
           <div className="space-y-8">
             <h4 className="text-md uppercase tracking-[0.6em] font-black text-white/70">Navigation</h4>
             <ul className="space-y-6 font-body">
-              {['Home', 'Selected Work', 'About Story', 'Journal'].map((item) => (
-                <li key={item}>
-                  <a href="#" className="text-white hover:text-primary transition-all flex items-center gap-3 group text-xl md:text-2xl">
-                    {item}
+              {[
+                { label: 'Home', href: '/' },
+                { label: 'Selected Work', href: '/#work' },
+                { label: 'About Story', href: '/#about' },
+                { label: 'Journal', href: '/blog' }
+              ].map((item) => (
+                <li key={item.label}>
+                  <Link href={item.href} className="text-white hover:text-primary transition-all flex items-center gap-3 group text-xl md:text-2xl">
+                    {item.label}
                     <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
