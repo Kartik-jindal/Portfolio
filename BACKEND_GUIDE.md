@@ -14,7 +14,7 @@ We utilize a multi-cloud strategy to power the portfolio's dynamic capabilities:
 
 ## 2. Environment Variables (.env.local)
 
-The following variables must be configured for the Command Center to operate.
+The following variables are configured for the Command Center to operate.
 
 ### Firebase Credentials
 | Key | Purpose |
@@ -24,12 +24,12 @@ The following variables must be configured for the Command Center to operate.
 | `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Firestore/Auth Project ID |
 
 ### AWS S3 Credentials (Server-Side)
-| Key | Purpose |
-|-----|---------|
-| `AWS_REGION` | e.g. `us-east-1` |
-| `AWS_ACCESS_KEY_ID` | IAM User Access Key |
-| `AWS_SECRET_ACCESS_KEY` | IAM User Secret Key |
-| `AWS_S3_BUCKET_NAME` | Your unique S3 Bucket name |
+| Key | Value |
+|-----|-------|
+| `AWS_REGION` | `eu-north-1` |
+| `AWS_ACCESS_KEY_ID` | `AKIA4U3OTE...` |
+| `AWS_SECRET_ACCESS_KEY` | `JHJljitkiz...` |
+| `AWS_S3_BUCKET_NAME` | `kj-portfolio-bucket` |
 
 ---
 
@@ -37,8 +37,9 @@ The following variables must be configured for the Command Center to operate.
 
 To ensure your images render correctly on the frontend:
 
-1. **Create Bucket**: Enable "Block Public Access" (Off) if you want direct URL access, or configure a Bucket Policy.
-2. **Bucket Policy**:
+1. **Create Bucket**: Ensure the bucket `kj-portfolio-bucket` is created in the `eu-north-1` region.
+2. **Public Access**: For portfolio use, ensure "Block Public Access" is tuned to allow your bucket policy to function.
+3. **Bucket Policy**:
    ```json
    {
      "Version": "2012-10-17",
@@ -48,12 +49,12 @@ To ensure your images render correctly on the frontend:
          "Effect": "Allow",
          "Principal": "*",
          "Action": "s3:GetObject",
-         "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME/*"
+         "Resource": "arn:aws:s3:::kj-portfolio-bucket/*"
        }
      ]
    }
    ```
-3. **IAM User**: Create a user with `AmazonS3FullAccess` (or specific `PutObject` permissions) and generate the Access/Secret keys.
+4. **IAM User**: Ensure the user associated with the provided Access Key has `AmazonS3FullAccess` or specific `s3:PutObject` and `s3:PutObjectAcl` permissions for the bucket.
 
 ---
 
@@ -61,14 +62,14 @@ To ensure your images render correctly on the frontend:
 
 ### Project Management
 - **Flagship Builds**: Appear in "Selected Works".
-- **S3 Assets**: Images uploaded via the CMS are stored in `s3://bucket/projects/`.
+- **S3 Assets**: Images uploaded via the CMS are stored in `s3://kj-portfolio-bucket/projects/`.
 
 ### The Journal (Blog)
 - **Slug Generation**: Slugs are automatically generated from titles.
-- **S3 Assets**: Header images are stored in `s3://bucket/blog/`.
+- **S3 Assets**: Header images are stored in `s3://kj-portfolio-bucket/blog/`.
 
 ### Global Settings
-- **Resume Management**: Uploaded PDFs are stored in `s3://bucket/resumes/`.
+- **Resume Management**: Uploaded PDFs are stored in `s3://kj-portfolio-bucket/resumes/`.
 
 ---
 
