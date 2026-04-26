@@ -113,16 +113,13 @@ export const Footer = ({ config, footerLayout }: FooterProps) => {
           </div>
         </div>
 
-        <div className="mt-32 pt-12 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-8 text-xs tracking-[0.4em] font-black text-white/60 uppercase">
+        <div className="mt-18 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-8 text-xs tracking-[0.4em] font-black text-white/60 uppercase">
           <div className="flex items-center gap-8">
             <span>&copy; {new Date().getFullYear()} Kartik Jindal</span>
             <span className="hidden md:block w-1 h-1 rounded-full bg-white/30" />
             <span className="hidden md:block">{estMark}</span>
           </div>
-          <div className="flex gap-12">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-          </div>
+          
         </div>
       </div>
     </footer>

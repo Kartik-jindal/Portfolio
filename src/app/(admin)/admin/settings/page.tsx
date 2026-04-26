@@ -6,7 +6,7 @@ import { db } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { motion } from 'framer-motion';
-import { Save, Globe, Share2, Shield, Eye, FileUp, Image as ImageIcon } from 'lucide-react';
+import { Save, Share2, Eye, FileUp, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -92,7 +92,7 @@ export default function SettingsAdminPage() {
     }
   };
 
-  if (loading) return null;
+  if (loading) return <div className="h-96 flex items-center justify-center"><div className="w-2 h-2 bg-primary animate-ping rounded-full" /></div>;
 
   return (
     <div className="space-y-10 pb-20">
@@ -110,69 +110,12 @@ export default function SettingsAdminPage() {
         </Button>
       </header>
 
-      <Tabs defaultValue="seo" className="space-y-10">
+      <Tabs defaultValue="socials" className="space-y-10">
         <TabsList className="bg-white/5 border border-white/5 p-1 rounded-2xl h-14 overflow-x-auto custom-scrollbar">
-          <TabsTrigger value="seo" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[10px] font-black uppercase tracking-widest px-8 h-full">SEO & Meta</TabsTrigger>
           <TabsTrigger value="socials" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[10px] font-black uppercase tracking-widest px-8 h-full">Social Bridge</TabsTrigger>
           <TabsTrigger value="resume" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[10px] font-black uppercase tracking-widest px-8 h-full">Assets (S3)</TabsTrigger>
           <TabsTrigger value="visibility" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[10px] font-black uppercase tracking-widest px-8 h-full">Interface</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="seo" className="space-y-6">
-          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
-            <div className="flex items-center gap-4 text-primary">
-              <Globe className="w-6 h-6" />
-              <h3 className="text-lg font-headline font-black italic tracking-tight">Search Engine Optimization</h3>
-            </div>
-            <div className="grid gap-6">
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Default Title</Label>
-                <Input 
-                  value={settings?.seo?.defaultTitle} 
-                  onChange={(e) => setSettings({ ...settings, seo: { ...settings.seo, defaultTitle: e.target.value } })}
-                  className="bg-white/5 border-white/5 rounded-xl h-14"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
-                <Input 
-                  value={settings?.seo?.defaultDescription} 
-                  onChange={(e) => setSettings({ ...settings, seo: { ...settings.seo, defaultDescription: e.target.value } })}
-                  className="bg-white/5 border-white/5 rounded-xl h-14"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Keywords (Comma separated)</Label>
-                <Input 
-                  value={settings?.seo?.keywords} 
-                  onChange={(e) => setSettings({ ...settings, seo: { ...settings.seo, keywords: e.target.value } })}
-                  className="bg-white/5 border-white/5 rounded-xl h-14"
-                />
-              </div>
-              <div className="space-y-4">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Open Graph Image (S3)</Label>
-                <div className="flex gap-4">
-                  <Input 
-                    value={settings?.seo?.ogImage} 
-                    onChange={(e) => setSettings({ ...settings, seo: { ...settings.seo, ogImage: e.target.value } })}
-                    className="bg-white/5 border-white/5 rounded-xl h-14 flex-1"
-                  />
-                  <div className="relative">
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      className="absolute inset-0 opacity-0 cursor-pointer" 
-                      onChange={(e) => handleFileUpload(e, 'config', 'seo.ogImage')}
-                    />
-                    <Button variant="outline" className="h-14 rounded-xl border-white/10 aspect-square p-0">
-                      {uploading === 'seo.ogImage' ? '...' : <ImageIcon className="w-5 h-5" />}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </TabsContent>
 
         <TabsContent value="socials" className="space-y-6">
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
