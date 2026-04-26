@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar } from '@/components/portfolio/navbar';
 import { Footer } from '@/components/portfolio/footer';
 import { Projects } from '@/components/portfolio/projects';
-import { ArrowUpRight, Github, Code2, Globe, Cpu, X, ExternalLink, Box, Terminal, Activity } from 'lucide-react';
+import { ArrowUpRight, Github, Code2, Globe, Cpu, X, ExternalLink, Box, Terminal, Activity, Zap, Shield, Database } from 'lucide-react';
 import Image from 'next/image';
 import {
   Dialog,
@@ -19,45 +19,69 @@ const smallProjects = [
     title: "Vesper Shader Lab",
     type: "Experiment",
     desc: "A collection of high-performance GLSL shaders exploring procedural textures.",
-    longDesc: "Vesper is an experimental playground for testing noise algorithms and fluid simulations. It pushes the boundaries of what's possible with Fragment Shaders in a browser environment.",
+    longDesc: "Vesper is an experimental playground for testing noise algorithms and fluid simulations. It pushes the boundaries of what's possible with Fragment Shaders in a browser environment. By offloading complex calculations to the GPU, we achieve liquid-smooth 60fps animations even with millions of simultaneous calculations. The architecture focuses on modular shader chunks that can be recompiled in real-time without losing state, allowing for rapid iteration of visual effects.",
     tech: ["WebGL", "GLSL", "Three.js"],
     image: "https://picsum.photos/seed/shader/800/600",
     imageHint: "webgl shaders",
     link: "#",
-    metrics: { cpu: "Low", gpu: "High", latency: "Sub-16ms" }
+    metrics: { 
+      "Runtime Environment": "GPU-Accelerated",
+      "Memory Allocation": "45MB VRAM",
+      "Compute Density": "High-Fidelity",
+      "Frame Latency": "< 8ms",
+      "Architecture": "Custom GLSL Pipeline"
+    }
   },
   {
     title: "Kryptos Auth",
     type: "Utility",
     desc: "Zero-knowledge proof authentication library for decentralized applications.",
-    longDesc: "A cryptographic utility designed for privacy-first applications. It implements secure handshake protocols without ever exposing user credentials to the server.",
+    longDesc: "A cryptographic utility designed for privacy-first applications. It implements secure handshake protocols without ever exposing user credentials to the server. This project solves the problem of 'trust-less' identity verification by using modular arithmetic and elliptic curve cryptography. The library is optimized for bundle size, coming in at under 12kb gzipped, making it ideal for edge-computing scenarios where initial payload size is critical for user experience.",
     tech: ["TypeScript", "Cryptography", "Node.js"],
     image: "https://picsum.photos/seed/crypto/800/600",
     imageHint: "encryption security",
     link: "#",
-    metrics: { cpu: "Medium", gpu: "N/A", latency: "40ms" }
+    metrics: {
+      "Protocol Type": "ZKP Handshake",
+      "Encryption Std": "AES-256-GCM",
+      "Bundle Weight": "11.8kb (Gzip)",
+      "Verify Time": "42ms Average",
+      "Compliance": "NIST Standard"
+    }
   },
   {
     title: "Onyx Grid",
     type: "Library",
     desc: "A CSS-in-JS layout engine optimized for ultra-low latency dashboards.",
-    longDesc: "Onyx Grid solves the problem of DOM thrashing in heavy data environments. It uses a virtualized layout engine to render thousands of cells with minimal layout shift.",
+    longDesc: "Onyx Grid solves the problem of DOM thrashing in heavy data environments. It uses a virtualized layout engine to render thousands of cells with minimal layout shift. By calculating viewport dimensions and only rendering visible rows, we achieve a flat O(1) rendering cost regardless of dataset size. This is particularly effective for financial terminals or satellite telemetry dashboards where data updates occur at sub-second intervals.",
     tech: ["React", "Stylus", "Vite"],
     image: "https://picsum.photos/seed/grid/800/600",
     imageHint: "data grid",
     link: "#",
-    metrics: { cpu: "Ultra-Low", gpu: "N/A", latency: "8ms" }
+    metrics: {
+      "Render Complexity": "O(1) Constant",
+      "Update Velocity": "250ms Refresh",
+      "DOM Nodes": "Virtual Stack",
+      "Memory Leakage": "None Detected",
+      "Integration": "React Hook Pattern"
+    }
   },
   {
     title: "Aether CMS",
     type: "Tool",
     desc: "Minimalist headless CMS architecture designed for static site generation.",
-    longDesc: "A lightweight content management solution that prioritizes developer speed. It features a Git-based workflow and instant edge-deployment triggers.",
+    longDesc: "A lightweight content management solution that prioritizes developer speed. It features a Git-based workflow and instant edge-deployment triggers. Aether bypasses the traditional database-driven CMS model by treating the file system as the source of truth, leveraging high-speed caching layers in Redis to serve content at the edge. This results in Time-To-First-Byte metrics that are 3x faster than traditional SaaS CMS offerings.",
     tech: ["Go", "Next.js", "Redis"],
     image: "https://picsum.photos/seed/cms/800/600",
     imageHint: "headless cms",
     link: "#",
-    metrics: { cpu: "Low", gpu: "N/A", latency: "120ms" }
+    metrics: {
+      "Storage Model": "Flat-File Git",
+      "Cache Strat": "Redis Edge",
+      "TTFB Metric": "120ms (Global)",
+      "Deployment": "Atomic Sync",
+      "Build Trigger": "Webhook Native"
+    }
   }
 ];
 
@@ -161,7 +185,7 @@ export default function WorkPage() {
 
       {/* Lab Entry Modal */}
       <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
-        <DialogContent className="max-w-5xl bg-background/95 backdrop-blur-3xl border-white/5 p-0 overflow-hidden rounded-[2rem] shadow-2xl">
+        <DialogContent className="max-w-5xl bg-background/95 backdrop-blur-3xl border-white/5 p-0 overflow-hidden rounded-[2rem] shadow-2xl outline-none">
           <AnimatePresence>
             {selectedProject && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
@@ -177,15 +201,15 @@ export default function WorkPage() {
                   </div>
                 </div>
 
-                <div className="p-12 space-y-12">
-                  <div className="grid md:grid-cols-12 gap-12">
-                    <div className="md:col-span-7 space-y-8">
+                <div className="p-10 md:p-14 space-y-12">
+                  <div className="grid md:grid-cols-12 gap-12 lg:gap-20">
+                    <div className="md:col-span-7 space-y-10">
                       <div className="space-y-6">
                         <div className="flex items-center gap-3 text-primary">
                           <Terminal className="w-4 h-4" />
                           <h4 className="text-[10px] font-black uppercase tracking-[0.4em]">Development Abstract</h4>
                         </div>
-                        <p className="text-white/70 text-lg leading-relaxed font-body font-light">
+                        <p className="text-white/80 text-xl leading-relaxed font-body font-light">
                           {selectedProject.longDesc}
                         </p>
                       </div>
@@ -194,28 +218,32 @@ export default function WorkPage() {
                         <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">Architecture Stack</h4>
                         <div className="flex flex-wrap gap-3">
                           {selectedProject.tech.map((t: string) => (
-                            <span key={t} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-xs font-bold text-white/60">{t}</span>
+                            <span key={t} className="px-5 py-2.5 rounded-xl bg-white/5 border border-white/5 text-xs font-bold text-white/60">{t}</span>
                           ))}
                         </div>
                       </div>
                     </div>
 
-                    <div className="md:col-span-5 space-y-8">
+                    <div className="md:col-span-5 space-y-10">
                       <div className="flex items-center gap-3 text-accent">
                         <Activity className="w-4 h-4" />
                         <h4 className="text-[10px] font-black uppercase tracking-[0.4em]">System Diagnostics</h4>
                       </div>
-                      <div className="grid grid-cols-1 gap-4">
-                        {Object.entries(selectedProject.metrics).map(([key, val]: [string, any]) => (
-                          <div key={key} className="flex justify-between items-center p-5 rounded-2xl bg-white/[0.02] border border-white/5">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-white/30">{key}</span>
-                            <span className="text-sm font-mono text-primary font-bold">{val}</span>
+                      
+                      <div className="space-y-1">
+                        {Object.entries(selectedProject.metrics).map(([key, val]: [string, any], idx) => (
+                          <div key={key} className="flex justify-between items-center p-6 border-b border-white/5 last:border-0 group hover:bg-white/[0.02] transition-colors rounded-xl">
+                            <div className="flex flex-col gap-1">
+                              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 group-hover:text-primary transition-colors">Metric_{idx + 1}</span>
+                              <span className="text-sm font-bold text-white/70">{key}</span>
+                            </div>
+                            <span className="text-base font-mono text-primary font-bold bg-primary/5 px-4 py-2 rounded-lg border border-primary/10 shadow-[0_0_20px_rgba(16,185,129,0.1)]">{val}</span>
                           </div>
                         ))}
                       </div>
                       
-                      <a href={selectedProject.link} className="flex items-center justify-center gap-3 w-full py-5 rounded-xl bg-white text-black text-[12px] font-black uppercase tracking-[0.3em] hover:bg-primary transition-all mt-6 shadow-xl">
-                        Explore Repository <ExternalLink className="w-4 h-4" />
+                      <a href={selectedProject.link} className="flex items-center justify-center gap-3 w-full py-6 rounded-2xl bg-white text-black text-[12px] font-black uppercase tracking-[0.3em] hover:bg-primary transition-all mt-6 shadow-2xl group">
+                        Explore Repository <ExternalLink className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                       </a>
                     </div>
                   </div>
