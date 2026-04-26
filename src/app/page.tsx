@@ -1,3 +1,4 @@
+
 import { Navbar } from '@/components/portfolio/navbar';
 import { Hero } from '@/components/portfolio/hero';
 import { About } from '@/components/portfolio/about';
@@ -19,6 +20,16 @@ async function getGlobalConfig() {
     return docSnap.exists() ? docSnap.data() : null;
   } catch (err) {
     console.error("Firebase Error (Global Config):", err);
+    return null;
+  }
+}
+
+async function getSeoPageConfig() {
+  try {
+    const docRef = doc(db, 'site_config', 'seo_pages');
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? docSnap.data() : null;
+  } catch (err) {
     return null;
   }
 }
@@ -80,14 +91,12 @@ async function getContactData() {
 
 async function getProjects(count: number) {
   try {
-    // We remove orderBy from query to avoid composite index requirements
     const q = query(
       collection(db, 'projects'),
       where('status', '==', 'published')
     );
     const snap = await getDocs(q);
     const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    // Sort in memory instead
     return data.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)).slice(0, count);
   } catch (err) {
     console.error("Firebase Error (Projects):", err);
@@ -120,16 +129,22 @@ async function getTestimonials() {
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
-    const config = await getGlobalConfig();
-    const title = config?.seo?.defaultTitle || 'Kartik Jindal | Portfolio';
-    const description = config?.seo?.defaultDescription || 'Full Stack Architect & Creative Engineer';
-    const keywords = config?.seo?.keywords || 'Portfolio, Full Stack, Developer, Creative Engineering';
-    const ogImage = config?.seo?.ogImage || 'https://picsum.photos/seed/portfolio/1200/630';
+    const globalConfig = await getGlobalConfig();
+    const seoPageConfig = await getSeoPageConfig();
+    const homeSeo = seoPageConfig?.home || {};
+
+    const title = homeSeo.title || globalConfig?.seo?.defaultTitle || 'Kartik Jindal | Full Stack Architect';
+    const description = homeSeo.description || globalConfig?.seo?.defaultDescription || 'Engineering digital landscapes where architectural precision meets artistic motion.';
+    const keywords = homeSeo.keywords || globalConfig?.seo?.keywords || 'Portfolio, Full Stack, Developer, Creative Engineering';
+    const ogImage = homeSeo.ogImage || globalConfig?.seo?.ogImage || 'https://picsum.photos/seed/portfolio/1200/630';
 
     return {
       title,
       description,
       keywords,
+      alternates: {
+        canonical: process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com',
+      },
       openGraph: {
         title,
         description,
@@ -142,9 +157,13 @@ export async function generateMetadata(): Promise<Metadata> {
         description,
         images: [ogImage],
       },
+      robots: {
+        index: homeSeo.indexable ?? true,
+        follow: homeSeo.indexable ?? true,
+      }
     };
   } catch (e) {
-    return { title: 'Kartik Jindal | Portfolio' };
+    return { title: 'Kartik Jindal | Full Stack Architect' };
   }
 }
 
@@ -180,7 +199,6 @@ export default async function Home() {
       <Contact initialData={contactData} />
       <Footer config={config} footerLayout={footerLayout} />
       
-      {/* Structured Data (JSON-LD) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -190,6 +208,7 @@ export default async function Home() {
             "name": "Kartik Jindal",
             "jobTitle": "Full Stack Architect",
             "url": baseUrl,
+            "description": config?.seo?.defaultDescription,
             "sameAs": [
               config?.socials?.github,
               config?.socials?.linkedin,
