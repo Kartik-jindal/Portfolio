@@ -44,32 +44,32 @@ export const About = () => {
             className="lg:col-span-7 space-y-12"
           >
             <div className="space-y-6">
-              <span className="text-primary tracking-[0.6em] uppercase text-[10px] font-black block">The Philosophy</span>
-              <h2 className="text-5xl md:text-7xl font-headline font-black leading-[1.1] tracking-tighter">
+              <span className="text-primary tracking-[0.6em] uppercase text-xs font-black block">The Philosophy</span>
+              <h2 className="text-6xl md:text-8xl font-headline font-black leading-[1.1] tracking-tighter">
                 Fusing <span className="text-outline italic">Logic</span> with <br />
                 <span className="text-primary italic">Artistry.</span>
               </h2>
             </div>
 
-            <div className="space-y-8 max-w-2xl">
-              <p className="text-xl md:text-2xl text-muted-foreground/90 font-body font-light leading-relaxed">
+            <div className="space-y-10 max-w-3xl">
+              <p className="text-2xl md:text-4xl text-white font-body font-light leading-snug">
                 I am a Full Stack Architect dedicated to building digital landscapes that are as high-performance as they are emotionally resonant. 
               </p>
-              <p className="text-lg text-muted-foreground/70 font-body leading-relaxed">
+              <p className="text-xl md:text-2xl text-muted-foreground font-body leading-relaxed">
                 With over six years of experience in the engineering trenches, I've learned that the best products aren't just built with code—they're crafted with a deep understanding of human interaction and technical scalability. My approach is rooted in precision, curiosity, and a relentless drive for excellence.
               </p>
             </div>
 
             {/* Simple Pillars Grid */}
-            <div className="grid sm:grid-cols-3 gap-8 pt-8">
+            <div className="grid sm:grid-cols-3 gap-10 pt-12">
               {pillars.map((pillar, i) => (
                 <div key={i} className="space-y-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <pillar.icon className="w-5 h-5 text-primary" />
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <pillar.icon className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="text-white font-bold text-sm uppercase tracking-widest mb-2">{pillar.title}</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{pillar.desc}</p>
+                    <h3 className="text-white font-bold text-sm uppercase tracking-widest mb-3">{pillar.title}</h3>
+                    <p className="text-sm text-muted-foreground/80 leading-relaxed">{pillar.desc}</p>
                   </div>
                 </div>
               ))}
@@ -84,25 +84,25 @@ export const About = () => {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
             className="lg:col-span-5 space-y-12 lg:pl-12"
           >
-            <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-10 relative overflow-hidden group">
+            <div className="glass p-12 rounded-[2.5rem] border-white/5 space-y-12 relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-30 transition-opacity">
-                <Sparkles className="w-12 h-12 text-primary" />
+                <Sparkles className="w-16 h-16 text-primary" />
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-8">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-white/5 rounded-2xl">
-                    <Cpu className="w-5 h-5 text-primary" />
+                    <Cpu className="w-6 h-6 text-primary" />
                   </div>
-                  <h3 className="text-xs uppercase tracking-[0.5em] font-black text-white/40">Core Arsenal</h3>
+                  <h3 className="text-xs uppercase tracking-[0.5em] font-black text-white/50">Core Arsenal</h3>
                 </div>
                 
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   {skills.map((skill) => (
                     <Badge 
                       key={skill} 
                       variant="outline"
-                      className="px-5 py-2.5 rounded-xl text-[10px] uppercase font-black tracking-widest border-white/10 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-default"
+                      className="px-6 py-3 rounded-xl text-xs uppercase font-black tracking-widest border-white/10 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-default"
                     >
                       {skill}
                     </Badge>
@@ -110,23 +110,23 @@ export const About = () => {
                 </div>
               </div>
 
-              <div className="pt-10 border-t border-white/5">
-                <div className="flex items-center gap-8">
+              <div className="pt-12 border-t border-white/5">
+                <div className="flex items-center gap-12">
                   <div>
-                    <div className="text-4xl font-headline font-bold text-white mb-1">6k+</div>
-                    <div className="text-[9px] uppercase tracking-[0.3em] text-primary font-black">Coding Hours</div>
+                    <div className="text-5xl md:text-6xl font-headline font-bold text-white mb-2">6k+</div>
+                    <div className="text-[10px] uppercase tracking-[0.3em] text-primary font-black">Coding Hours</div>
                   </div>
-                  <div className="w-px h-10 bg-white/5" />
+                  <div className="w-px h-16 bg-white/5" />
                   <div>
-                    <div className="text-4xl font-headline font-bold text-white mb-1">50+</div>
-                    <div className="text-[9px] uppercase tracking-[0.3em] text-primary font-black">Projects Shipped</div>
+                    <div className="text-5xl md:text-6xl font-headline font-bold text-white mb-2">50+</div>
+                    <div className="text-[10px] uppercase tracking-[0.3em] text-primary font-black">Projects Shipped</div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="p-10 border border-white/5 rounded-[2.5rem] bg-gradient-to-br from-primary/5 to-transparent">
-              <p className="text-sm italic text-muted-foreground/60 leading-relaxed font-light">
+            <div className="p-12 border border-white/5 rounded-[2.5rem] bg-gradient-to-br from-primary/5 to-transparent">
+              <p className="text-lg italic text-muted-foreground/80 leading-relaxed font-light">
                 "Digital architecture is the bridge between human imagination and machine execution. I strive to make that bridge invisible and beautiful."
               </p>
             </div>
