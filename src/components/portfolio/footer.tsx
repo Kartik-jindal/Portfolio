@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -66,6 +67,9 @@ export const Footer = () => {
                 </span>
               </a>
               <div className="pt-4">
+                <Link href="/blog" className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.3em] font-black text-primary hover:text-white transition-colors py-4 px-8 rounded-full border border-primary/30 glass mb-4">
+                  Visit the Journal
+                </Link>
                 <a href="#" className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.3em] font-black text-white/80 hover:text-white transition-colors py-4 px-8 rounded-full border border-white/20 glass">
                   Download Portfolio PDF
                 </a>
