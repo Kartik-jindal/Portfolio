@@ -1,21 +1,15 @@
 "use client";
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import { motion } from 'framer-motion';
 import { Navbar } from '@/components/portfolio/navbar';
 import { Footer } from '@/components/portfolio/footer';
 import { Projects } from '@/components/portfolio/projects';
-import { ArrowUpRight, X, Terminal, Binary, Calendar } from 'lucide-react';
+import { ArrowUpRight, Binary } from 'lucide-react';
 import Image from 'next/image';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import Link from 'next/link';
 
 export default function WorkClient({ config, initialExperiments, initialFlagships }: { config: any, initialExperiments: any[], initialFlagships: any[] }) {
-  const [selectedProject, setSelectedProject] = useState<any>(null);
-
   return (
     <main className="bg-transparent min-h-screen">
       <Navbar resumeUrl={config?.resume?.fileUrl} />
@@ -76,9 +70,10 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1 }}
-                    onClick={() => setSelectedProject(project)}
                     className="glass p-8 rounded-3xl border-white/5 hover:border-primary/30 transition-all duration-500 group relative flex flex-col justify-between min-h-[480px] cursor-none"
                   >
+                    <Link href={`/work/${project.slug || project.id}`} scroll={false} className="absolute inset-0 z-10" />
+                    
                     <div className="space-y-6">
                       <div className="flex justify-between items-start">
                         <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-primary transition-colors duration-500">
@@ -125,88 +120,6 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
           </div>
         </section>
       )}
-
-      <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
-        <DialogContent className="max-w-6xl bg-background/98 backdrop-blur-3xl border-white/5 p-0 overflow-hidden rounded-[2.5rem] shadow-2xl outline-none z-[5000] cursor-none">
-          <AnimatePresence>
-            {selectedProject && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col h-[90vh] md:h-auto max-h-[90vh]">
-                <div className="relative h-64 md:h-80 w-full shrink-0 overflow-hidden">
-                  <Image 
-                    src={selectedProject.image || 'https://picsum.photos/seed/placeholder/1200/800'} 
-                    alt={selectedProject.title} 
-                    fill 
-                    className="object-cover opacity-30 grayscale" 
-                    data-ai-hint={selectedProject.imageHint || "experiment hero"}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
-                  
-                  <button 
-                    onClick={() => setSelectedProject(null)} 
-                    className="absolute top-8 right-8 w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-all z-30 group"
-                  >
-                    <X className="w-6 h-6 text-white group-hover:rotate-90 transition-transform" />
-                  </button>
-
-                  <div className="absolute bottom-10 left-12 right-12 z-20">
-                     <div className="flex items-center gap-4 mb-3">
-                        <span className="text-primary font-black tracking-[0.4em] text-[10px] uppercase bg-primary/10 px-3 py-1 rounded-md border border-primary/20">Technical_Case_{selectedProject.type}</span>
-                        {selectedProject.date && (
-                          <span className="text-white/20 text-[9px] font-black uppercase tracking-[0.4em] flex items-center gap-2">
-                             <Calendar className="w-3 h-3" /> {selectedProject.date}
-                          </span>
-                        )}
-                        <div className="h-px flex-1 bg-white/10" />
-                     </div>
-                     <DialogTitle className="text-4xl md:text-7xl font-headline font-black text-white italic tracking-tighter leading-tight">{selectedProject.title}</DialogTitle>
-                  </div>
-                </div>
-
-                <div className="flex-1 overflow-y-auto custom-scrollbar">
-                  <div className="p-8 md:p-16">
-                    <div className="grid lg:grid-cols-12 gap-16">
-                      <div className="lg:col-span-8 space-y-12">
-                        <div className="space-y-8">
-                          <div className="flex items-center gap-3 text-primary">
-                            <Terminal className="w-5 h-5" />
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.5em]">Architectural Narrative</h4>
-                          </div>
-                          <div className="prose prose-invert max-w-none">
-                            <p className="text-white/80 text-lg md:text-xl leading-relaxed font-body font-light first-letter:text-5xl first-letter:font-headline first-letter:font-black first-letter:text-primary first-letter:mr-3 first-letter:float-left break-words">
-                              {selectedProject.longDesc || selectedProject.desc}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="lg:col-span-4 space-y-12">
-                        <div className="space-y-8 p-10 rounded-[2rem] glass-accent border-primary/10">
-                          <div className="space-y-4">
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.5em] text-white/30">Technology Stack</h4>
-                            <div className="flex flex-wrap gap-2">
-                              {selectedProject.tech?.map((t: string) => (
-                                <span key={t} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[10px] font-bold text-white/70 uppercase tracking-widest">{t}</span>
-                              ))}
-                            </div>
-                          </div>
-                          <a 
-                            href={selectedProject.liveUrl} 
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-3 w-full py-6 rounded-2xl bg-white text-black text-[12px] font-black uppercase tracking-[0.3em] hover:bg-primary hover:text-black transition-all shadow-2xl group"
-                          >
-                            Check Live <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </DialogContent>
-      </Dialog>
 
       <Footer config={config} />
     </main>

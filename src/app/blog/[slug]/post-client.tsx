@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -30,8 +31,9 @@ export default function PostClient({ post, config }: { post: any, config: any })
     );
   }
 
-  // Handle legacy single-category posts
   const postCategories = post.categories || (post.category ? [post.category] : ['Engineering']);
+  const authorName = config?.identity?.authorName || "Kartik Jindal";
+  const jobTitle = config?.identity?.jobTitle || "Architect";
 
   return (
     <main className="bg-transparent min-h-screen">
@@ -85,7 +87,7 @@ export default function PostClient({ post, config }: { post: any, config: any })
           <div className="relative aspect-[21/9] rounded-3xl overflow-hidden border border-white/5 shadow-2xl">
             <Image 
               src={post.image || 'https://picsum.photos/seed/blog/1600/900'} 
-              alt={post.title} 
+              alt={post.altText || post.title} 
               fill 
               className="object-cover"
               priority
@@ -141,11 +143,11 @@ export default function PostClient({ post, config }: { post: any, config: any })
                 <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Author</h4>
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs italic">
-                    KJ.
+                    {authorName.split(' ').map((n: string) => n[0]).join('.')}
                   </div>
                   <div>
-                    <span className="text-sm font-bold text-white block">Kartik Jindal</span>
-                    <span className="text-[9px] uppercase tracking-widest text-white/30">Architect</span>
+                    <span className="text-sm font-bold text-white block">{authorName}</span>
+                    <span className="text-[9px] uppercase tracking-widest text-white/30">{jobTitle}</span>
                   </div>
                 </div>
               </div>
@@ -170,7 +172,15 @@ export default function PostClient({ post, config }: { post: any, config: any })
             "datePublished": typeof post.createdAt === 'number' ? new Date(post.createdAt).toISOString() : (post.createdAt?.toDate ? post.createdAt.toDate().toISOString() : undefined),
             "author": {
               "@type": "Person",
-              "name": "Kartik Jindal"
+              "name": authorName
+            },
+            "publisher": {
+              "@type": "Person",
+              "name": authorName
+            },
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": `${process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com'}/blog/${post.slug || post.id}`
             }
           })
         }}

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -59,6 +60,7 @@ export default function EditProjectPage() {
             githubUrl: data.githubUrl || '',
             image: data.image || '',
             imageHint: data.imageHint || '',
+            altText: data.altText || '',
             tech: data.tech || [],
             challenges: data.challenges || [],
             status: data.status || 'draft',
@@ -361,6 +363,10 @@ export default function EditProjectPage() {
                     <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileUpload} />
                     <span className="text-[10px] font-black uppercase tracking-widest text-white">{uploading ? 'Syncing...' : 'Update Cover (S3)'}</span>
                  </div>
+               </div>
+               <div className="space-y-2">
+                 <Label className="text-[9px] uppercase font-black text-white/20 ml-2">Image Alt Text (SEO)</Label>
+                 <Input value={formData.altText} onChange={e => setFormData({ ...formData, altText: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-10 text-[10px]" placeholder="Descriptive alt text..." />
                </div>
                <div className="space-y-2">
                  <Label className="text-[9px] uppercase font-black text-white/20">Direct Image URL</Label>

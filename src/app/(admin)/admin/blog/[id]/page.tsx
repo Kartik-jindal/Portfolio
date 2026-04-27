@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -63,6 +64,7 @@ export default function EditBlogPostPage() {
             content: data.content || '',
             image: data.image || '',
             imageHint: data.imageHint || '',
+            altText: data.altText || '',
             status: data.status || 'draft',
             seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' }
           });
@@ -310,6 +312,10 @@ export default function EditBlogPostPage() {
                     <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileUpload} />
                     <span className="text-[13px] font-black uppercase tracking-widest text-white">{uploading ? 'Syncing...' : 'Update Cover (S3)'}</span>
                  </div>
+               </div>
+               <div className="space-y-2">
+                 <Label className="text-[11px] uppercase font-black text-white/30 ml-2">Image Alt Text (SEO)</Label>
+                 <Input value={formData.altText} onChange={e => setFormData({ ...formData, altText: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm" placeholder="Descriptive alt text..." />
                </div>
                <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm" placeholder="Direct Image URL" />
                <Input value={formData.imageHint} onChange={e => setFormData({ ...formData, imageHint: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm" placeholder="AI image hint" />

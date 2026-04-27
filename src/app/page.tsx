@@ -15,11 +15,9 @@ import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 
-// Helper to ensure data passed to Client Components is a plain object
 function serialize(data: any) {
   if (!data) return data;
   return JSON.parse(JSON.stringify(data, (key, value) => {
-    // Check if value is a Firestore Timestamp
     if (value && typeof value === 'object' && value.seconds !== undefined && value.nanoseconds !== undefined) {
       return new Date(value.seconds * 1000).getTime();
     }
@@ -32,10 +30,7 @@ async function getGlobalConfig() {
     const docRef = doc(db, 'site_config', 'global');
     const docSnap = await getDoc(docRef);
     return docSnap.exists() ? serialize(docSnap.data()) : null;
-  } catch (err) {
-    console.error("Firebase Error (Global Config):", err);
-    return null;
-  }
+  } catch (err) { return null; }
 }
 
 async function getSeoPageConfig() {
@@ -43,9 +38,7 @@ async function getSeoPageConfig() {
     const docRef = doc(db, 'site_config', 'seo_pages');
     const docSnap = await getDoc(docRef);
     return docSnap.exists() ? serialize(docSnap.data()) : null;
-  } catch (err) {
-    return null;
-  }
+  } catch (err) { return null; }
 }
 
 async function getHeroData() {
@@ -53,10 +46,7 @@ async function getHeroData() {
     const docRef = doc(db, 'site_config', 'hero');
     const docSnap = await getDoc(docRef);
     return docSnap.exists() ? serialize(docSnap.data()) : null;
-  } catch (err) {
-    console.error("Firebase Error (Hero):", err);
-    return null;
-  }
+  } catch (err) { return null; }
 }
 
 async function getNavbarData() {
@@ -64,10 +54,7 @@ async function getNavbarData() {
     const docRef = doc(db, 'site_config', 'navbar');
     const docSnap = await getDoc(docRef);
     return docSnap.exists() ? serialize(docSnap.data()) : null;
-  } catch (err) {
-    console.error("Firebase Error (Navbar):", err);
-    return null;
-  }
+  } catch (err) { return null; }
 }
 
 async function getFooterData() {
@@ -75,10 +62,7 @@ async function getFooterData() {
     const docRef = doc(db, 'site_config', 'footer');
     const docSnap = await getDoc(docRef);
     return docSnap.exists() ? serialize(docSnap.data()) : null;
-  } catch (err) {
-    console.error("Firebase Error (Footer):", err);
-    return null;
-  }
+  } catch (err) { return null; }
 }
 
 async function getAboutData() {
@@ -86,10 +70,7 @@ async function getAboutData() {
     const docRef = doc(db, 'site_config', 'about');
     const docSnap = await getDoc(docRef);
     return docSnap.exists() ? serialize(docSnap.data()) : null;
-  } catch (err) {
-    console.error("Firebase Error (About):", err);
-    return null;
-  }
+  } catch (err) { return null; }
 }
 
 async function getContactData() {
@@ -97,10 +78,7 @@ async function getContactData() {
     const docRef = doc(db, 'site_config', 'contact');
     const docSnap = await getDoc(docRef);
     return docSnap.exists() ? serialize(docSnap.data()) : null;
-  } catch (err) {
-    console.error("Firebase Error (Contact):", err);
-    return null;
-  }
+  } catch (err) { return null; }
 }
 
 async function getProjects(count: number) {
@@ -114,10 +92,7 @@ async function getProjects(count: number) {
       .map(doc => serialize({ id: doc.id, ...doc.data() }))
       .filter((p: any) => p.type === 'FLAGSHIP');
     return data.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)).slice(0, count);
-  } catch (err) {
-    console.error("Firebase Error (Projects):", err);
-    return [];
-  }
+  } catch (err) { return []; }
 }
 
 async function getExperience() {
@@ -126,10 +101,7 @@ async function getExperience() {
     const snap = await getDocs(q);
     const data = snap.docs.map(doc => serialize({ id: doc.id, ...doc.data() }));
     return data.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
-  } catch (err) {
-    console.error("Firebase Error (Experience):", err);
-    return [];
-  }
+  } catch (err) { return []; }
 }
 
 async function getTestimonials() {
@@ -137,50 +109,43 @@ async function getTestimonials() {
     const q = collection(db, 'testimonials');
     const snap = await getDocs(q);
     return snap.docs.map(doc => serialize({ id: doc.id, ...doc.data() }));
-  } catch (err) {
-    console.error("Firebase Error (Testimonials):", err);
-    return [];
-  }
+  } catch (err) { return []; }
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  try {
-    const globalConfig = await getGlobalConfig();
-    const seoPageConfig = await getSeoPageConfig();
-    const homeSeo = seoPageConfig?.home || {};
+  const globalConfig = await getGlobalConfig();
+  const seoPageConfig = await getSeoPageConfig();
+  const homeSeo = seoPageConfig?.home || {};
 
-    const title = homeSeo.title || globalConfig?.seo?.defaultTitle || 'Kartik Jindal | Full Stack Architect';
-    const description = homeSeo.description || globalConfig?.seo?.defaultDescription || 'Engineering digital landscapes where architectural precision meets artistic motion.';
-    const keywords = homeSeo.keywords || globalConfig?.seo?.keywords || 'Portfolio, Full Stack, Developer, Creative Engineering';
-    const ogImage = homeSeo.ogImage || globalConfig?.seo?.ogImage || 'https://picsum.photos/seed/portfolio/1200/630';
+  const title = homeSeo.title || globalConfig?.seo?.defaultTitle || 'Kartik Jindal | Full Stack Architect';
+  const description = homeSeo.description || globalConfig?.seo?.defaultDescription || 'Engineering digital landscapes where architectural precision meets artistic motion.';
+  const keywords = homeSeo.keywords || globalConfig?.seo?.keywords || 'Portfolio, Full Stack, Developer, Creative Engineering';
+  const ogImage = homeSeo.ogImage || globalConfig?.seo?.ogImage || 'https://picsum.photos/seed/portfolio/1200/630';
 
-    return {
+  return {
+    title,
+    description,
+    keywords,
+    alternates: {
+      canonical: process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com',
+    },
+    openGraph: {
       title,
       description,
-      keywords,
-      alternates: {
-        canonical: process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com',
-      },
-      openGraph: {
-        title,
-        description,
-        images: [{ url: ogImage }],
-        type: 'website',
-      },
-      twitter: {
-        card: 'summary_large_image',
-        title,
-        description,
-        images: [ogImage],
-      },
-      robots: {
-        index: homeSeo.indexable ?? true,
-        follow: homeSeo.indexable ?? true,
-      }
-    };
-  } catch (e) {
-    return { title: 'Kartik Jindal | Full Stack Architect' };
-  }
+      images: [{ url: ogImage }],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage],
+    },
+    robots: {
+      index: homeSeo.indexable ?? true,
+      follow: homeSeo.indexable ?? true,
+    }
+  };
 }
 
 export default async function Home() {
@@ -195,6 +160,11 @@ export default async function Home() {
   const testimonials = await getTestimonials();
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com';
+  const branding = config?.identity?.authorName || (heroData?.titleMain && heroData?.titleHighlight 
+    ? `${heroData.titleMain} ${heroData.titleHighlight}` 
+    : "Kartik Jindal");
+  
+  const jobTitle = config?.identity?.jobTitle || heroData?.badge || "Full Stack Architect";
 
   const visibility = config?.visibility || {
     showTestimonials: true,
@@ -221,10 +191,10 @@ export default async function Home() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Person",
-            "name": "Kartik Jindal",
-            "jobTitle": "Full Stack Architect",
+            "name": branding,
+            "jobTitle": jobTitle,
             "url": baseUrl,
-            "description": config?.seo?.defaultDescription,
+            "description": config?.seo?.defaultDescription || "Engineering digital landscapes where architectural precision meets artistic motion.",
             "sameAs": [
               config?.socials?.github,
               config?.socials?.linkedin,

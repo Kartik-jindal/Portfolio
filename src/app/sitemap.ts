@@ -17,7 +17,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
   } catch (e) {
-    console.error("Sitemap error:", e);
+    console.error("Sitemap error (blog):", e);
+  }
+
+  // Fetch projects for sitemap
+  let projectRoutes: any[] = [];
+  try {
+    const q = query(collection(db, 'projects'), where('status', '==', 'published'));
+    const snap = await getDocs(q);
+    projectRoutes = snap.docs.map((doc) => ({
+      url: `${baseUrl}/work/${doc.data().slug || doc.id}`,
+      lastModified: doc.data().createdAt?.toDate ? doc.data().createdAt.toDate() : new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    }));
+  } catch (e) {
+    console.error("Sitemap error (projects):", e);
   }
 
   return [
@@ -39,6 +54,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
+    ...projectRoutes,
     ...blogRoutes,
   ];
 }

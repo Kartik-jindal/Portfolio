@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -5,7 +6,7 @@ import { db } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { motion } from 'framer-motion';
-import { Save, Share2, Eye, FileUp, Image as ImageIcon } from 'lucide-react';
+import { Save, Share2, Eye, FileUp, User, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -35,7 +36,8 @@ export default function SettingsAdminPage() {
           seo: { defaultTitle: '', defaultDescription: '', keywords: '', ogImage: '' },
           socials: { github: '', linkedin: '', twitter: '', instagram: '', email: '' },
           resume: { fileUrl: '' },
-          visibility: { showTestimonials: true, showExperience: true, showExperiments: true }
+          visibility: { showTestimonials: true, showExperience: true, showExperiments: true },
+          identity: { authorName: 'Kartik Jindal', jobTitle: 'Full Stack Architect' }
         };
         setSettings(initial);
       }
@@ -109,12 +111,42 @@ export default function SettingsAdminPage() {
         </Button>
       </header>
 
-      <Tabs defaultValue="socials" className="space-y-10">
+      <Tabs defaultValue="identity" className="space-y-10">
         <TabsList className="bg-white/5 border border-white/5 p-1 rounded-2xl h-14 overflow-x-auto custom-scrollbar">
+          <TabsTrigger value="identity" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[12px] font-black uppercase tracking-widest px-8 h-full">Identity</TabsTrigger>
           <TabsTrigger value="socials" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[12px] font-black uppercase tracking-widest px-8 h-full">Social Bridge</TabsTrigger>
           <TabsTrigger value="resume" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[12px] font-black uppercase tracking-widest px-8 h-full">Assets (S3)</TabsTrigger>
           <TabsTrigger value="visibility" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-black text-[12px] font-black uppercase tracking-widest px-8 h-full">Interface</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="identity" className="space-y-6">
+          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
+             <div className="flex items-center gap-4 text-primary">
+              <User className="w-7 h-7" />
+              <h3 className="text-xl font-headline font-black italic tracking-tight">Entity Identification</h3>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-[12px] uppercase font-black tracking-widest text-white/40">Author Name (GEO)</Label>
+                <Input 
+                  value={settings?.identity?.authorName || ''} 
+                  onChange={(e) => setSettings({ ...settings, identity: { ...settings.identity, authorName: e.target.value } })}
+                  className="bg-white/5 border-white/5 rounded-xl h-14 text-base"
+                  placeholder="e.g. Kartik Jindal"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[12px] uppercase font-black tracking-widest text-white/40">Professional Title (GEO)</Label>
+                <Input 
+                  value={settings?.identity?.jobTitle || ''} 
+                  onChange={(e) => setSettings({ ...settings, identity: { ...settings.identity, jobTitle: e.target.value } })}
+                  className="bg-white/5 border-white/5 rounded-xl h-14 text-base"
+                  placeholder="e.g. Full Stack Architect"
+                />
+              </div>
+            </div>
+          </div>
+        </TabsContent>
 
         <TabsContent value="socials" className="space-y-6">
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">

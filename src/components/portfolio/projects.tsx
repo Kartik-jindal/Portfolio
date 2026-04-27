@@ -8,14 +8,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { db } from '@/lib/firebase/config';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { cn } from '@/lib/utils';
 
-const ProjectCard = ({ project, index, onOpen }: { project: any, index: number, onOpen: (p: any) => void }) => {
+const ProjectCard = ({ project, index }: { project: any, index: number }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   
@@ -48,12 +43,13 @@ const ProjectCard = ({ project, index, onOpen }: { project: any, index: number, 
       className="py-12 md:py-24"
     >
       <div className={`flex flex-col ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-8 md:gap-12 lg:gap-20 max-w-[1600px] mx-auto px-6 items-center`}>
-        <div 
-          className="lg:w-[60%] w-full group relative"
+        <Link 
+          href={`/work/${project.slug || project.id}`}
+          className="lg:w-[60%] w-full group relative block"
           onMouseMove={handleMouse}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => { setIsHovered(false); x.set(0); y.set(0); }}
-          onClick={() => onOpen(project)}
+          scroll={false}
         >
           <div 
             className="absolute -inset-4 md:-inset-8 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 blur-[40px] md:blur-[80px] -z-10"
@@ -85,7 +81,7 @@ const ProjectCard = ({ project, index, onOpen }: { project: any, index: number, 
               </AnimatePresence>
             </div>
           </motion.div>
-        </div>
+        </Link>
 
         <div className="lg:w-[40%] w-full space-y-6 md:space-y-10">
           <div className="space-y-4 md:space-y-6 text-center lg:text-left">
@@ -106,9 +102,9 @@ const ProjectCard = ({ project, index, onOpen }: { project: any, index: number, 
              ))}
           </div>
           <div className="pt-4 flex items-center justify-center lg:justify-start gap-12">
-            <button onClick={() => onOpen(project)} className="text-white text-sm font-black uppercase tracking-[0.3em] group hover:text-primary transition-colors flex items-center gap-3">
+            <Link href={`/work/${project.slug || project.id}`} scroll={false} className="text-white text-sm font-black uppercase tracking-[0.3em] group hover:text-primary transition-colors flex items-center gap-3">
               Case Study <ArrowUpRight className="w-4 h-4" />
-            </button>
+            </Link>
             {project.githubUrl && <a href={project.githubUrl} className="text-white/20 hover:text-white transition-colors"><Github className="w-6 h-6" /></a>}
           </div>
         </div>
@@ -119,7 +115,6 @@ const ProjectCard = ({ project, index, onOpen }: { project: any, index: number, 
 
 export const Projects = ({ initialData, limit = 0, hideHeader = false }: { initialData?: any[], limit?: number, hideHeader?: boolean }) => {
   const [projects, setProjects] = useState<any[]>(initialData || []);
-  const [selectedProject, setSelectedProject] = useState<any>(null);
   const [loading, setLoading] = useState(!initialData);
 
   useEffect(() => {
@@ -176,7 +171,7 @@ export const Projects = ({ initialData, limit = 0, hideHeader = false }: { initi
           </div>
         ) : (
           projects.map((project, index) => (
-            <ProjectCard key={project.id} project={project} index={index} onOpen={setSelectedProject} />
+            <ProjectCard key={project.id} project={project} index={index} />
           ))
         )}
       </div>
@@ -190,123 +185,6 @@ export const Projects = ({ initialData, limit = 0, hideHeader = false }: { initi
           </Link>
         </div>
       )}
-
-      {/* Case Study Preview Modal */}
-      <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
-        <DialogContent className="max-w-5xl bg-background/95 backdrop-blur-3xl border-white/5 p-0 overflow-hidden rounded-[3rem] shadow-2xl outline-none z-[5000] cursor-none">
-          <AnimatePresence>
-            {selectedProject && (
-              <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col max-h-[90vh]">
-                <div className="relative h-64 md:h-80 w-full shrink-0 overflow-hidden">
-                  <Image 
-                    src={selectedProject.image || 'https://picsum.photos/seed/placeholder/1600/1000'} 
-                    alt={selectedProject.title} 
-                    fill 
-                    className="object-cover opacity-60" 
-                    data-ai-hint={selectedProject.imageHint || "project hero"}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-                  <button onClick={() => setSelectedProject(null)} className="absolute top-8 right-8 w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-colors z-[6000] group">
-                    <X className="w-6 h-6 text-white group-hover:rotate-90 transition-transform" />
-                  </button>
-                  <div className="absolute bottom-8 left-12 z-20">
-                     <div className="flex items-center gap-4 mb-1">
-                        <span className="text-primary font-black tracking-[0.4em] text-[10px] uppercase">{selectedProject.role}</span>
-                        {selectedProject.date && (
-                          <span className="text-white/30 text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
-                             <Calendar className="w-3 h-3" /> {selectedProject.date}
-                          </span>
-                        )}
-                     </div>
-                     <DialogTitle className="text-4xl md:text-6xl font-headline font-black text-white italic tracking-tighter break-words">{selectedProject.title}</DialogTitle>
-                  </div>
-                </div>
-
-                <div className="px-8 md:px-12 py-12 md:py-16 space-y-16 overflow-y-auto custom-scrollbar flex-1">
-                  <div className="grid md:grid-cols-12 gap-12 md:gap-20">
-                    <div className="md:col-span-7 space-y-16">
-                      {/* The Narrative */}
-                      <div className="space-y-6">
-                        <div className="flex items-center gap-3 text-primary"><Target className="w-4 h-4" /><h4 className="text-xs font-black uppercase tracking-[0.4em]">The Architecture</h4></div>
-                        <p className="text-lg md:text-xl text-white/80 font-body font-light leading-relaxed first-letter:text-5xl first-letter:font-headline first-letter:font-black first-letter:text-primary first-letter:mr-3 first-letter:float-left break-words">
-                          {selectedProject.longDesc || selectedProject.desc}
-                        </p>
-                      </div>
-
-                      {/* Methodology */}
-                      {selectedProject.methodology && (
-                        <div className="space-y-6">
-                          <div className="flex items-center gap-3 text-accent"><Code className="w-4 h-4" /><h4 className="text-xs font-black uppercase tracking-[0.4em]">Strategic Methodology</h4></div>
-                          <p className="text-lg text-white/60 font-body border-l-2 border-accent/20 pl-8 italic leading-relaxed break-words">
-                            {selectedProject.methodology}
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Technical Hurdles */}
-                      {selectedProject.challenges && selectedProject.challenges.length > 0 && (
-                        <div className="space-y-8">
-                          <h4 className="text-xs font-black uppercase tracking-[0.4em] text-white/40">Engineering Challenges</h4>
-                          <ul className="grid gap-6">
-                            {selectedProject.challenges.map((c: string, i: number) => (
-                              <li key={i} className="flex gap-6 items-start group">
-                                <div className="mt-1 w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_rgba(16,185,129,0.5)] group-hover:scale-150 transition-transform" />
-                                <span className="text-white/50 font-body leading-tight text-base md:text-lg break-words">{c}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="md:col-span-5 space-y-12">
-                      <div className="glass p-10 rounded-[2rem] border-white/5 space-y-10">
-                        {selectedProject.impact && (
-                          <div>
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Project Impact</h4>
-                            <div className="bg-primary/5 p-8 rounded-2xl border border-primary/10">
-                              <p className="text-sm md:text-base font-medium text-white/90 leading-relaxed italic break-words">
-                                "{selectedProject.impact}"
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                        
-                        <div>
-                          <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Core Arsenal</h4>
-                          <div className="flex flex-wrap gap-2">
-                            {selectedProject.tech?.map((t: string) => (
-                              <span key={t} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[10px] font-bold text-white/60 uppercase tracking-widest">{t}</span>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="h-px bg-white/5" />
-
-                        <div className="flex items-center justify-between px-2">
-                          <span className="text-[9px] font-black text-white/20 tracking-[0.4em] uppercase">STATUS: DEPLOYED</span>
-                          <div className="flex gap-4">
-                             {selectedProject.githubUrl && <a href={selectedProject.githubUrl} target="_blank" rel="noopener"><Github className="w-5 h-5 text-white/20 hover:text-white transition-colors cursor-pointer" /></a>}
-                             {selectedProject.liveUrl && <a href={selectedProject.liveUrl} target="_blank" rel="noopener"><ExternalLink className="w-5 h-5 text-white/20 hover:text-white transition-colors cursor-pointer" /></a>}
-                          </div>
-                        </div>
-                      </div>
-
-                      {selectedProject.liveUrl && (
-                        <Button asChild className="w-full py-10 rounded-[2rem] bg-white text-black hover:bg-primary transition-all font-black uppercase tracking-[0.3em] shadow-2xl group">
-                          <a href={selectedProject.liveUrl} target="_blank" rel="noopener noreferrer">
-                            Check Live <ArrowUpRight className="w-5 h-5 ml-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                          </a>
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </DialogContent>
-      </Dialog>
     </section>
   );
 };

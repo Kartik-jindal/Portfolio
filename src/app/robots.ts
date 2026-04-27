@@ -7,7 +7,11 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin/', '/admin/*'],
+      disallow: [
+        '/admin',
+        '/admin/*',
+        '/*?*', // Block query params from crawling to prevent duplicate content
+      ],
     },
     sitemap: `${baseUrl}/sitemap.xml`,
   };

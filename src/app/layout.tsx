@@ -5,17 +5,22 @@ import { CustomCursor } from '@/components/portfolio/custom-cursor';
 import { Hero3D } from '@/components/portfolio/hero-3d';
 import { AuthProvider } from '@/context/auth-context';
 import { Toaster } from '@/components/ui/toaster';
+import { headers } from 'next/headers';
 
 export const metadata: Metadata = {
   title: 'Kartik Jindal | Full Stack Developer & Creative Engineer',
   description: 'Portfolio of Kartik Jindal, a Full Stack Developer specializing in cinematic, high-performance web experiences.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const userAgent = headersList.get('user-agent') || '';
+  const isBot = /bot|googlebot|crawler|spider|robot|crawling/i.test(userAgent);
+
   return (
     <html lang="en" className="dark scroll-smooth">
       <head>
@@ -34,6 +39,7 @@ export default function RootLayout({
           <div className="fixed inset-0 bg-grain z-[1] pointer-events-none opacity-[0.03]" />
           
           <div className="relative z-10">
+            {/* Pass isBot to children if needed, but handled globally via CSS/Logic in components */}
             {children}
           </div>
 

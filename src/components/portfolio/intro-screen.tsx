@@ -18,6 +18,13 @@ export const IntroScreen = () => {
       setIsVisible(false);
       return;
     }
+
+    // Skip for bots to improve LCP/performance scores
+    const isBot = /bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent);
+    if (isBot) {
+      setIsVisible(false);
+      return;
+    }
     
     setIsVisible(true);
 
@@ -94,7 +101,7 @@ export const IntroScreen = () => {
                   transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
                   className="flex flex-col items-center gap-6"
                 >
-                  <h1 className="text-6xl sm:text-8xl md:text-[10rem] font-headline font-black italic tracking-tighter text-gradient leading-none text-center">
+                  <h1 className="text-6xl sm:text-8xl md:text-[10rem] font-headline font-black italic tracking-tighter text-gradient leading-none text-center text-white">
                     Welcome.
                   </h1>
                 </motion.div>
