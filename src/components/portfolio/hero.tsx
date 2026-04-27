@@ -98,7 +98,7 @@ export const Hero = ({ initialData }: { initialData?: any }) => {
           <Button 
             onClick={scrollToContact}
             size="lg" 
-            className="h-20 rounded-full px-12 text-lg font-black bg-white text-black hover:bg-primary transition-all duration-500 hover:scale-105 shadow-2xl group relative overflow-hidden w-full sm:w-auto"
+            className="h-16 rounded-full px-12 text-lg font-black bg-white text-black hover:bg-primary transition-all duration-500 hover:scale-105 shadow-2xl group relative overflow-hidden w-full sm:w-auto"
           >
             <span className="relative z-10 flex items-center gap-2">
               {content.ctaPrimary} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -109,7 +109,7 @@ export const Hero = ({ initialData }: { initialData?: any }) => {
             variant="outline" 
             size="lg" 
             onClick={() => document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' })}
-            className="h-20 rounded-full px-12 text-lg font-black border-white/10 hover:bg-white/5 transition-all duration-500 backdrop-blur-md w-full sm:w-auto"
+            className="h-16 rounded-full px-12 text-lg font-black border-white/10 hover:bg-white/5 transition-all duration-500 backdrop-blur-md w-full sm:w-auto"
           >
             {content.ctaSecondary}
           </Button>

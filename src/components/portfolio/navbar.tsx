@@ -85,7 +85,7 @@ export const Navbar = ({ resumeUrl, navConfig }: NavbarProps) => {
           <div className="flex items-center gap-3">
              <button
                 onClick={scrollToContact}
-                className="flex items-center gap-2 px-6 py-4 rounded-full bg-primary text-black text-[12px] uppercase font-black tracking-widest hover:bg-accent transition-all group"
+                className="flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-black text-[12px] uppercase font-black tracking-widest hover:bg-accent transition-all group"
               >
                 Start Project <Plus className="w-3.5 h-3.5 group-hover:rotate-90 transition-transform" />
               </button>
@@ -93,7 +93,7 @@ export const Navbar = ({ resumeUrl, navConfig }: NavbarProps) => {
             {resumeUrl && (
               <a href={resumeUrl} target="_blank" rel="noopener noreferrer">
                 <button
-                  className="flex items-center gap-2 px-6 py-4 rounded-full bg-white/5 border border-white/10 text-white text-[12px] uppercase font-black tracking-widest hover:bg-white/10 transition-colors group backdrop-blur-md"
+                  className="flex items-center gap-2 px-5 py-3 rounded-full bg-white/5 border border-white/10 text-white text-[12px] uppercase font-black tracking-widest hover:bg-white/10 transition-colors group backdrop-blur-md"
                 >
                   Resume <ArrowUpRight className="w-3 h-3" />
                 </button>

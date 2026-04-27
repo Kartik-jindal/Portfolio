@@ -145,7 +145,7 @@ export const Contact = ({ initialData }: { initialData?: any }) => {
               <Button 
                 onClick={() => setIsOpen(true)}
                 size="lg" 
-                className="rounded-full px-8 py-8 md:px-16 md:py-12 text-lg sm:text-2xl md:text-3xl font-black bg-white text-black hover:bg-primary hover:text-primary-foreground transition-all duration-700 group relative overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.1)] w-full sm:w-auto cursor-none"
+                className="rounded-full px-8 py-6 md:px-12 md:py-9 text-base sm:text-xl md:text-2xl font-black bg-white text-black hover:bg-primary hover:text-primary-foreground transition-all duration-700 group relative overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.1)] w-full sm:w-auto cursor-none"
                 data-cursor="Initiate"
               >
                 <span className="relative z-10 flex items-center justify-center gap-3 md:gap-4">
