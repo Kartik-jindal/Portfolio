@@ -6,7 +6,7 @@ import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, RefreshCcw, Database } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, RefreshCcw, Database, MessageSquare, HelpCircle, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,6 +25,8 @@ export default function EditBlogPostPage() {
   const [newCategory, setNewCategory] = useState('');
   const [newFact, setNewFact] = useState('');
   const [newCitation, setNewCitation] = useState('');
+  const [newTakeaway, setNewTakeaway] = useState('');
+  const [newFaq, setNewFaq] = useState({ q: '', a: '' });
   const [formData, setFormData] = useState<any>(null);
   const [isSlugManual, setIsSlugManual] = useState(false);
   const router = useRouter();
@@ -68,7 +70,8 @@ export default function EditBlogPostPage() {
             altText: data.altText || '',
             status: data.status || 'draft',
             seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' },
-            entity: data.entity || { facts: [], citations: [] }
+            entity: data.entity || { facts: [], citations: [] },
+            aeo: data.aeo || { quickAnswer: '', takeaways: [], faqs: [] }
           });
         } else {
           router.push('/admin/blog');
@@ -91,27 +94,27 @@ export default function EditBlogPostPage() {
     }));
   };
 
-  const handleAddItem = (field: string, listField: string) => {
-    const val = field === 'fact' ? newFact : newCitation;
-    if (val && !formData.entity[listField].includes(val)) {
-      setFormData({
-        ...formData,
-        entity: {
-          ...formData.entity,
-          [listField]: [...formData.entity[listField], val]
-        }
-      });
-      if (field === 'fact') setNewFact('');
-      else setNewCitation('');
-    }
-  };
-
-  const handleRemoveItem = (listField: string, val: string) => {
+  const handleAddItem = (section: string, field: string, val: any) => {
+    if (!val) return;
     setFormData({
       ...formData,
-      entity: {
-        ...formData.entity,
-        [listField]: formData.entity[listField].filter((item: string) => item !== val)
+      [section]: {
+        ...formData[section],
+        [field]: [...(formData[section][field] || []), val]
+      }
+    });
+    if (field === 'facts') setNewFact('');
+    if (field === 'citations') setNewCitation('');
+    if (field === 'takeaways') setNewTakeaway('');
+    if (field === 'faqs') setNewFaq({ q: '', a: '' });
+  };
+
+  const handleRemoveItem = (section: string, field: string, val: any) => {
+    setFormData({
+      ...formData,
+      [section]: {
+        ...formData[section],
+        [field]: formData[section][field].filter((item: any) => item !== val)
       }
     });
   };
@@ -257,6 +260,73 @@ export default function EditBlogPostPage() {
             </div>
           </div>
 
+          {/* Answer Engine Optimization (AEO) Section */}
+          <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
+             <div className="flex items-center gap-5 text-primary">
+              <MessageSquare className="w-8 h-8" />
+              <h3 className="text-2xl font-headline font-black italic tracking-tight">Answer Engine (AEO)</h3>
+            </div>
+            
+            <div className="space-y-8">
+              <div className="space-y-3">
+                <div className="flex justify-between items-end px-1">
+                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Quick Answer (Snippet Intro)</Label>
+                  <span className={`text-[10px] font-mono ${formData.aeo?.quickAnswer?.length > 250 ? 'text-red-500' : 'text-white/20'}`}>
+                    {formData.aeo?.quickAnswer?.length || 0} / 250
+                  </span>
+                </div>
+                <Textarea 
+                  value={formData.aeo?.quickAnswer || ''} 
+                  onChange={e => setFormData({ ...formData, aeo: { ...formData.aeo, quickAnswer: e.target.value } })} 
+                  className="bg-white/5 border-white/5 rounded-xl min-h-[100px] text-base italic" 
+                  placeholder="Provide a concise 1-2 sentence answer for AI snippet engines..."
+                />
+              </div>
+
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 text-white/60">
+                    <Lightbulb className="w-4 h-4" />
+                    <Label className="text-[13px] uppercase font-black tracking-widest">Key Takeaways</Label>
+                  </div>
+                  <div className="flex gap-3">
+                    <Input value={newTakeaway} onChange={e => setNewTakeaway(e.target.value)} className="bg-white/5 border-white/10 h-14 rounded-xl" placeholder="Add a high-signal takeaway..." />
+                    <Button onClick={() => handleAddItem('aeo', 'takeaways', newTakeaway)} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
+                  </div>
+                  <div className="grid gap-3">
+                    {formData.aeo?.takeaways?.map((item: string) => (
+                      <div key={item} className="p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-between group">
+                        <span className="text-sm font-bold text-white/70">{item}</span>
+                        <button onClick={() => handleRemoveItem('aeo', 'takeaways', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-4 pt-8 border-t border-white/5">
+                  <div className="flex items-center gap-3 text-white/60">
+                    <HelpCircle className="w-4 h-4" />
+                    <Label className="text-[13px] uppercase font-black tracking-widest">Strategic FAQs</Label>
+                  </div>
+                  <div className="grid gap-4 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+                    <Input value={newFaq.q} onChange={e => setNewFaq({ ...newFaq, q: e.target.value })} className="bg-transparent border-white/10 h-12" placeholder="Question..." />
+                    <Textarea value={newFaq.a} onChange={e => setNewFaq({ ...newFaq, a: e.target.value })} className="bg-transparent border-white/10 min-h-[80px]" placeholder="Answer..." />
+                    <Button onClick={() => handleAddItem('aeo', 'faqs', newFaq)} variant="outline" className="h-12 w-full rounded-xl border-white/10 uppercase font-black tracking-widest text-[10px]">Add FAQ Pair</Button>
+                  </div>
+                  <div className="grid gap-4">
+                    {formData.aeo?.faqs?.map((item: any, i: number) => (
+                      <div key={i} className="p-6 rounded-xl bg-white/[0.03] border border-white/5 space-y-3 relative group">
+                        <button onClick={() => handleRemoveItem('aeo', 'faqs', item)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
+                        <div className="text-sm font-black text-primary uppercase tracking-tight">Q: {item.q}</div>
+                        <div className="text-sm text-white/50 leading-relaxed">A: {item.a}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Generative Intelligence Section (GEO/AEO) */}
           <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
              <div className="flex items-center gap-5 text-primary">
@@ -269,13 +339,13 @@ export default function EditBlogPostPage() {
                 <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Hard Facts (Key Data Points)</Label>
                 <div className="flex gap-3">
                   <Input value={newFact} onChange={e => setNewFact(e.target.value)} className="bg-white/5 border-white/10 h-14 rounded-xl" placeholder="e.g. Optimized bundle size by 30%..." />
-                  <Button onClick={() => handleAddItem('fact', 'facts')} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
+                  <Button onClick={() => handleAddItem('entity', 'facts', newFact)} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
                 </div>
                 <div className="grid gap-3">
                   {formData.entity?.facts?.map((item: string) => (
                     <div key={item} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between group">
                       <span className="text-sm font-bold text-white/60">{item}</span>
-                      <button onClick={() => handleRemoveItem('facts', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
+                      <button onClick={() => handleRemoveItem('entity', 'facts', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
                     </div>
                   ))}
                 </div>
@@ -285,13 +355,13 @@ export default function EditBlogPostPage() {
                 <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Sources & Citations</Label>
                 <div className="flex gap-3">
                   <Input value={newCitation} onChange={e => setNewCitation(e.target.value)} className="bg-white/5 border-white/10 h-14 rounded-xl" placeholder="Link to research or documentation..." />
-                  <Button onClick={() => handleAddItem('citation', 'citations')} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
+                  <Button onClick={() => handleAddItem('entity', 'citations', newCitation)} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
                 </div>
                 <div className="grid gap-3">
                   {formData.entity?.citations?.map((item: string) => (
                     <div key={item} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between group">
                       <span className="text-xs font-mono text-white/40 truncate">{item}</span>
-                      <button onClick={() => handleRemoveItem('citations', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
+                      <button onClick={() => handleRemoveItem('entity', 'citations', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
                     </div>
                   ))}
                 </div>

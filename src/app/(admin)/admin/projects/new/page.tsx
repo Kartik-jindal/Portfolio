@@ -6,7 +6,7 @@ import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/fires
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box, Globe, Calendar, Database } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box, Globe, Calendar, Database, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -42,14 +42,14 @@ function ProjectFormContent() {
     status: 'draft',
     order: 0,
     seo: { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' },
-    entity: { outcomes: [], facts: [], citations: [] }
+    entity: { outcomes: [], facts: [], citations: [] },
+    aeo: { quickAnswer: '', takeaways: [], faqs: [] }
   });
 
   const [newTech, setNewTech] = useState('');
-  const [newChallenge, setNewChallenge] = useState('');
   const [newFact, setNewFact] = useState('');
-  const [newCitation, setNewCitation] = useState('');
   const [newOutcome, setNewOutcome] = useState('');
+  const [newTakeaway, setNewTakeaway] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
@@ -68,7 +68,8 @@ function ProjectFormContent() {
               title: `${data.title} (Clone)`,
               slug: `${data.slug}-copy`,
               status: 'draft',
-              entity: data.entity || { outcomes: [], facts: [], citations: [] }
+              entity: data.entity || { outcomes: [], facts: [], citations: [] },
+              aeo: data.aeo || { quickAnswer: '', takeaways: [], faqs: [] }
             }));
             setIsSlugManual(true);
             toast({ title: 'Clone Initialized', description: 'Data imported from source build.' });
@@ -98,28 +99,26 @@ function ProjectFormContent() {
     }));
   };
 
-  const handleAddItem = (field: string, listField: string) => {
-    const val = (field === 'fact' ? newFact : field === 'citation' ? newCitation : newOutcome);
-    if (val && !formData.entity[listField].includes(val)) {
-      setFormData({
-        ...formData,
-        entity: {
-          ...formData.entity,
-          [listField]: [...formData.entity[listField], val]
-        }
-      });
-      if (field === 'fact') setNewFact('');
-      if (field === 'citation') setNewCitation('');
-      if (field === 'outcome') setNewOutcome('');
-    }
-  };
-
-  const handleRemoveItem = (listField: string, val: string) => {
+  const handleAddItem = (section: string, field: string, val: any) => {
+    if (!val) return;
     setFormData({
       ...formData,
-      entity: {
-        ...formData.entity,
-        [listField]: formData.entity[listField].filter((item: string) => item !== val)
+      [section]: {
+        ...formData[section],
+        [field]: [...(formData[section][field] || []), val]
+      }
+    });
+    if (field === 'facts') setNewFact('');
+    if (field === 'outcomes') setNewOutcome('');
+    if (field === 'takeaways') setNewTakeaway('');
+  };
+
+  const handleRemoveItem = (section: string, field: string, val: any) => {
+    setFormData({
+      ...formData,
+      [section]: {
+        ...formData[section],
+        [field]: formData[section][field].filter((item: any) => item !== val)
       }
     });
   };
@@ -167,7 +166,7 @@ function ProjectFormContent() {
 
   const addTech = () => {
     if (newTech && !formData.tech.includes(newTech)) {
-      setFormData({ ...formData, tech: [...formData.tech, newTech] });
+      setFormData(prev => ({ ...prev, tech: [...prev.tech, newTech] }));
       setNewTech('');
     }
   };
@@ -219,59 +218,24 @@ function ProjectFormContent() {
                 />
               </div>
             </div>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Type</Label>
-                <Select value={formData.type} onValueChange={v => setFormData({ ...formData, type: v })}>
-                  <SelectTrigger className="bg-white/5 border-white/5 h-14 rounded-xl">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="FLAGSHIP">Flagship Build</SelectItem>
-                    <SelectItem value="EXPERIMENT">Technical Experiment</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Role</Label>
-                <Input value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="Lead Engineer" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Completion Date</Label>
-                <div className="relative">
-                   <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
-                   <Input value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="bg-white/5 border-white/10 rounded-xl h-14 pl-12" placeholder="e.g. June 2024" />
-                </div>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Order</Label>
-                <Input type="number" value={formData.order} onChange={e => setFormData({ ...formData, order: parseInt(e.target.value) })} className="bg-white/5 border-white/5 rounded-xl h-14" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Live URL</Label>
-                <Input value={formData.liveUrl} onChange={e => setFormData({ ...formData, liveUrl: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 font-mono" placeholder="https://..." />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">GitHub URL</Label>
-                <Input value={formData.githubUrl} onChange={e => setFormData({ ...formData, githubUrl: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 font-mono" placeholder="https://github.com/..." />
-              </div>
-            </div>
           </div>
 
+          {/* Answer Engine Optimization (AEO) Section */}
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
-            <h3 className="text-lg font-headline font-black italic tracking-tight text-white/60">Architectural Narrative</h3>
+             <div className="flex items-center gap-4 text-primary">
+              <MessageSquare className="w-6 h-6" />
+              <h3 className="text-lg font-headline font-black italic tracking-tight">Answer Engine (AEO)</h3>
+            </div>
+            
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Short Description</Label>
-                <Textarea value={formData.desc} onChange={e => setFormData({ ...formData, desc: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[100px]" placeholder="Brief teaser..." />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Case Study (Detailed)</Label>
-                <Textarea value={formData.longDesc} onChange={e => setFormData({ ...formData, longDesc: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[300px]" placeholder="The full story..." />
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Quick Answer (Fragment)</Label>
+                <Textarea 
+                  value={formData.aeo.quickAnswer} 
+                  onChange={e => setFormData({ ...formData, aeo: { ...formData.aeo, quickAnswer: e.target.value } })} 
+                  className="bg-white/5 border-white/5 rounded-xl min-h-[80px] text-xs italic" 
+                  placeholder="Summarize the core technical achievement for AI snippet engines..."
+                />
               </div>
             </div>
           </div>
@@ -288,91 +252,16 @@ function ProjectFormContent() {
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Project Outcomes</Label>
                 <div className="flex gap-2">
                   <Input value={newOutcome} onChange={e => setNewOutcome(e.target.value)} className="bg-white/5 border-white/10 h-12 rounded-xl" placeholder="Add success marker..." />
-                  <Button onClick={() => handleAddItem('outcome', 'outcomes')} variant="outline" className="h-12 w-12 rounded-xl border-white/10">+</Button>
+                  <Button onClick={() => handleAddItem('entity', 'outcomes', newOutcome)} variant="outline" className="h-12 w-12 rounded-xl border-white/10">+</Button>
                 </div>
                 <div className="grid gap-2">
                   {formData.entity?.outcomes?.map((item: string) => (
                     <div key={item} className="p-3 rounded-lg bg-primary/5 border border-primary/10 flex items-center justify-between group">
                       <span className="text-[11px] font-bold text-white/60">{item}</span>
-                      <button onClick={() => handleRemoveItem('outcomes', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-3 h-3 text-destructive" /></button>
+                      <button onClick={() => handleRemoveItem('entity', 'outcomes', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-3 h-3 text-destructive" /></button>
                     </div>
                   ))}
                 </div>
-              </div>
-
-              <div className="space-y-4">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Technical Facts</Label>
-                <div className="flex gap-2">
-                  <Input value={newFact} onChange={e => setNewFact(e.target.value)} className="bg-white/5 border-white/10 h-12 rounded-xl" placeholder="Add technical fact..." />
-                  <Button onClick={() => handleAddItem('fact', 'facts')} variant="outline" className="h-12 w-12 rounded-xl border-white/10">+</Button>
-                </div>
-                <div className="grid gap-2">
-                  {formData.entity?.facts?.map((item: string) => (
-                    <div key={item} className="p-3 rounded-lg bg-white/5 border border-white/5 flex items-center justify-between group">
-                      <span className="text-[11px] font-mono text-white/40">{item}</span>
-                      <button onClick={() => handleRemoveItem('facts', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-3 h-3 text-destructive" /></button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
-            <div className="flex items-center gap-4 text-primary">
-              <Globe className="w-6 h-6" />
-              <h3 className="text-lg font-headline font-black italic tracking-tight">Search Optimization</h3>
-            </div>
-            <div className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <div className="flex justify-between items-end px-1">
-                    <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title</Label>
-                    <span className={`text-[9px] font-mono ${formData.seo.title.length > 60 ? 'text-red-500' : 'text-white/20'}`}>
-                      {formData.seo.title.length} / 60
-                    </span>
-                  </div>
-                  <Input 
-                    value={formData.seo.title} 
-                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-14" 
-                    placeholder="Auto-suggested from title..."
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Keywords (CSV)</Label>
-                  <Input 
-                    value={formData.seo.keywords} 
-                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, keywords: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-14" 
-                    placeholder="UX, React, FinTech"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between items-end px-1">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
-                  <span className={`text-[9px] font-mono ${formData.seo.description.length > 160 ? 'text-red-500' : 'text-white/20'}`}>
-                    {formData.seo.description.length} / 160
-                  </span>
-                </div>
-                <Textarea 
-                  value={formData.seo.description} 
-                  onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })} 
-                  className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" 
-                  placeholder="Auto-suggested from description..."
-                />
-              </div>
-
-              <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 h-14">
-                <div className="space-y-0.5">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white">Indexable</Label>
-                  <p className="text-[8px] text-white/20 uppercase font-black">Allow bots to crawl</p>
-                </div>
-                <Switch 
-                  checked={formData.seo.indexable} 
-                  onCheckedChange={v => setFormData({ ...formData, seo: { ...formData.seo, indexable: v } })}
-                />
               </div>
             </div>
           </div>
@@ -409,23 +298,6 @@ function ProjectFormContent() {
                </div>
                <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px] font-mono" placeholder="Direct Image URL" />
             </div>
-          </div>
-
-          <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
-             <div className="space-y-4">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Technology Stack</Label>
-                <div className="flex gap-2">
-                  <Input value={newTech} onChange={e => setNewTech(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTech())} className="bg-white/5 border-white/5 rounded-xl h-10 flex-1" placeholder="Add tool..." />
-                  <Button onClick={addTech} variant="outline" className="h-10 w-10 rounded-xl border-white/10">+</Button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {formData.tech?.map((t: string) => (
-                    <span key={t} className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary flex items-center gap-2">
-                      {t} <button onClick={() => setFormData({ ...formData, tech: formData.tech.filter((x: string) => x !== t) })}><Plus className="w-3 h-3 rotate-45" /></button>
-                    </span>
-                  ))}
-                </div>
-             </div>
           </div>
 
           <div className="glass p-8 rounded-[2rem] border-white/5 space-y-6">

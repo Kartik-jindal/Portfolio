@@ -6,7 +6,7 @@ import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box, Globe, Calendar, RefreshCcw, Database, ShieldCheck, Quote } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box, Globe, Calendar, RefreshCcw, Database, ShieldCheck, Quote, MessageSquare, HelpCircle, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -28,6 +28,8 @@ export default function EditProjectPage() {
   const [newFact, setNewFact] = useState('');
   const [newCitation, setNewCitation] = useState('');
   const [newOutcome, setNewOutcome] = useState('');
+  const [newTakeaway, setNewTakeaway] = useState('');
+  const [newFaq, setNewFaq] = useState({ q: '', a: '' });
   const [isSlugManual, setIsSlugManual] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -68,7 +70,8 @@ export default function EditProjectPage() {
             status: data.status || 'draft',
             order: data.order || 0,
             seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' },
-            entity: data.entity || { outcomes: [], facts: [], citations: [] }
+            entity: data.entity || { outcomes: [], facts: [], citations: [] },
+            aeo: data.aeo || { quickAnswer: '', takeaways: [], faqs: [] }
           });
         } else {
           router.push('/admin/projects');
@@ -91,28 +94,28 @@ export default function EditProjectPage() {
     }));
   };
 
-  const handleAddItem = (field: string, listField: string) => {
-    const val = (field === 'fact' ? newFact : field === 'citation' ? newCitation : newOutcome);
-    if (val && !formData.entity[listField].includes(val)) {
-      setFormData({
-        ...formData,
-        entity: {
-          ...formData.entity,
-          [listField]: [...formData.entity[listField], val]
-        }
-      });
-      if (field === 'fact') setNewFact('');
-      if (field === 'citation') setNewCitation('');
-      if (field === 'outcome') setNewOutcome('');
-    }
-  };
-
-  const handleRemoveItem = (listField: string, val: string) => {
+  const handleAddItem = (section: string, field: string, val: any) => {
+    if (!val) return;
     setFormData({
       ...formData,
-      entity: {
-        ...formData.entity,
-        [listField]: formData.entity[listField].filter((item: string) => item !== val)
+      [section]: {
+        ...formData[section],
+        [field]: [...(formData[section][field] || []), val]
+      }
+    });
+    if (field === 'facts') setNewFact('');
+    if (field === 'citations') setNewCitation('');
+    if (field === 'outcomes') setNewOutcome('');
+    if (field === 'takeaways') setNewTakeaway('');
+    if (field === 'faqs') setNewFaq({ q: '', a: '' });
+  };
+
+  const handleRemoveItem = (section: string, field: string, val: any) => {
+    setFormData({
+      ...formData,
+      [section]: {
+        ...formData[section],
+        [field]: formData[section][field].filter((item: any) => item !== val)
       }
     });
   };
@@ -176,13 +179,6 @@ export default function EditProjectPage() {
     if (newTech && !formData.tech.includes(newTech)) {
       setFormData({ ...formData, tech: [...formData.tech, newTech] });
       setNewTech('');
-    }
-  };
-
-  const addChallenge = () => {
-    if (newChallenge && !formData.challenges.includes(newChallenge)) {
-      setFormData({ ...formData, challenges: [...formData.challenges, newChallenge] });
-      setNewChallenge('');
     }
   };
 
@@ -261,21 +257,6 @@ export default function EditProjectPage() {
                 </div>
               </div>
             </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="space-y-3">
-                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Manual Order</Label>
-                <Input type="number" value={formData.order} onChange={e => setFormData({ ...formData, order: parseInt(e.target.value) })} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" />
-              </div>
-              <div className="space-y-3">
-                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Live Deployment</Label>
-                <Input value={formData.liveUrl} onChange={e => setFormData({ ...formData, liveUrl: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg font-mono" placeholder="https://..." />
-              </div>
-              <div className="space-y-3">
-                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">GitHub Repo</Label>
-                <Input value={formData.githubUrl} onChange={e => setFormData({ ...formData, githubUrl: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg font-mono" placeholder="https://github.com/..." />
-              </div>
-            </div>
           </div>
 
           {/* Narrative Section */}
@@ -290,9 +271,72 @@ export default function EditProjectPage() {
                 <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Case Study (Deep Dive)</Label>
                 <Textarea value={formData.longDesc} onChange={e => setFormData({ ...formData, longDesc: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[400px] text-lg leading-relaxed" />
               </div>
+            </div>
+          </div>
+
+          {/* Answer Engine Optimization (AEO) Section */}
+          <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
+             <div className="flex items-center gap-5 text-primary">
+              <MessageSquare className="w-8 h-8" />
+              <h3 className="text-2xl font-headline font-black italic tracking-tight">Answer Engine (AEO)</h3>
+            </div>
+            
+            <div className="space-y-8">
               <div className="space-y-3">
-                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Strategic Methodology</Label>
-                <Textarea value={formData.methodology} onChange={e => setFormData({ ...formData, methodology: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[140px] text-lg leading-relaxed italic" />
+                <div className="flex justify-between items-end px-1">
+                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Quick Answer (Snippet Definition)</Label>
+                  <span className={`text-[10px] font-mono ${formData.aeo?.quickAnswer?.length > 250 ? 'text-red-500' : 'text-white/20'}`}>
+                    {formData.aeo?.quickAnswer?.length || 0} / 250
+                  </span>
+                </div>
+                <Textarea 
+                  value={formData.aeo?.quickAnswer || ''} 
+                  onChange={e => setFormData({ ...formData, aeo: { ...formData.aeo, quickAnswer: e.target.value } })} 
+                  className="bg-white/5 border-white/5 rounded-xl min-h-[100px] text-base italic" 
+                  placeholder="Summarize the core technical achievement in 1-2 sentences for AI snippets..."
+                />
+              </div>
+
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 text-white/60">
+                    <Lightbulb className="w-4 h-4" />
+                    <Label className="text-[13px] uppercase font-black tracking-widest">Strategic Key Takeaways</Label>
+                  </div>
+                  <div className="flex gap-3">
+                    <Input value={newTakeaway} onChange={e => setNewTakeaway(e.target.value)} className="bg-white/5 border-white/10 h-14 rounded-xl" placeholder="Add a key project takeaway..." />
+                    <Button onClick={() => handleAddItem('aeo', 'takeaways', newTakeaway)} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
+                  </div>
+                  <div className="grid gap-3">
+                    {formData.aeo?.takeaways?.map((item: string) => (
+                      <div key={item} className="p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-between group">
+                        <span className="text-sm font-bold text-white/70">{item}</span>
+                        <button onClick={() => handleRemoveItem('aeo', 'takeaways', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-4 pt-8 border-t border-white/5">
+                  <div className="flex items-center gap-3 text-white/60">
+                    <HelpCircle className="w-4 h-4" />
+                    <Label className="text-[13px] uppercase font-black tracking-widest">Build FAQs</Label>
+                  </div>
+                  <div className="grid gap-4 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+                    <Input value={newFaq.q} onChange={e => setNewFaq({ ...newFaq, q: e.target.value })} className="bg-transparent border-white/10 h-12" placeholder="Question..." />
+                    <Textarea value={newFaq.a} onChange={e => setNewFaq({ ...newFaq, a: e.target.value })} className="bg-transparent border-white/10 min-h-[80px]" placeholder="Answer..." />
+                    <Button onClick={() => handleAddItem('aeo', 'faqs', newFaq)} variant="outline" className="h-12 w-full rounded-xl border-white/10 uppercase font-black tracking-widest text-[10px]">Add FAQ Pair</Button>
+                  </div>
+                  <div className="grid gap-4">
+                    {formData.aeo?.faqs?.map((item: any, i: number) => (
+                      <div key={i} className="p-6 rounded-xl bg-white/[0.03] border border-white/5 space-y-3 relative group">
+                        <button onClick={() => handleRemoveItem('aeo', 'faqs', item)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
+                        <div className="text-sm font-black text-primary uppercase tracking-tight">Q: {item.q}</div>
+                        <div className="text-sm text-white/50 leading-relaxed">A: {item.a}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -309,13 +353,13 @@ export default function EditProjectPage() {
                 <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Project Outcomes (Success Markers)</Label>
                 <div className="flex gap-3">
                   <Input value={newOutcome} onChange={e => setNewOutcome(e.target.value)} className="bg-white/5 border-white/10 h-14 rounded-xl" placeholder="e.g. 40% reduction in TBT..." />
-                  <Button onClick={() => handleAddItem('outcome', 'outcomes')} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
+                  <Button onClick={() => handleAddItem('entity', 'outcomes', newOutcome)} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
                 </div>
                 <div className="grid gap-3">
                   {formData.entity?.outcomes?.map((item: string) => (
                     <div key={item} className="p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-between group">
                       <span className="text-sm font-bold text-white/80">{item}</span>
-                      <button onClick={() => handleRemoveItem('outcomes', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
+                      <button onClick={() => handleRemoveItem('entity', 'outcomes', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
                     </div>
                   ))}
                 </div>
@@ -325,13 +369,13 @@ export default function EditProjectPage() {
                 <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Hard Evidence (Technical Facts)</Label>
                 <div className="flex gap-3">
                   <Input value={newFact} onChange={e => setNewFact(e.target.value)} className="bg-white/5 border-white/10 h-14 rounded-xl" placeholder="e.g. Utilized Web Workers for background tasks..." />
-                  <Button onClick={() => handleAddItem('fact', 'facts')} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
+                  <Button onClick={() => handleAddItem('entity', 'facts', newFact)} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
                 </div>
                 <div className="grid gap-3">
                   {formData.entity?.facts?.map((item: string) => (
                     <div key={item} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between group">
                       <span className="text-sm font-mono text-white/60">{item}</span>
-                      <button onClick={() => handleRemoveItem('facts', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
+                      <button onClick={() => handleRemoveItem('entity', 'facts', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
                     </div>
                   ))}
                 </div>
@@ -341,13 +385,13 @@ export default function EditProjectPage() {
                 <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Source Citations & Mentions</Label>
                 <div className="flex gap-3">
                   <Input value={newCitation} onChange={e => setNewCitation(e.target.value)} className="bg-white/5 border-white/10 h-14 rounded-xl" placeholder="URL or publication name..." />
-                  <Button onClick={() => handleAddItem('citation', 'citations')} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
+                  <Button onClick={() => handleAddItem('entity', 'citations', newCitation)} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
                 </div>
                 <div className="grid gap-3">
                   {formData.entity?.citations?.map((item: string) => (
                     <div key={item} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between group">
                       <span className="text-xs font-mono text-white/40 truncate">{item}</span>
-                      <button onClick={() => handleRemoveItem('citations', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
+                      <button onClick={() => handleRemoveItem('entity', 'citations', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
                     </div>
                   ))}
                 </div>
