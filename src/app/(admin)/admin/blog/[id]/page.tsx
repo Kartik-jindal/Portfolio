@@ -6,7 +6,7 @@ import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, RefreshCcw, Database, MessageSquare, HelpCircle, Lightbulb } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, RefreshCcw, Database, MessageSquare, HelpCircle, Lightbulb, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -218,18 +218,24 @@ export default function EditBlogPostPage() {
             
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-3">
-                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Post Title</Label>
+                <div className="flex justify-between items-end px-1">
+                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Post Title</Label>
+                  {!formData.title && <span className="text-[9px] text-red-500 font-black uppercase tracking-widest">Required</span>}
+                </div>
                 <Input value={formData.title} onChange={handleTitleChange} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" />
               </div>
               <div className="space-y-3">
-                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Slug</Label>
+                <div className="flex justify-between items-end px-1">
+                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Slug</Label>
+                  {!/^[a-z0-9-]+$/.test(formData.slug) && formData.slug && <span className="text-[9px] text-red-500 font-black uppercase tracking-widest">Invalid Format</span>}
+                </div>
                 <Input 
                   value={formData.slug} 
                   onChange={e => {
                     setIsSlugManual(true);
                     setFormData({ ...formData, slug: e.target.value });
                   }} 
-                  className="bg-white/5 border-white/5 rounded-xl h-16 text-lg font-mono" 
+                  className={`bg-white/5 border-white/5 rounded-xl h-16 text-lg font-mono ${!/^[a-z0-9-]+$/.test(formData.slug) && formData.slug ? 'border-red-500/50' : ''}`} 
                 />
               </div>
             </div>
@@ -250,11 +256,17 @@ export default function EditBlogPostPage() {
             <h3 className="text-2xl font-headline font-black italic tracking-tight text-white/60">Editorial Content</h3>
             <div className="space-y-8">
               <div className="space-y-3">
-                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Abstract Summary</Label>
+                <div className="flex justify-between items-end px-1">
+                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Abstract Summary</Label>
+                  <span className={`text-[10px] font-mono ${formData.summary?.length > 160 ? 'text-yellow-500' : 'text-white/20'}`}>{formData.summary?.length || 0} chars</span>
+                </div>
                 <Textarea value={formData.summary} onChange={e => setFormData({ ...formData, summary: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[140px] text-lg leading-relaxed" />
               </div>
               <div className="space-y-3">
-                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Article Body (HTML/Markdown)</Label>
+                <div className="flex justify-between items-end px-1">
+                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Article Body (HTML/Markdown)</Label>
+                  {!formData.content && <span className="text-[9px] text-yellow-500 font-black uppercase tracking-widest flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Body Empty</span>}
+                </div>
                 <Textarea value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[500px] font-mono text-sm leading-relaxed" />
               </div>
             </div>
@@ -389,7 +401,7 @@ export default function EditBlogPostPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-end px-1">
                     <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">SEO Title Override</Label>
-                    <span className={`text-[10px] font-mono ${formData.seo.title.length > 60 ? 'text-red-500' : 'text-white/20'}`}>
+                    <span className={`text-[10px] font-mono ${formData.seo.title.length > 60 || formData.seo.title.length < 30 ? 'text-yellow-500' : 'text-green-500'}`}>
                       {formData.seo.title.length} / 60
                     </span>
                   </div>
@@ -412,7 +424,7 @@ export default function EditBlogPostPage() {
               <div className="space-y-3">
                 <div className="flex justify-between items-end px-1">
                   <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
-                  <span className={`text-[10px] font-mono ${formData.seo.description.length > 160 ? 'text-red-500' : 'text-white/20'}`}>
+                  <span className={`text-[10px] font-mono ${formData.seo.description.length > 160 || formData.seo.description.length < 70 ? 'text-yellow-500' : 'text-green-500'}`}>
                     {formData.seo.description.length} / 160
                   </span>
                 </div>
@@ -482,8 +494,11 @@ export default function EditBlogPostPage() {
                  </div>
                </div>
                <div className="space-y-3">
-                 <Label className="text-[11px] uppercase font-black text-white/30 ml-2">Image Alt Text (SEO)</Label>
-                 <Input value={formData.altText} onChange={e => setFormData({ ...formData, altText: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm" placeholder="Descriptive alt text..." />
+                 <div className="flex justify-between items-end px-1">
+                   <Label className="text-[11px] uppercase font-black text-white/30 ml-2">Image Alt Text (SEO)</Label>
+                   {!formData.altText && formData.image && <span className="text-[9px] text-yellow-500 font-black uppercase tracking-widest flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Missing</span>}
+                 </div>
+                 <Input value={formData.altText} onChange={e => setFormData({ ...formData, altText: e.target.value })} className={`bg-white/5 border-white/5 rounded-xl h-14 text-sm ${!formData.altText && formData.image ? 'border-yellow-500/30' : ''}`} placeholder="Descriptive alt text..." />
                </div>
                <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm font-mono" placeholder="Direct Image URL" />
             </div>

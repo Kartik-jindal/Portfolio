@@ -5,7 +5,7 @@ import { db } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { motion } from 'framer-motion';
-import { Save, Share2, Eye, FileUp, User, Briefcase, Plus, Trash2, ShieldCheck, Globe } from 'lucide-react';
+import { Save, Share2, Eye, FileUp, User, Briefcase, Plus, Trash2, ShieldCheck, Globe, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -130,7 +130,23 @@ export default function SettingsAdminPage() {
     }
   };
 
+  const calculateCompleteness = () => {
+    if (!settings) return 0;
+    const fields = [
+      settings.identity?.authorName,
+      settings.identity?.jobTitle,
+      settings.identity?.bio,
+      settings.identity?.expertise?.length > 0,
+      settings.identity?.services?.length > 0,
+      settings.identity?.sameAs?.length > 0
+    ];
+    const completed = fields.filter(Boolean).length;
+    return Math.round((completed / fields.length) * 100);
+  };
+
   if (loading) return <div className="h-96 flex items-center justify-center"><div className="w-2.5 h-2.5 bg-primary animate-ping rounded-full" /></div>;
+
+  const completeness = calculateCompleteness();
 
   return (
     <div className="space-y-12 pb-20">
@@ -139,13 +155,22 @@ export default function SettingsAdminPage() {
           <span className="text-primary font-black uppercase tracking-[0.6em] text-[12px]">Global Control</span>
           <h1 className="text-6xl font-headline font-black italic tracking-tighter text-white">System Settings.</h1>
         </div>
-        <Button 
-          onClick={handleSave}
-          disabled={saving}
-          className="h-16 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-10 group text-base"
-        >
-          {saving ? 'Syncing...' : 'Sync Settings'} <Save className="w-7 h-7 ml-3 group-hover:scale-110 transition-transform" />
-        </Button>
+        <div className="flex flex-col items-end gap-4">
+          <div className="flex items-center gap-4 px-6 py-2 rounded-xl glass border-white/5">
+             <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Entity Readiness</span>
+             <div className="w-24 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                <div className={`h-full transition-all duration-1000 ${completeness > 80 ? 'bg-primary' : 'bg-yellow-500'}`} style={{ width: `${completeness}%` }} />
+             </div>
+             <span className={`text-[11px] font-black font-mono ${completeness > 80 ? 'text-primary' : 'text-yellow-500'}`}>{completeness}%</span>
+          </div>
+          <Button 
+            onClick={handleSave}
+            disabled={saving}
+            className="h-16 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-10 group text-base"
+          >
+            {saving ? 'Syncing...' : 'Sync Settings'} <Save className="w-7 h-7 ml-3 group-hover:scale-110 transition-transform" />
+          </Button>
+        </div>
       </header>
 
       <Tabs defaultValue="identity" className="space-y-12">
@@ -165,26 +190,35 @@ export default function SettingsAdminPage() {
             </div>
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-3">
-                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Full Legal Name</Label>
+                <div className="flex justify-between items-end px-1">
+                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Full Legal Name</Label>
+                  {!settings.identity.authorName && <span className="text-[9px] text-red-500 font-black uppercase tracking-widest">Missing</span>}
+                </div>
                 <Input 
                   value={settings?.identity?.authorName || ''} 
                   onChange={(e) => setSettings({ ...settings, identity: { ...settings.identity, authorName: e.target.value } })}
-                  className="bg-white/5 border-white/5 rounded-xl h-16 text-lg"
+                  className={`bg-white/5 border-white/5 rounded-xl h-16 text-lg ${!settings.identity.authorName ? 'border-red-500/20' : ''}`}
                   placeholder="e.g. Kartik Jindal"
                 />
               </div>
               <div className="space-y-3">
-                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Professional Job Title</Label>
+                <div className="flex justify-between items-end px-1">
+                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Professional Job Title</Label>
+                  {!settings.identity.jobTitle && <span className="text-[9px] text-red-500 font-black uppercase tracking-widest">Missing</span>}
+                </div>
                 <Input 
                   value={settings?.identity?.jobTitle || ''} 
                   onChange={(e) => setSettings({ ...settings, identity: { ...settings.identity, jobTitle: e.target.value } })}
-                  className="bg-white/5 border-white/5 rounded-xl h-16 text-lg"
+                  className={`bg-white/5 border-white/5 rounded-xl h-16 text-lg ${!settings.identity.jobTitle ? 'border-red-500/20' : ''}`}
                   placeholder="e.g. Full Stack Architect"
                 />
               </div>
             </div>
             <div className="space-y-3">
-              <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Entity Bio (Concise Summary for AI)</Label>
+              <div className="flex justify-between items-end px-1">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Entity Bio (Concise Summary for AI)</Label>
+                {!settings.identity.bio && <span className="text-[9px] text-yellow-500 font-black uppercase tracking-widest flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Critical for GEO</span>}
+              </div>
               <Textarea 
                 value={settings?.identity?.bio || ''} 
                 onChange={(e) => setSettings({ ...settings, identity: { ...settings.identity, bio: e.target.value } })}
@@ -205,7 +239,10 @@ export default function SettingsAdminPage() {
               
               <div className="space-y-6">
                 <div className="space-y-4">
-                  <Label className="text-[11px] uppercase font-black tracking-widest text-white/40">Knowledge Pillars (Expertise)</Label>
+                  <div className="flex justify-between items-end px-1">
+                    <Label className="text-[11px] uppercase font-black tracking-widest text-white/40">Knowledge Pillars (Expertise)</Label>
+                    {settings.identity.expertise.length === 0 && <span className="text-[9px] text-yellow-500 font-black uppercase tracking-widest">Recommended</span>}
+                  </div>
                   <div className="flex gap-3">
                     <Input value={newVal.expertise} onChange={e => setNewVal({ ...newVal, expertise: e.target.value })} className="bg-white/5 border-white/10 h-12 rounded-xl" placeholder="Add expertise..." />
                     <Button onClick={() => handleAddItem('expertise', 'expertise')} variant="outline" className="h-12 w-12 rounded-xl border-white/10">+</Button>
@@ -259,7 +296,10 @@ export default function SettingsAdminPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <Label className="text-[11px] uppercase font-black tracking-widest text-white/40">Entity Verification (sameAs URLs)</Label>
+                  <div className="flex justify-between items-end px-1">
+                    <Label className="text-[11px] uppercase font-black tracking-widest text-white/40">Entity Verification (sameAs URLs)</Label>
+                    {settings.identity.sameAs.length === 0 && <span className="text-[9px] text-yellow-500 font-black uppercase tracking-widest flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Needed for Trust</span>}
+                  </div>
                   <div className="flex gap-3">
                     <Input value={newVal.sameAs} onChange={e => setNewVal({ ...newVal, sameAs: e.target.value })} className="bg-white/5 border-white/10 h-12 rounded-xl" placeholder="Add verified profile URL..." />
                     <Button onClick={() => handleAddItem('sameAs', 'sameAs')} variant="outline" className="h-12 w-12 rounded-xl border-white/10">+</Button>
