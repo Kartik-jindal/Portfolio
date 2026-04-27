@@ -7,6 +7,8 @@ import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firesto
 import type { Metadata } from 'next';
 import WorkClient from './work-client';
 
+export const dynamic = 'force-dynamic';
+
 function serialize(data: any) {
   if (!data) return data;
   return JSON.parse(JSON.stringify(data, (key, value) => {
@@ -45,6 +47,20 @@ async function getExperiments() {
   } catch (err) { return []; }
 }
 
+async function getFlagships() {
+  try {
+    const q = query(
+      collection(db, 'projects'),
+      where('status', '==', 'published')
+    );
+    const snap = await getDocs(q);
+    return snap.docs
+      .map(d => serialize({ id: d.id, ...d.data() }))
+      .filter((p: any) => p.type === 'FLAGSHIP')
+      .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+  } catch (err) { return []; }
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const globalConfig = await getGlobalConfig();
   const seoPageConfig = await getSeoPageConfig();
@@ -75,11 +91,13 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function WorkPage() {
   const config = await getGlobalConfig();
   const experiments = await getExperiments();
+  const flagships = await getFlagships();
 
   return (
     <WorkClient 
       config={config} 
       initialExperiments={experiments} 
+      initialFlagships={flagships}
     />
   );
 }

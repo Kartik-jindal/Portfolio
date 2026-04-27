@@ -13,6 +13,8 @@ import { db } from '@/lib/firebase/config';
 import { doc, getDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 // Helper to ensure data passed to Client Components is a plain object
 function serialize(data: any) {
   if (!data) return data;
@@ -108,7 +110,9 @@ async function getProjects(count: number) {
       where('status', '==', 'published')
     );
     const snap = await getDocs(q);
-    const data = snap.docs.map(doc => serialize({ id: doc.id, ...doc.data() }));
+    const data = snap.docs
+      .map(doc => serialize({ id: doc.id, ...doc.data() }))
+      .filter((p: any) => p.type === 'FLAGSHIP');
     return data.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)).slice(0, count);
   } catch (err) {
     console.error("Firebase Error (Projects):", err);

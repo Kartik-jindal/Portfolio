@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -13,7 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-export default function WorkClient({ config, initialExperiments }: { config: any, initialExperiments: any[] }) {
+export default function WorkClient({ config, initialExperiments, initialFlagships }: { config: any, initialExperiments: any[], initialFlagships: any[] }) {
   const [selectedProject, setSelectedProject] = useState<any>(null);
 
   return (
@@ -42,7 +43,7 @@ export default function WorkClient({ config, initialExperiments }: { config: any
         <div className="max-w-7xl mx-auto px-6 mb-12">
           <h2 className="text-xs uppercase tracking-[0.5em] font-black text-primary border-b border-primary/20 pb-4 inline-block">Flagship Builds</h2>
         </div>
-        <Projects />
+        <Projects initialData={initialFlagships} />
       </section>
 
       {config?.visibility?.showExperiments && (
