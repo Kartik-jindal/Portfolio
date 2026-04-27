@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { db } from '@/lib/firebase/config';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { SeoHud } from '@/components/admin/seo-hud';
 
-export default function NewBlogPostPage() {
+function BlogFormContent() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [isSlugManual, setIsSlugManual] = useState(false);
@@ -32,12 +32,40 @@ export default function NewBlogPostPage() {
     content: '',
     image: '',
     imageHint: '',
+    altText: '',
     status: 'draft',
     seo: { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' }
   });
 
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const cloneId = searchParams.get('clone');
+    if (cloneId) {
+      const fetchCloneSource = async () => {
+        try {
+          const sourceSnap = await getDoc(doc(db, 'blog', cloneId));
+          if (sourceSnap.exists()) {
+            const data = sourceSnap.data();
+            setFormData(prev => ({
+              ...prev,
+              ...data,
+              title: `${data.title} (Clone)`,
+              slug: `${data.slug}-copy`,
+              status: 'draft',
+            }));
+            setIsSlugManual(true);
+            toast({ title: 'Draft Cloned', description: 'Editorial content imported.' });
+          }
+        } catch (e) {
+          console.error("Clone Error:", e);
+        }
+      };
+      fetchCloneSource();
+    }
+  }, [searchParams, toast]);
 
   const slugify = (text: string) => {
     return text
@@ -278,6 +306,10 @@ export default function NewBlogPostPage() {
                     <span className="text-[10px] font-black uppercase tracking-widest text-white">{uploading ? 'Syncing...' : 'Upload to S3'}</span>
                  </div>
                </div>
+               <div className="space-y-2">
+                 <Label className="text-[9px] uppercase font-black text-white/20 ml-2">Image Alt Text (SEO)</Label>
+                 <Input value={formData.altText} onChange={e => setFormData({ ...formData, altText: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-10 text-[10px]" placeholder="Descriptive alt text..." />
+               </div>
                <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" placeholder="Direct Image URL" />
                <Input value={formData.imageHint} onChange={e => setFormData({ ...formData, imageHint: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" placeholder="AI image hint" />
             </div>
@@ -317,5 +349,13 @@ export default function NewBlogPostPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NewBlogPostPage() {
+  return (
+    <Suspense fallback={<div>Loading CMS...</div>}>
+      <BlogFormContent />
+    </Suspense>
   );
 }

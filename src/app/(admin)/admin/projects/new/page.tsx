@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { db } from '@/lib/firebase/config';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box, Globe, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { SeoHud } from '@/components/admin/seo-hud';
 
-export default function NewProjectPage() {
+function ProjectFormContent() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [isSlugManual, setIsSlugManual] = useState(false);
@@ -36,6 +36,7 @@ export default function NewProjectPage() {
     githubUrl: '',
     image: '',
     imageHint: '',
+    altText: '',
     tech: [] as string[],
     challenges: [] as string[],
     status: 'draft',
@@ -46,7 +47,34 @@ export default function NewProjectPage() {
   const [newTech, setNewTech] = useState('');
   const [newChallenge, setNewChallenge] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const cloneId = searchParams.get('clone');
+    if (cloneId) {
+      const fetchCloneSource = async () => {
+        try {
+          const sourceSnap = await getDoc(doc(db, 'projects', cloneId));
+          if (sourceSnap.exists()) {
+            const data = sourceSnap.data();
+            setFormData(prev => ({
+              ...prev,
+              ...data,
+              title: `${data.title} (Clone)`,
+              slug: `${data.slug}-copy`,
+              status: 'draft', // Force clones to draft
+            }));
+            setIsSlugManual(true);
+            toast({ title: 'Clone Initialized', description: 'Data imported from source build.' });
+          }
+        } catch (e) {
+          console.error("Clone Error:", e);
+        }
+      };
+      fetchCloneSource();
+    }
+  }, [searchParams, toast]);
 
   const slugify = (text: string) => {
     return text
@@ -328,6 +356,10 @@ export default function NewProjectPage() {
                  </div>
                </div>
                <div className="space-y-2">
+                 <Label className="text-[9px] uppercase font-black text-white/20 ml-2">Image Alt Text (SEO)</Label>
+                 <Input value={formData.altText} onChange={e => setFormData({ ...formData, altText: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-10 text-[10px]" placeholder="Descriptive alt text..." />
+               </div>
+               <div className="space-y-2">
                  <Label className="text-[9px] uppercase font-black text-white/20">Direct Image URL</Label>
                  <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-10 text-[10px]" />
                </div>
@@ -396,5 +428,13 @@ export default function NewProjectPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NewProjectPage() {
+  return (
+    <Suspense fallback={<div>Loading Lab...</div>}>
+      <ProjectFormContent />
+    </Suspense>
   );
 }
