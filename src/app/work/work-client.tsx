@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -21,12 +20,12 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
     <main className="bg-transparent min-h-screen">
       <Navbar resumeUrl={config?.resume?.fileUrl} />
       
-      <section className="pt-48 pb-24 px-6 relative overflow-hidden">
+      <section className="pt-48 pb-12 px-6 relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-24"
+            className="mb-12"
           >
             <span className="text-primary uppercase tracking-[0.6em] text-sm font-black block mb-6">Portfolio Archive</span>
             <h1 className="text-6xl md:text-[10rem] font-headline font-black tracking-tighter leading-none mb-12">
@@ -40,10 +39,15 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
       </section>
 
       <section className="pb-32">
-        <div className="max-w-7xl mx-auto px-6 mb-12">
-          <h2 className="text-xs uppercase tracking-[0.5em] font-black text-primary border-b border-primary/20 pb-4 inline-block">Flagship Builds</h2>
+        <div className="max-w-7xl mx-auto px-6 mb-20">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <span className="text-primary uppercase tracking-[0.5em] text-[10px] font-black block mb-6">Discovery</span>
+            <h2 className="text-5xl md:text-8xl font-headline font-black tracking-tighter leading-none">
+              FLAGSHIP <br /> <span className="text-outline italic">BUILDS.</span>
+            </h2>
+          </motion.div>
         </div>
-        <Projects initialData={initialFlagships} />
+        <Projects initialData={initialFlagships} hideHeader />
       </section>
 
       {config?.visibility?.showExperiments && (

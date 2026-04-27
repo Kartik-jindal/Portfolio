@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { cn } from '@/lib/utils';
 
 const ProjectCard = ({ project, index, onOpen }: { project: any, index: number, onOpen: (p: any) => void }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -116,7 +117,7 @@ const ProjectCard = ({ project, index, onOpen }: { project: any, index: number, 
   );
 };
 
-export const Projects = ({ initialData, limit = 0 }: { initialData?: any[], limit?: number }) => {
+export const Projects = ({ initialData, limit = 0, hideHeader = false }: { initialData?: any[], limit?: number, hideHeader?: boolean }) => {
   const [projects, setProjects] = useState<any[]>(initialData || []);
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [loading, setLoading] = useState(!initialData);
@@ -153,18 +154,20 @@ export const Projects = ({ initialData, limit = 0 }: { initialData?: any[], limi
   );
 
   return (
-    <section id="work" className="relative py-24 md:py-48 bg-transparent">
-      <div className="max-w-7xl mx-auto px-6 mb-12 md:mb-32">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="max-w-3xl text-center lg:text-left">
-          <span className="text-primary uppercase tracking-[0.5em] text-[10px] font-black block mb-6">Archive</span>
-          <h2 className="text-5xl md:text-8xl font-headline font-black tracking-tighter leading-none mb-8 break-words">
-            SELECTED <br /> <span className="text-outline italic">WORKS.</span>
-          </h2>
-          <p className="text-muted-foreground/60 text-lg md:text-xl font-light max-w-2xl font-body mx-auto lg:mx-0 break-words">
-            A curated collection of high-performance digital products where architectural precision meets emotive design.
-          </p>
-        </motion.div>
-      </div>
+    <section id="work" className={cn("relative bg-transparent", hideHeader ? "pt-0 pb-24 md:pb-48" : "py-24 md:py-48")}>
+      {!hideHeader && (
+        <div className="max-w-7xl mx-auto px-6 mb-12 md:mb-32">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="max-w-3xl text-center lg:text-left">
+            <span className="text-primary uppercase tracking-[0.5em] text-[10px] font-black block mb-6">Archive</span>
+            <h2 className="text-5xl md:text-8xl font-headline font-black tracking-tighter leading-none mb-8 break-words">
+              SELECTED <br /> <span className="text-outline italic">WORKS.</span>
+            </h2>
+            <p className="text-muted-foreground/60 text-lg md:text-xl font-light max-w-2xl font-body mx-auto lg:mx-0 break-words">
+              A curated collection of high-performance digital products where architectural precision meets emotive design.
+            </p>
+          </motion.div>
+        </div>
+      )}
 
       <div className="space-y-12">
         {projects.length === 0 ? (
