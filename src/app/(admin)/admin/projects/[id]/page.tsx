@@ -6,7 +6,7 @@ import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box, Globe, Calendar, RefreshCcw } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box, Globe, Calendar, RefreshCcw, Database, ShieldCheck, Quote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,6 +25,9 @@ export default function EditProjectPage() {
   const [formData, setFormData] = useState<any>(null);
   const [newTech, setNewTech] = useState('');
   const [newChallenge, setNewChallenge] = useState('');
+  const [newFact, setNewFact] = useState('');
+  const [newCitation, setNewCitation] = useState('');
+  const [newOutcome, setNewOutcome] = useState('');
   const [isSlugManual, setIsSlugManual] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -64,7 +67,8 @@ export default function EditProjectPage() {
             challenges: data.challenges || [],
             status: data.status || 'draft',
             order: data.order || 0,
-            seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' }
+            seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' },
+            entity: data.entity || { outcomes: [], facts: [], citations: [] }
           });
         } else {
           router.push('/admin/projects');
@@ -85,6 +89,32 @@ export default function EditProjectPage() {
       title: val,
       slug: isSlugManual ? prev.slug : slugify(val)
     }));
+  };
+
+  const handleAddItem = (field: string, listField: string) => {
+    const val = (field === 'fact' ? newFact : field === 'citation' ? newCitation : newOutcome);
+    if (val && !formData.entity[listField].includes(val)) {
+      setFormData({
+        ...formData,
+        entity: {
+          ...formData.entity,
+          [listField]: [...formData.entity[listField], val]
+        }
+      });
+      if (field === 'fact') setNewFact('');
+      if (field === 'citation') setNewCitation('');
+      if (field === 'outcome') setNewOutcome('');
+    }
+  };
+
+  const handleRemoveItem = (listField: string, val: string) => {
+    setFormData({
+      ...formData,
+      entity: {
+        ...formData.entity,
+        [listField]: formData.entity[listField].filter((item: string) => item !== val)
+      }
+    });
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,60 +186,61 @@ export default function EditProjectPage() {
     }
   };
 
-  if (loading || !formData) return <div className="h-96 flex items-center justify-center"><div className="w-2 h-2 bg-primary animate-ping rounded-full" /></div>;
+  if (loading || !formData) return <div className="h-96 flex items-center justify-center"><div className="w-2.5 h-2.5 bg-primary animate-ping rounded-full" /></div>;
 
   return (
-    <div className="space-y-10 pb-20">
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-4">
-          <Link href="/admin/projects" className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 hover:text-primary flex items-center gap-2 transition-colors">
-            <ArrowLeft className="w-3 h-3" /> Back to Archive
+    <div className="space-y-12 pb-20">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div className="space-y-5">
+          <Link href="/admin/projects" className="text-[13px] font-black uppercase tracking-[0.4em] text-white/40 hover:text-primary flex items-center gap-3 transition-colors">
+            <ArrowLeft className="w-4 h-4" /> Back to Archive
           </Link>
-          <div className="space-y-2">
-            <span className="text-primary font-black uppercase tracking-[0.6em] text-[10px]">Project Lab</span>
-            <h1 className="text-5xl font-headline font-black italic tracking-tighter text-white">Modify Build.</h1>
+          <div className="space-y-3">
+            <span className="text-primary font-black uppercase tracking-[0.6em] text-[13px]">Project Lab</span>
+            <h1 className="text-6xl font-headline font-black italic tracking-tighter text-white">Modify Build.</h1>
           </div>
         </div>
         <Button 
           onClick={handleSubmit}
           disabled={saving}
-          className="h-14 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-8 group"
+          className="h-16 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-10 group text-base"
         >
-          {saving ? 'Syncing...' : 'Sync Changes'} <Save className="w-5 h-5 ml-2 group-hover:scale-110 transition-transform" />
+          {saving ? 'Syncing...' : 'Sync Changes'} <Save className="w-6 h-6 ml-3 group-hover:scale-110 transition-transform" />
         </Button>
       </header>
 
       <div className="grid lg:grid-cols-12 gap-10">
         <div className="lg:col-span-8 space-y-10">
-          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
-            <div className="flex items-center gap-4 text-primary">
-              <Box className="w-6 h-6" />
-              <h3 className="text-lg font-headline font-black italic tracking-tight">Core Identity</h3>
+          {/* Identity Section */}
+          <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
+            <div className="flex items-center gap-5 text-primary">
+              <Box className="w-8 h-8" />
+              <h3 className="text-2xl font-headline font-black italic tracking-tight">Core Identity</h3>
             </div>
             
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Project Title</Label>
-                <Input value={formData.title} onChange={handleTitleChange} className="bg-white/5 border-white/5 rounded-xl h-14" />
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Project Title</Label>
+                <Input value={formData.title} onChange={handleTitleChange} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" />
               </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Slug (URL Path)</Label>
+              <div className="space-y-3">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Slug (URL Path)</Label>
                 <Input 
                   value={formData.slug} 
                   onChange={e => {
                     setIsSlugManual(true);
                     setFormData({ ...formData, slug: e.target.value });
                   }} 
-                  className="bg-white/5 border-white/5 rounded-xl h-14" 
+                  className="bg-white/5 border-white/5 rounded-xl h-16 text-lg font-mono" 
                 />
               </div>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Type</Label>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="space-y-3">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Type</Label>
                 <Select value={formData.type} onValueChange={v => setFormData({ ...formData, type: v })}>
-                  <SelectTrigger className="bg-white/5 border-white/5 h-14 rounded-xl">
+                  <SelectTrigger className="bg-white/5 border-white/5 h-16 rounded-xl text-base">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -218,139 +249,190 @@ export default function EditProjectPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Role</Label>
-                <Input value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
+              <div className="space-y-3">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Role</Label>
+                <Input value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" />
               </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Completion Date</Label>
+              <div className="space-y-3">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Completion Date</Label>
                 <div className="relative">
-                   <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
-                   <Input value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="bg-white/5 border-white/10 rounded-xl h-14 pl-12" placeholder="e.g. June 2024" />
+                   <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20" />
+                   <Input value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="bg-white/5 border-white/10 rounded-xl h-16 pl-14 text-lg" placeholder="e.g. June 2024" />
                 </div>
               </div>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Order</Label>
-                <Input type="number" value={formData.order} onChange={e => setFormData({ ...formData, order: parseInt(e.target.value) })} className="bg-white/5 border-white/5 rounded-xl h-14" />
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="space-y-3">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Manual Order</Label>
+                <Input type="number" value={formData.order} onChange={e => setFormData({ ...formData, order: parseInt(e.target.value) })} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" />
               </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Live URL</Label>
-                <Input value={formData.liveUrl} onChange={e => setFormData({ ...formData, liveUrl: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="https://..." />
+              <div className="space-y-3">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Live Deployment</Label>
+                <Input value={formData.liveUrl} onChange={e => setFormData({ ...formData, liveUrl: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg font-mono" placeholder="https://..." />
               </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">GitHub URL</Label>
-                <Input value={formData.githubUrl} onChange={e => setFormData({ ...formData, githubUrl: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="https://github.com/..." />
-              </div>
-            </div>
-          </div>
-
-          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
-            <h3 className="text-lg font-headline font-black italic tracking-tight text-white/60">Architectural Narrative</h3>
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Short Description</Label>
-                <Textarea value={formData.desc} onChange={e => setFormData({ ...formData, desc: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[100px]" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Detailed Narrative (Case Study)</Label>
-                <Textarea value={formData.longDesc} onChange={e => setFormData({ ...formData, longDesc: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[300px]" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Strategic Methodology</Label>
-                <Textarea value={formData.methodology} onChange={e => setFormData({ ...formData, methodology: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Project Impact</Label>
-                <Textarea value={formData.impact} onChange={e => setFormData({ ...formData, impact: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" />
+              <div className="space-y-3">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">GitHub Repo</Label>
+                <Input value={formData.githubUrl} onChange={e => setFormData({ ...formData, githubUrl: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg font-mono" placeholder="https://github.com/..." />
               </div>
             </div>
           </div>
 
-          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
+          {/* Narrative Section */}
+          <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
+            <h3 className="text-2xl font-headline font-black italic tracking-tight text-white/60">Architectural Narrative</h3>
+            <div className="space-y-8">
+              <div className="space-y-3">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Abstract Teaser</Label>
+                <Textarea value={formData.desc} onChange={e => setFormData({ ...formData, desc: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[120px] text-lg leading-relaxed" />
+              </div>
+              <div className="space-y-3">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Case Study (Deep Dive)</Label>
+                <Textarea value={formData.longDesc} onChange={e => setFormData({ ...formData, longDesc: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[400px] text-lg leading-relaxed" />
+              </div>
+              <div className="space-y-3">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Strategic Methodology</Label>
+                <Textarea value={formData.methodology} onChange={e => setFormData({ ...formData, methodology: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[140px] text-lg leading-relaxed italic" />
+              </div>
+            </div>
+          </div>
+
+          {/* Generative Intelligence Section (GEO/AEO) */}
+          <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
+             <div className="flex items-center gap-5 text-primary">
+              <Database className="w-8 h-8" />
+              <h3 className="text-2xl font-headline font-black italic tracking-tight">Generative Intelligence (GEO)</h3>
+            </div>
+            
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Project Outcomes (Success Markers)</Label>
+                <div className="flex gap-3">
+                  <Input value={newOutcome} onChange={e => setNewOutcome(e.target.value)} className="bg-white/5 border-white/10 h-14 rounded-xl" placeholder="e.g. 40% reduction in TBT..." />
+                  <Button onClick={() => handleAddItem('outcome', 'outcomes')} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
+                </div>
+                <div className="grid gap-3">
+                  {formData.entity?.outcomes?.map((item: string) => (
+                    <div key={item} className="p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-between group">
+                      <span className="text-sm font-bold text-white/80">{item}</span>
+                      <button onClick={() => handleRemoveItem('outcomes', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Hard Evidence (Technical Facts)</Label>
+                <div className="flex gap-3">
+                  <Input value={newFact} onChange={e => setNewFact(e.target.value)} className="bg-white/5 border-white/10 h-14 rounded-xl" placeholder="e.g. Utilized Web Workers for background tasks..." />
+                  <Button onClick={() => handleAddItem('fact', 'facts')} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
+                </div>
+                <div className="grid gap-3">
+                  {formData.entity?.facts?.map((item: string) => (
+                    <div key={item} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between group">
+                      <span className="text-sm font-mono text-white/60">{item}</span>
+                      <button onClick={() => handleRemoveItem('facts', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Source Citations & Mentions</Label>
+                <div className="flex gap-3">
+                  <Input value={newCitation} onChange={e => setNewCitation(e.target.value)} className="bg-white/5 border-white/10 h-14 rounded-xl" placeholder="URL or publication name..." />
+                  <Button onClick={() => handleAddItem('citation', 'citations')} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
+                </div>
+                <div className="grid gap-3">
+                  {formData.entity?.citations?.map((item: string) => (
+                    <div key={item} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between group">
+                      <span className="text-xs font-mono text-white/40 truncate">{item}</span>
+                      <button onClick={() => handleRemoveItem('citations', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SEO Section */}
+          <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4 text-primary">
-                <Globe className="w-6 h-6" />
-                <h3 className="text-lg font-headline font-black italic tracking-tight">Search Optimization</h3>
+              <div className="flex items-center gap-5 text-primary">
+                <Globe className="w-8 h-8" />
+                <h3 className="text-2xl font-headline font-black italic tracking-tight">Search Optimization</h3>
               </div>
               <Button 
                 variant="outline" 
                 onClick={handleSeoSync}
-                className="h-10 rounded-xl border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-black transition-all"
+                className="h-12 rounded-xl border-white/10 text-[11px] font-black uppercase tracking-widest hover:bg-primary hover:text-black transition-all"
               >
-                Sync with Content <RefreshCcw className="w-3 h-3 ml-2" />
+                Sync with Content <RefreshCcw className="w-3.5 h-3.5 ml-2" />
               </Button>
             </div>
             
-            <div className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
+            <div className="space-y-8">
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-3">
                   <div className="flex justify-between items-end px-1">
-                    <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title Override</Label>
-                    <span className={`text-[9px] font-mono ${formData.seo.title.length > 60 ? 'text-red-500' : 'text-white/20'}`}>
+                    <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">SEO Title Tag</Label>
+                    <span className={`text-[10px] font-mono ${formData.seo.title.length > 60 ? 'text-red-500' : 'text-white/20'}`}>
                       {formData.seo.title.length} / 60
                     </span>
                   </div>
                   <Input 
                     value={formData.seo.title} 
                     onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-14" 
-                    placeholder="Auto-suggested from project name..."
+                    className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" 
                   />
                 </div>
-                <div className="space-y-2">
-                   <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Keywords (CSV)</Label>
+                <div className="space-y-3">
+                   <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Keywords (CSV)</Label>
                    <Input 
                     value={formData.seo.keywords} 
                     onChange={e => setFormData({ ...formData, seo: { ...formData.seo, keywords: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-14" 
-                    placeholder="e.g. UX, Engineering, Fintech"
+                    className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" 
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="flex justify-between items-end px-1">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
-                  <span className={`text-[9px] font-mono ${formData.seo.description.length > 160 ? 'text-red-500' : 'text-white/20'}`}>
+                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
+                  <span className={`text-[10px] font-mono ${formData.seo.description.length > 160 ? 'text-red-500' : 'text-white/20'}`}>
                     {formData.seo.description.length} / 160
                   </span>
                 </div>
                 <Textarea 
                   value={formData.seo.description} 
                   onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })} 
-                  className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" 
-                  placeholder="Auto-suggested from short description..."
+                  className="bg-white/5 border-white/5 rounded-xl min-h-[140px] text-lg" 
                 />
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6 pt-4 border-t border-white/5">
-                <div className="space-y-2">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Canonical URL</Label>
+              <div className="grid md:grid-cols-2 gap-8 pt-8 border-t border-white/5">
+                <div className="space-y-3">
+                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Canonical URL</Label>
                   <Input 
                     value={formData.seo.canonicalUrl} 
                     onChange={e => setFormData({ ...formData, seo: { ...formData.seo, canonicalUrl: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-14" 
-                    placeholder="https://..."
+                    className="bg-white/5 border-white/5 rounded-xl h-16 font-mono text-base" 
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">OG Image URL</Label>
+                <div className="space-y-3">
+                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">OG Image Override</Label>
                   <Input 
                     value={formData.seo.ogImage} 
                     onChange={e => setFormData({ ...formData, seo: { ...formData.seo, ogImage: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-14" 
-                    placeholder="https://..."
+                    className="bg-white/5 border-white/5 rounded-xl h-16 font-mono text-base" 
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 h-14 mt-6">
-                <div className="space-y-0.5">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white">Indexable</Label>
-                  <p className="text-[8px] text-white/20 uppercase font-black">Allow bots to crawl</p>
+              <div className="flex items-center justify-between p-8 rounded-[2rem] bg-white/[0.02] border border-white/5 h-20 mt-10">
+                <div className="space-y-1">
+                  <Label className="text-[15px] uppercase font-black tracking-widest text-white">Indexable</Label>
+                  <p className="text-[11px] text-white/30 uppercase font-black">Visibility for search crawlers</p>
                 </div>
                 <Switch 
                   checked={formData.seo.indexable} 
@@ -370,83 +452,53 @@ export default function EditProjectPage() {
             url={`work/${formData.slug || formData.id}`}
           />
 
-          <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
-            <h3 className="text-[10px] uppercase font-black tracking-widest text-white/40">Media & Assets (S3)</h3>
-            <div className="space-y-4">
-               <div className="relative aspect-video rounded-xl overflow-hidden bg-white/5 border border-white/5">
+          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-10">
+            <h3 className="text-[13px] uppercase font-black tracking-widest text-white/40">Visual Context (S3)</h3>
+            <div className="space-y-8">
+               <div className="relative aspect-video rounded-3xl overflow-hidden bg-white/5 border border-white/5 shadow-2xl">
                  {formData.image ? (
                    <img src={formData.image} alt="" className="w-full h-full object-cover" />
                  ) : (
                    <div className="w-full h-full flex items-center justify-center text-white/10">
-                     <ImageIcon className="w-10 h-10" />
+                     <ImageIcon className="w-16 h-16" />
                    </div>
                  )}
                  <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
                     <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileUpload} />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white">{uploading ? 'Syncing...' : 'Update Cover (S3)'}</span>
+                    <span className="text-[13px] font-black uppercase tracking-widest text-white">{uploading ? 'Syncing...' : 'Update Cover (S3)'}</span>
                  </div>
                </div>
-               <div className="space-y-2">
-                 <Label className="text-[9px] uppercase font-black text-white/20 ml-2">Image Alt Text (SEO)</Label>
-                 <Input value={formData.altText} onChange={e => setFormData({ ...formData, altText: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-10 text-[10px]" placeholder="Descriptive alt text..." />
+               <div className="space-y-3">
+                 <Label className="text-[11px] uppercase font-black text-white/30 ml-2">Image Alt Text (SEO)</Label>
+                 <Input value={formData.altText} onChange={e => setFormData({ ...formData, altText: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm" placeholder="Descriptive alt text for image search..." />
                </div>
-               <div className="space-y-2">
-                 <Label className="text-[9px] uppercase font-black text-white/20">Direct Image URL</Label>
-                 <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-10 text-[10px]" />
-               </div>
-               <div className="space-y-2">
-                 <Label className="text-[9px] uppercase font-black text-white/20">AI Image Hint</Label>
-                 <Input value={formData.imageHint} onChange={e => setFormData({ ...formData, imageHint: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-10 text-[10px]" placeholder="e.g. high-tech workspace" />
-               </div>
-               <div className="space-y-2">
-                 <Label className="text-[9px] uppercase font-black text-white/20">Accent Color</Label>
-                 <Input value={formData.accentColor} onChange={e => setFormData({ ...formData, accentColor: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-10 text-[10px]" />
-               </div>
+               <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm font-mono" placeholder="Direct Image URL" />
+               <Input value={formData.accentColor} onChange={e => setFormData({ ...formData, accentColor: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm font-mono" placeholder="Accent Color (HEX)" />
             </div>
           </div>
 
-          <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
-             <div className="space-y-4">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Technology Stack</Label>
-                <div className="flex gap-2">
-                  <Input value={newTech} onChange={e => setNewTech(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTech())} className="bg-white/5 border-white/5 rounded-xl h-10 flex-1" placeholder="Add tool..." />
-                  <Button onClick={addTech} variant="outline" className="h-10 w-10 rounded-xl border-white/10">+</Button>
+          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-10">
+             <div className="space-y-6">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Tools Used (GEO Tech)</Label>
+                <div className="flex gap-3">
+                  <Input value={newTech} onChange={e => setNewTech(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTech())} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="Add tool..." />
+                  <Button onClick={addTech} variant="outline" className="h-14 w-14 rounded-xl border-white/10 text-xl">+</Button>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   {formData.tech?.map((t: string) => (
-                    <span key={t} className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary flex items-center gap-2">
-                      {t} <button onClick={() => setFormData({ ...formData, tech: formData.tech.filter((x: string) => x !== t) })}><Plus className="w-3 h-3 rotate-45" /></button>
+                    <span key={t} className="px-4 py-2 rounded-xl bg-primary/10 border border-primary/20 text-[12px] font-bold text-primary flex items-center gap-3">
+                      {t} <button onClick={() => setFormData({ ...formData, tech: formData.tech.filter((x: string) => x !== t) })}><Plus className="w-4 h-4 rotate-45" /></button>
                     </span>
                   ))}
                 </div>
              </div>
           </div>
 
-          <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
-             <div className="space-y-4">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Engineering Challenges</Label>
-                <div className="flex gap-2">
-                  <Input value={newChallenge} onChange={e => setNewChallenge(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addChallenge())} className="bg-white/5 border-white/5 rounded-xl h-10 flex-1" placeholder="Add hurdle..." />
-                  <Button onClick={addChallenge} variant="outline" className="h-10 w-10 rounded-xl border-white/10">+</Button>
-                </div>
-                <div className="space-y-2">
-                  {formData.challenges?.map((c: string) => (
-                    <div key={c} className="p-3 rounded-lg bg-white/5 border border-white/5 text-[10px] text-white/60 flex items-center justify-between group">
-                      <span className="truncate pr-4">{c}</span>
-                      <button onClick={() => setFormData({ ...formData, challenges: formData.challenges.filter((x: string) => x !== c) })} className="opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Trash2 className="w-3 h-3 text-destructive" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-             </div>
-          </div>
-
-          <div className="glass p-8 rounded-[2rem] border-white/5 space-y-6">
+          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Deployment Status</span>
+              <span className="text-[13px] font-black uppercase tracking-widest text-white/40">Deployment Status</span>
               <Select value={formData.status} onValueChange={v => setFormData({ ...formData, status: v })}>
-                <SelectTrigger className="w-32 bg-white/5 border-white/5 h-10 rounded-xl text-[10px] font-black uppercase">
+                <SelectTrigger className="w-44 bg-white/5 border-white/5 h-14 rounded-xl text-[13px] font-black uppercase">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

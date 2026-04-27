@@ -6,7 +6,7 @@ import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/fires
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2 } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,6 +22,8 @@ function BlogFormContent() {
   const [uploading, setUploading] = useState(false);
   const [isSlugManual, setIsSlugManual] = useState(false);
   const [newCategory, setNewCategory] = useState('');
+  const [newFact, setNewFact] = useState('');
+  const [newCitation, setNewCitation] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -34,7 +36,8 @@ function BlogFormContent() {
     imageHint: '',
     altText: '',
     status: 'draft',
-    seo: { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' }
+    seo: { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' },
+    entity: { facts: [], citations: [] }
   });
 
   const router = useRouter();
@@ -55,6 +58,7 @@ function BlogFormContent() {
               title: `${data.title} (Clone)`,
               slug: `${data.slug}-copy`,
               status: 'draft',
+              entity: data.entity || { facts: [], citations: [] }
             }));
             setIsSlugManual(true);
             toast({ title: 'Draft Cloned', description: 'Editorial content imported.' });
@@ -82,6 +86,31 @@ function BlogFormContent() {
       title: val,
       slug: isSlugManual ? prev.slug : slugify(val)
     }));
+  };
+
+  const handleAddItem = (field: string, listField: string) => {
+    const val = field === 'fact' ? newFact : newCitation;
+    if (val && !formData.entity[listField].includes(val)) {
+      setFormData({
+        ...formData,
+        entity: {
+          ...formData.entity,
+          [listField]: [...formData.entity[listField], val]
+        }
+      });
+      if (field === 'fact') setNewFact('');
+      else setNewCitation('');
+    }
+  };
+
+  const handleRemoveItem = (listField: string, val: string) => {
+    setFormData({
+      ...formData,
+      entity: {
+        ...formData.entity,
+        [listField]: formData.entity[listField].filter((item: string) => item !== val)
+      }
+    });
   };
 
   const addCategory = () => {
@@ -178,20 +207,35 @@ function BlogFormContent() {
                     setIsSlugManual(true);
                     setFormData({ ...formData, slug: e.target.value });
                   }} 
-                  className="bg-white/5 border-white/5 rounded-xl h-14" 
+                  className="bg-white/5 border-white/5 rounded-xl h-14 font-mono" 
                   placeholder="future-of-webgl" 
                 />
               </div>
             </div>
+          </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Display Date</Label>
-                <Input value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Read Time</Label>
-                <Input value={formData.readTime} onChange={e => setFormData({ ...formData, readTime: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="5 min read" />
+          {/* Generative Intelligence Section (GEO/AEO) */}
+          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
+             <div className="flex items-center gap-4 text-primary">
+              <Database className="w-6 h-6" />
+              <h3 className="text-lg font-headline font-black italic tracking-tight">Generative Intelligence (GEO)</h3>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Technical Facts</Label>
+                <div className="flex gap-2">
+                  <Input value={newFact} onChange={e => setNewFact(e.target.value)} className="bg-white/5 border-white/10 h-12 rounded-xl" placeholder="Add factual claim..." />
+                  <Button onClick={() => handleAddItem('fact', 'facts')} variant="outline" className="h-12 w-12 rounded-xl border-white/10">+</Button>
+                </div>
+                <div className="grid gap-2">
+                  {formData.entity?.facts?.map((item: string) => (
+                    <div key={item} className="p-3 rounded-lg bg-white/5 border border-white/5 flex items-center justify-between group">
+                      <span className="text-[11px] font-bold text-white/40">{item}</span>
+                      <button onClick={() => handleRemoveItem('facts', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-3 h-3 text-destructive" /></button>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -206,87 +250,6 @@ function BlogFormContent() {
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Article Body (HTML/Markdown)</Label>
                 <Textarea value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[500px] font-mono text-xs" placeholder="<p>Beginning the narrative...</p>" />
-              </div>
-            </div>
-          </div>
-
-          <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
-            <div className="flex items-center gap-4 text-primary">
-              <Globe className="w-6 h-6" />
-              <h3 className="text-lg font-headline font-black italic tracking-tight">Search Optimization</h3>
-            </div>
-            <div className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <div className="flex justify-between items-end px-1">
-                    <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title</Label>
-                    <span className={`text-[9px] font-mono ${formData.seo.title.length > 60 ? 'text-red-500' : 'text-white/20'}`}>
-                      {formData.seo.title.length} / 60
-                    </span>
-                  </div>
-                  <Input 
-                    value={formData.seo.title} 
-                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-14" 
-                    placeholder="Auto-suggested from title..."
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Keywords (CSV)</Label>
-                  <Input 
-                    value={formData.seo.keywords} 
-                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, keywords: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-14" 
-                    placeholder="UX, Tech, React"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between items-end px-1">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
-                  <span className={`text-[9px] font-mono ${formData.seo.description.length > 160 ? 'text-red-500' : 'text-white/20'}`}>
-                    {formData.seo.description.length} / 160
-                  </span>
-                </div>
-                <Textarea 
-                  value={formData.seo.description} 
-                  onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })} 
-                  className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" 
-                  placeholder="Auto-suggested from summary..."
-                />
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6 pt-4 border-t border-white/5">
-                <div className="space-y-2">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Canonical URL</Label>
-                  <Input 
-                    value={formData.seo.canonicalUrl} 
-                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, canonicalUrl: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-14" 
-                    placeholder="https://..."
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">OG Image URL</Label>
-                  <Input 
-                    value={formData.seo.ogImage} 
-                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, ogImage: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-14" 
-                    placeholder="https://..."
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 h-14 mt-6">
-                <div className="space-y-0.5">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white">Indexable</Label>
-                  <p className="text-[8px] text-white/20 uppercase font-black">Allow bots to crawl</p>
-                </div>
-                <Switch 
-                  checked={formData.seo.indexable} 
-                  onCheckedChange={v => setFormData({ ...formData, seo: { ...formData.seo, indexable: v } })}
-                />
               </div>
             </div>
           </div>
@@ -321,25 +284,7 @@ function BlogFormContent() {
                  <Label className="text-[9px] uppercase font-black text-white/20 ml-2">Image Alt Text (SEO)</Label>
                  <Input value={formData.altText} onChange={e => setFormData({ ...formData, altText: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-10 text-[10px]" placeholder="Descriptive alt text..." />
                </div>
-               <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" placeholder="Direct Image URL" />
-               <Input value={formData.imageHint} onChange={e => setFormData({ ...formData, imageHint: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px]" placeholder="AI image hint" />
-            </div>
-          </div>
-
-          <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
-            <div className="space-y-4">
-              <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Category Arsenal</Label>
-              <div className="flex gap-2">
-                <Input value={newCategory} onChange={e => setNewCategory(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addCategory())} className="bg-white/5 border-white/5 rounded-xl h-10 flex-1" placeholder="Add category..." />
-                <Button onClick={addCategory} variant="outline" className="h-10 w-10 rounded-xl border-white/10">+</Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {formData.categories?.map((cat: string) => (
-                  <span key={cat} className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary flex items-center gap-2">
-                    {cat} <button onClick={() => removeCategory(cat)}><Plus className="w-3 h-3 rotate-45" /></button>
-                  </span>
-                ))}
-              </div>
+               <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-12 text-[10px] font-mono" placeholder="Direct Image URL" />
             </div>
           </div>
 

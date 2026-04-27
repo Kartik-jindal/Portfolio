@@ -6,7 +6,7 @@ import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, RefreshCcw } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, RefreshCcw, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -23,6 +23,8 @@ export default function EditBlogPostPage() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [newCategory, setNewCategory] = useState('');
+  const [newFact, setNewFact] = useState('');
+  const [newCitation, setNewCitation] = useState('');
   const [formData, setFormData] = useState<any>(null);
   const [isSlugManual, setIsSlugManual] = useState(false);
   const router = useRouter();
@@ -65,7 +67,8 @@ export default function EditBlogPostPage() {
             imageHint: data.imageHint || '',
             altText: data.altText || '',
             status: data.status || 'draft',
-            seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' }
+            seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' },
+            entity: data.entity || { facts: [], citations: [] }
           });
         } else {
           router.push('/admin/blog');
@@ -86,6 +89,31 @@ export default function EditBlogPostPage() {
       title: val,
       slug: isSlugManual ? prev.slug : slugify(val)
     }));
+  };
+
+  const handleAddItem = (field: string, listField: string) => {
+    const val = field === 'fact' ? newFact : newCitation;
+    if (val && !formData.entity[listField].includes(val)) {
+      setFormData({
+        ...formData,
+        entity: {
+          ...formData.entity,
+          [listField]: [...formData.entity[listField], val]
+        }
+      });
+      if (field === 'fact') setNewFact('');
+      else setNewCitation('');
+    }
+  };
+
+  const handleRemoveItem = (listField: string, val: string) => {
+    setFormData({
+      ...formData,
+      entity: {
+        ...formData.entity,
+        [listField]: formData.entity[listField].filter((item: string) => item !== val)
+      }
+    });
   };
 
   const handleSeoSync = () => {
@@ -143,6 +171,17 @@ export default function EditBlogPostPage() {
     }
   };
 
+  const addCategory = () => {
+    if (newCategory && !formData.categories.includes(newCategory)) {
+      setFormData({ ...formData, categories: [...formData.categories, newCategory] });
+      setNewCategory('');
+    }
+  };
+
+  const removeCategory = (cat: string) => {
+    setFormData({ ...formData, categories: formData.categories.filter((c: string) => c !== cat) });
+  };
+
   if (loading || !formData) return <div className="h-96 flex items-center justify-center"><div className="w-2.5 h-2.5 bg-primary animate-ping rounded-full" /></div>;
 
   return (
@@ -187,7 +226,7 @@ export default function EditBlogPostPage() {
                     setIsSlugManual(true);
                     setFormData({ ...formData, slug: e.target.value });
                   }} 
-                  className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" 
+                  className="bg-white/5 border-white/5 rounded-xl h-16 text-lg font-mono" 
                 />
               </div>
             </div>
@@ -218,6 +257,49 @@ export default function EditBlogPostPage() {
             </div>
           </div>
 
+          {/* Generative Intelligence Section (GEO/AEO) */}
+          <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
+             <div className="flex items-center gap-5 text-primary">
+              <Database className="w-8 h-8" />
+              <h3 className="text-2xl font-headline font-black italic tracking-tight">Generative Intelligence (GEO)</h3>
+            </div>
+            
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Hard Facts (Key Data Points)</Label>
+                <div className="flex gap-3">
+                  <Input value={newFact} onChange={e => setNewFact(e.target.value)} className="bg-white/5 border-white/10 h-14 rounded-xl" placeholder="e.g. Optimized bundle size by 30%..." />
+                  <Button onClick={() => handleAddItem('fact', 'facts')} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
+                </div>
+                <div className="grid gap-3">
+                  {formData.entity?.facts?.map((item: string) => (
+                    <div key={item} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between group">
+                      <span className="text-sm font-bold text-white/60">{item}</span>
+                      <button onClick={() => handleRemoveItem('facts', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Sources & Citations</Label>
+                <div className="flex gap-3">
+                  <Input value={newCitation} onChange={e => setNewCitation(e.target.value)} className="bg-white/5 border-white/10 h-14 rounded-xl" placeholder="Link to research or documentation..." />
+                  <Button onClick={() => handleAddItem('citation', 'citations')} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
+                </div>
+                <div className="grid gap-3">
+                  {formData.entity?.citations?.map((item: string) => (
+                    <div key={item} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between group">
+                      <span className="text-xs font-mono text-white/40 truncate">{item}</span>
+                      <button onClick={() => handleRemoveItem('citations', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SEO Section */}
           <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-5 text-primary">
@@ -227,9 +309,9 @@ export default function EditBlogPostPage() {
               <Button 
                 variant="outline" 
                 onClick={handleSeoSync}
-                className="h-10 rounded-xl border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-black transition-all"
+                className="h-12 rounded-xl border-white/10 text-[11px] font-black uppercase tracking-widest hover:bg-primary hover:text-black transition-all"
               >
-                Sync with Content <RefreshCcw className="w-3 h-3 ml-2" />
+                Sync with Content <RefreshCcw className="w-3.5 h-3.5 ml-2" />
               </Button>
             </div>
             <div className="space-y-8">
@@ -245,7 +327,6 @@ export default function EditBlogPostPage() {
                     value={formData.seo.title} 
                     onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
                     className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" 
-                    placeholder="Auto-suggested from title..."
                   />
                 </div>
                 <div className="space-y-3">
@@ -254,7 +335,6 @@ export default function EditBlogPostPage() {
                     value={formData.seo.keywords} 
                     onChange={e => setFormData({ ...formData, seo: { ...formData.seo, keywords: e.target.value } })} 
                     className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" 
-                    placeholder="e.g. AI, Architecture, Engineering"
                   />
                 </div>
               </div>
@@ -270,35 +350,32 @@ export default function EditBlogPostPage() {
                   value={formData.seo.description} 
                   onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })} 
                   className="bg-white/5 border-white/5 rounded-xl min-h-[140px] text-lg" 
-                  placeholder="Auto-suggested from summary..."
                 />
               </div>
 
-              <div className="grid md:grid-cols-2 gap-8 pt-6 border-t border-white/5">
+              <div className="grid md:grid-cols-2 gap-8 pt-8 border-t border-white/5">
                 <div className="space-y-3">
                   <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Canonical URL</Label>
                   <Input 
                     value={formData.seo.canonicalUrl} 
                     onChange={e => setFormData({ ...formData, seo: { ...formData.seo, canonicalUrl: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" 
-                    placeholder="https://..."
+                    className="bg-white/5 border-white/5 rounded-xl h-16 font-mono text-base" 
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">OG Image URL</Label>
+                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">OG Image Override</Label>
                   <Input 
                     value={formData.seo.ogImage} 
                     onChange={e => setFormData({ ...formData, seo: { ...formData.seo, ogImage: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" 
-                    placeholder="https://..."
+                    className="bg-white/5 border-white/5 rounded-xl h-16 font-mono text-base" 
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-6 rounded-xl bg-white/5 border border-white/5 h-16 mt-8">
+              <div className="flex items-center justify-between p-8 rounded-[2rem] bg-white/[0.02] border border-white/5 h-20 mt-10">
                 <div className="space-y-1">
-                  <Label className="text-[14px] uppercase font-black tracking-widest text-white">Indexable</Label>
-                  <p className="text-[11px] text-white/20 uppercase font-black">Allow bots to crawl</p>
+                  <Label className="text-[15px] uppercase font-black tracking-widest text-white">Indexable</Label>
+                  <p className="text-[11px] text-white/30 uppercase font-black">Allow bots to crawl</p>
                 </div>
                 <Switch 
                   checked={formData.seo.indexable} 
@@ -320,13 +397,13 @@ export default function EditBlogPostPage() {
 
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-10">
             <h3 className="text-[13px] uppercase font-black tracking-widest text-white/40">Visual Context (S3)</h3>
-            <div className="space-y-6">
-               <div className="relative aspect-video rounded-2xl overflow-hidden bg-white/5 border border-white/5">
+            <div className="space-y-8">
+               <div className="relative aspect-video rounded-3xl overflow-hidden bg-white/5 border border-white/5 shadow-2xl">
                  {formData.image ? (
                    <img src={formData.image} alt="" className="w-full h-full object-cover" />
                  ) : (
                    <div className="w-full h-full flex items-center justify-center text-white/10">
-                     <ImageIcon className="w-12 h-12" />
+                     <ImageIcon className="w-16 h-16" />
                    </div>
                  )}
                  <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -334,12 +411,11 @@ export default function EditBlogPostPage() {
                     <span className="text-[13px] font-black uppercase tracking-widest text-white">{uploading ? 'Syncing...' : 'Update Cover (S3)'}</span>
                  </div>
                </div>
-               <div className="space-y-2">
+               <div className="space-y-3">
                  <Label className="text-[11px] uppercase font-black text-white/30 ml-2">Image Alt Text (SEO)</Label>
                  <Input value={formData.altText} onChange={e => setFormData({ ...formData, altText: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm" placeholder="Descriptive alt text..." />
                </div>
-               <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm" placeholder="Direct Image URL" />
-               <Input value={formData.imageHint} onChange={e => setFormData({ ...formData, imageHint: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm" placeholder="AI image hint" />
+               <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm font-mono" placeholder="Direct Image URL" />
             </div>
           </div>
 
@@ -347,12 +423,12 @@ export default function EditBlogPostPage() {
             <div className="space-y-6">
               <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Category Arsenal</Label>
               <div className="flex gap-3">
-                <Input value={newCategory} onChange={e => setNewCategory(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addCategory())} className="bg-white/5 border-white/5 rounded-xl h-12 flex-1 text-base" placeholder="Add category..." />
-                <Button onClick={addCategory} variant="outline" className="h-12 w-12 rounded-xl border-white/10 text-lg">+</Button>
+                <Input value={newCategory} onChange={e => setNewCategory(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addCategory())} className="bg-white/5 border-white/5 rounded-xl h-14 font-bold" placeholder="Add category..." />
+                <Button onClick={addCategory} variant="outline" className="h-14 w-14 rounded-xl border-white/10 text-xl">+</Button>
               </div>
               <div className="flex flex-wrap gap-3">
                 {formData.categories?.map((cat: string) => (
-                  <span key={cat} className="px-4 py-2 rounded-lg bg-primary/10 border border-primary/20 text-[13px] font-bold text-primary flex items-center gap-3">
+                  <span key={cat} className="px-4 py-2 rounded-xl bg-primary/10 border border-primary/20 text-[12px] font-bold text-primary flex items-center gap-3">
                     {cat} <button onClick={() => removeCategory(cat)}><Plus className="w-4 h-4 rotate-45" /></button>
                   </span>
                 ))}
@@ -364,7 +440,7 @@ export default function EditBlogPostPage() {
             <div className="flex items-center justify-between">
               <span className="text-[13px] font-black uppercase tracking-widest text-white/40">Editorial Status</span>
               <Select value={formData.status} onValueChange={v => setFormData({ ...formData, status: v })}>
-                <SelectTrigger className="w-40 bg-white/5 border-white/5 h-12 rounded-xl text-[13px] font-black uppercase">
+                <SelectTrigger className="w-44 bg-white/5 border-white/5 h-14 rounded-xl text-[13px] font-black uppercase">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
