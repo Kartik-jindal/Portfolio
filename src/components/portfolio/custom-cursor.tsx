@@ -7,6 +7,7 @@ import { createPortal } from 'react-dom';
 
 export const CustomCursor = () => {
   const [mounted, setMounted] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -20,7 +21,16 @@ export const CustomCursor = () => {
 
   useEffect(() => {
     setMounted(true);
+    
+    // Only initialize and show cursor on devices that support hover (desktop/mouse)
+    // This prevents the cursor from getting stuck on mobile screens
+    const mediaQuery = window.matchMedia('(hover: hover)');
+    if (!mediaQuery.matches) return;
+
     const moveCursor = (e: MouseEvent) => {
+      // Ensure cursor becomes visible only after moving to avoid starting at 0,0
+      if (!isVisible) setIsVisible(true);
+
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
 
@@ -48,9 +58,9 @@ export const CustomCursor = () => {
 
     window.addEventListener('mousemove', moveCursor);
     return () => window.removeEventListener('mousemove', moveCursor);
-  }, [mouseX, mouseY]);
+  }, [mouseX, mouseY, isVisible]);
 
-  if (!mounted) return null;
+  if (!mounted || !isVisible) return null;
 
   const variants = {
     default: {
