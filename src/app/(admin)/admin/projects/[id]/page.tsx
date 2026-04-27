@@ -5,8 +5,8 @@ import { db } from '@/lib/firebase/config';
 import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box, Globe, Calendar, RefreshCcw, Database, ShieldCheck, Quote, MessageSquare, HelpCircle, Lightbulb, AlertTriangle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box, Globe, Calendar, RefreshCcw, Database, ShieldCheck, Quote, MessageSquare, HelpCircle, Lightbulb, AlertTriangle, Code, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,6 +22,7 @@ export default function EditProjectPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [showSchema, setShowSchema] = useState(false);
   const [formData, setFormData] = useState<any>(null);
   const [newTech, setNewTech] = useState('');
   const [newChallenge, setNewChallenge] = useState('');
@@ -180,6 +181,32 @@ export default function EditProjectPage() {
       setFormData({ ...formData, tech: [...formData.tech, newTech] });
       setNewTech('');
     }
+  };
+
+  const generateSchemaPreview = () => {
+    if (!formData) return null;
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": formData.title,
+      "description": formData.desc,
+      "applicationCategory": "DeveloperTool",
+      "operatingSystem": "Web",
+      "author": { "@type": "Person", "name": "Kartik Jindal" },
+      "image": formData.image,
+      "abstract": formData.aeo?.quickAnswer,
+      "featureList": formData.entity?.outcomes,
+      "softwareRequirements": formData.tech?.join(', '),
+      "mainEntity": {
+        "@type": "FAQPage",
+        "mainEntity": formData.aeo?.faqs?.map((f: any) => ({
+          "@type": "Question",
+          "name": f.q,
+          "acceptedAnswer": { "@type": "Answer", "text": f.a }
+        }))
+      }
+    };
+    return JSON.stringify(schema, null, 2);
   };
 
   if (loading || !formData) return <div className="h-96 flex items-center justify-center"><div className="w-2.5 h-2.5 bg-primary animate-ping rounded-full" /></div>;
@@ -403,7 +430,7 @@ export default function EditProjectPage() {
                   {formData.entity?.citations?.map((item: string) => (
                     <div key={item} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between group">
                       <span className="text-xs font-mono text-white/40 truncate">{item}</span>
-                      <button onClick={() => handleRemoveItem('entity', 'citations', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4 text-destructive" /></button>
+                      <button onClick={() => handleRemoveItem('entity', 'citations', item)} className="opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-3.5 h-3.5 text-destructive" /></button>
                     </div>
                   ))}
                 </div>
@@ -496,6 +523,37 @@ export default function EditProjectPage() {
                 />
               </div>
             </div>
+          </div>
+
+          {/* Schema Preview HUD */}
+          <div className="glass rounded-[3rem] border-white/5 overflow-hidden">
+            <button 
+              onClick={() => setShowSchema(!showSchema)}
+              className="w-full flex items-center justify-between p-10 hover:bg-white/[0.02] transition-colors"
+            >
+              <div className="flex items-center gap-5 text-primary">
+                <Code className="w-8 h-8" />
+                <h3 className="text-2xl font-headline font-black italic tracking-tight">Entity Graph Preview (JSON-LD)</h3>
+              </div>
+              {showSchema ? <ChevronUp className="w-6 h-6 text-white/20" /> : <ChevronDown className="w-6 h-6 text-white/20" />}
+            </button>
+            <AnimatePresence>
+              {showSchema && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="px-10 pb-10"
+                >
+                  <div className="p-6 rounded-2xl bg-black/40 border border-white/5 font-mono text-[10px] text-primary/70 overflow-x-auto whitespace-pre">
+                    {generateSchemaPreview()}
+                  </div>
+                  <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+                    This entity data is formatted for AI Knowledge Graphs (SoftwareApplication / FAQ).
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 

@@ -6,7 +6,7 @@ import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, RefreshCcw, Database, MessageSquare, HelpCircle, Lightbulb, AlertTriangle } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, RefreshCcw, Database, MessageSquare, HelpCircle, Lightbulb, AlertTriangle, Code, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,6 +22,7 @@ export default function EditBlogPostPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [showSchema, setShowSchema] = useState(false);
   const [newCategory, setNewCategory] = useState('');
   const [newFact, setNewFact] = useState('');
   const [newCitation, setNewCitation] = useState('');
@@ -183,6 +184,32 @@ export default function EditBlogPostPage() {
 
   const removeCategory = (cat: string) => {
     setFormData({ ...formData, categories: formData.categories.filter((c: string) => c !== cat) });
+  };
+
+  const generateSchemaPreview = () => {
+    if (!formData) return null;
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": formData.title,
+      "description": formData.summary,
+      "image": formData.image,
+      "datePublished": formData.date,
+      "author": { "@type": "Person", "name": "Kartik Jindal" },
+      "publisher": { "@type": "Person", "name": "Kartik Jindal" },
+      "abstract": formData.aeo?.quickAnswer,
+      "keywords": formData.categories?.join(', '),
+      "about": formData.entity?.facts?.map((f: string) => ({ "@type": "Thing", "name": f })),
+      "mainEntity": {
+        "@type": "FAQPage",
+        "mainEntity": formData.aeo?.faqs?.map((f: any) => ({
+          "@type": "Question",
+          "name": f.q,
+          "acceptedAnswer": { "@type": "Answer", "text": f.a }
+        }))
+      }
+    };
+    return JSON.stringify(schema, null, 2);
   };
 
   if (loading || !formData) return <div className="h-96 flex items-center justify-center"><div className="w-2.5 h-2.5 bg-primary animate-ping rounded-full" /></div>;
@@ -350,8 +377,8 @@ export default function EditBlogPostPage() {
               <div className="space-y-4">
                 <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Hard Facts (Key Data Points)</Label>
                 <div className="flex gap-3">
-                  <Input value={newFact} onChange={e => setNewFact(e.target.value)} className="bg-white/5 border-white/10 h-14 rounded-xl" placeholder="e.g. Optimized bundle size by 30%..." />
-                  <Button onClick={() => handleAddItem('entity', 'facts', newFact)} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
+                  <Input value={newFact} onChange={e => setNewFact(e.target.value)} className="bg-white/5 border-white/10 h-12 rounded-xl" placeholder="e.g. Optimized bundle size by 30%..." />
+                  <Button onClick={() => handleAddItem('entity', 'facts', newFact)} variant="outline" className="h-12 w-12 rounded-xl border-white/10">+</Button>
                 </div>
                 <div className="grid gap-3">
                   {formData.entity?.facts?.map((item: string) => (
@@ -366,8 +393,8 @@ export default function EditBlogPostPage() {
               <div className="space-y-4">
                 <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Sources & Citations</Label>
                 <div className="flex gap-3">
-                  <Input value={newCitation} onChange={e => setNewCitation(e.target.value)} className="bg-white/5 border-white/10 h-14 rounded-xl" placeholder="Link to research or documentation..." />
-                  <Button onClick={() => handleAddItem('entity', 'citations', newCitation)} variant="outline" className="h-14 w-14 rounded-xl border-white/10">+</Button>
+                  <Input value={newCitation} onChange={e => setNewCitation(e.target.value)} className="bg-white/5 border-white/10 h-12 rounded-xl" placeholder="Link to research or documentation..." />
+                  <Button onClick={() => handleAddItem('entity', 'citations', newCitation)} variant="outline" className="h-12 w-12 rounded-xl border-white/10">+</Button>
                 </div>
                 <div className="grid gap-3">
                   {formData.entity?.citations?.map((item: string) => (
@@ -465,6 +492,37 @@ export default function EditBlogPostPage() {
                 />
               </div>
             </div>
+          </div>
+
+          {/* Schema Preview HUD */}
+          <div className="glass rounded-[3rem] border-white/5 overflow-hidden">
+            <button 
+              onClick={() => setShowSchema(!showSchema)}
+              className="w-full flex items-center justify-between p-10 hover:bg-white/[0.02] transition-colors"
+            >
+              <div className="flex items-center gap-5 text-primary">
+                <Code className="w-8 h-8" />
+                <h3 className="text-2xl font-headline font-black italic tracking-tight">Entity Graph Preview (JSON-LD)</h3>
+              </div>
+              {showSchema ? <ChevronUp className="w-6 h-6 text-white/20" /> : <ChevronDown className="w-6 h-6 text-white/20" />}
+            </button>
+            <AnimatePresence>
+              {showSchema && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="px-10 pb-10"
+                >
+                  <div className="p-6 rounded-2xl bg-black/40 border border-white/5 font-mono text-[10px] text-primary/70 overflow-x-auto whitespace-pre">
+                    {generateSchemaPreview()}
+                  </div>
+                  <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+                    This structured data is automatically generated for Gemini, Perplexity, and OpenAI crawlers.
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 

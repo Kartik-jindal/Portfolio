@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { ShieldCheck, Info, AlertTriangle, CheckCircle2, Search, ExternalLink } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShieldCheck, Info, AlertTriangle, CheckCircle2, Search, ExternalLink, Share2, Twitter, Linkedin } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface SeoHudProps {
   title?: string;
@@ -14,6 +15,8 @@ interface SeoHudProps {
 }
 
 export const SeoHud = ({ title = '', description = '', keywords = '', ogImage = '', url = 'yourdomain.com/path' }: SeoHudProps) => {
+  const [previewMode, setPreviewMode] = useState('serp');
+
   const calculateScore = () => {
     let score = 0;
     
@@ -75,24 +78,60 @@ export const SeoHud = ({ title = '', description = '', keywords = '', ogImage = 
         <Progress value={score} className="h-1.5 bg-white/5" />
       </div>
 
-      {/* SERP Preview */}
-      <div className="space-y-6">
-        <h4 className="text-[10px] font-black uppercase tracking-widest text-white/20 flex items-center gap-2">
-          <Search className="w-3 h-3" /> Search Result Preview
-        </h4>
-        <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
-           <div className="flex items-center gap-2 text-[12px] text-white/40 mb-1 truncate">
-             <span>https://{url}</span>
-             <ExternalLink className="w-2.5 h-2.5" />
-           </div>
-           <div className="text-xl text-[#8ab4f8] font-medium leading-tight line-clamp-1 hover:underline cursor-pointer">
-             {title || "Untitled Digital Build"}
-           </div>
-           <p className="text-[14px] text-white/60 leading-relaxed line-clamp-2">
-             {description || "Provide a meta description to see how your content will appear in search results. An optimal length is between 120 and 160 characters."}
-           </p>
+      <Tabs defaultValue="serp" onValueChange={setPreviewMode} className="space-y-6">
+        <div className="flex items-center justify-between">
+           <h4 className="text-[10px] font-black uppercase tracking-widest text-white/20 flex items-center gap-2">
+             <Search className="w-3 h-3" /> Visual Simulation
+           </h4>
+           <TabsList className="bg-white/5 border-white/10 h-8 rounded-lg">
+             <TabsTrigger value="serp" className="text-[9px] font-black uppercase px-3">Google</TabsTrigger>
+             <TabsTrigger value="social" className="text-[9px] font-black uppercase px-3">Social</TabsTrigger>
+           </TabsList>
         </div>
-      </div>
+
+        <TabsContent value="serp">
+          <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
+             <div className="flex items-center gap-2 text-[12px] text-white/40 mb-1 truncate">
+               <span>https://{url}</span>
+               <ExternalLink className="w-2.5 h-2.5" />
+             </div>
+             <div className="text-xl text-[#8ab4f8] font-medium leading-tight line-clamp-1 hover:underline cursor-pointer">
+               {title || "Untitled Digital Build"}
+             </div>
+             <p className="text-[14px] text-white/60 leading-relaxed line-clamp-2">
+               {description || "Provide a meta description to see how your content will appear in search results. An optimal length is between 120 and 160 characters."}
+             </p>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="social">
+          <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#15181c] space-y-0">
+             <div className="aspect-[1.91/1] relative bg-white/5">
+                {ogImage ? (
+                  <img src={ogImage} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-white/5">
+                     <Share2 className="w-12 h-12" />
+                  </div>
+                )}
+                <div className="absolute bottom-3 left-3 px-2 py-1 rounded bg-black/60 backdrop-blur-md text-[9px] font-black text-white uppercase tracking-widest">
+                  Preview
+                </div>
+             </div>
+             <div className="p-4 space-y-1">
+                <div className="text-[11px] font-bold text-white/40 uppercase tracking-widest flex items-center gap-2">
+                   {url.split('/')[0]} <Twitter className="w-3 h-3" />
+                </div>
+                <div className="text-[14px] font-bold text-white line-clamp-1">
+                   {title || "Brand Story"}
+                </div>
+                <p className="text-[13px] text-white/50 line-clamp-2 leading-snug">
+                   {description || "The cinematic narrative of this architectural build..."}
+                </p>
+             </div>
+          </div>
+        </TabsContent>
+      </Tabs>
 
       <div className="grid gap-8">
         <div className="space-y-3">

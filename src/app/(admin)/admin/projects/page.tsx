@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase/config';
-import { collection, query, orderBy, getDocs, deleteDoc, doc, writeBatch } from 'firebase/firestore';
+import { collection, query, orderBy, getDocs, deleteDoc, doc, writeBatch, updateDoc } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Edit2, Trash2, ExternalLink, Box, Copy, CheckSquare, Square, X, Filter } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, ExternalLink, Box, Copy, CheckSquare, Square, X, Filter, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,6 +46,17 @@ export default function ProjectsAdminPage() {
       toast({ title: 'Success', description: 'Project deleted successfully' });
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Error', description: error.message });
+    }
+  };
+
+  const toggleStatus = async (id: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'published' ? 'draft' : 'published';
+    try {
+      await updateDoc(doc(db, 'projects', id), { status: newStatus });
+      setProjects(prev => prev.map(p => p.id === id ? { ...p, status: newStatus } : p));
+      toast({ title: 'Status Toggled', description: `Build moved to ${newStatus}` });
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Action Failed', description: error.message });
     }
   };
 
@@ -165,7 +176,13 @@ export default function ProjectsAdminPage() {
                   <div className="flex items-center gap-4 mt-2">
                     <span className="text-[10px] font-black uppercase tracking-widest text-white/30">{project.type}</span>
                     <span className="w-1 h-1 rounded-full bg-white/10" />
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${project.status === 'published' ? 'text-green-500/60' : 'text-yellow-500/60'}`}>{project.status}</span>
+                    <button 
+                      onClick={() => toggleStatus(project.id, project.status)}
+                      className={`text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:opacity-100 transition-opacity ${project.status === 'published' ? 'text-green-500/60' : 'text-yellow-500/60'}`}
+                    >
+                      {project.status === 'published' ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                      {project.status}
+                    </button>
                   </div>
                 </div>
               </div>

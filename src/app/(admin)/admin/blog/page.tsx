@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase/config';
-import { collection, query, orderBy, getDocs, deleteDoc, doc, writeBatch } from 'firebase/firestore';
+import { collection, query, orderBy, getDocs, deleteDoc, doc, writeBatch, updateDoc } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Edit2, Trash2, FileText, Calendar, Copy, CheckSquare, Square, X, Filter } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, FileText, Calendar, Copy, CheckSquare, Square, X, Filter, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,6 +33,17 @@ export default function BlogAdminPage() {
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleStatus = async (id: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'published' ? 'draft' : 'published';
+    try {
+      await updateDoc(doc(db, 'blog', id), { status: newStatus });
+      setPosts(prev => prev.map(p => p.id === id ? { ...p, status: newStatus } : p));
+      toast({ title: 'Editorial Sync', description: `Entry visibility marked as ${newStatus}` });
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Sync Failed', description: error.message });
     }
   };
 
@@ -153,9 +164,13 @@ export default function BlogAdminPage() {
                           {cat}
                         </span>
                       ))}
-                      <span className={`text-[10px] font-black uppercase tracking-widest ${post.status === 'published' ? 'text-green-500/60' : 'text-yellow-500/60'}`}>
-                        • {post.status}
-                      </span>
+                      <button 
+                        onClick={() => toggleStatus(post.id, post.status)}
+                        className={`text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:opacity-100 transition-opacity ${post.status === 'published' ? 'text-green-500/60' : 'text-yellow-500/60'}`}
+                      >
+                        {post.status === 'published' ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                        {post.status}
+                      </button>
                     </div>
                     <h3 className="text-2xl font-bold text-white group-hover:text-primary transition-colors leading-tight">
                       {post.title}
