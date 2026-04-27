@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -7,7 +6,7 @@ import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2 } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, RefreshCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -89,15 +88,17 @@ export default function EditBlogPostPage() {
     }));
   };
 
-  const addCategory = () => {
-    if (newCategory && !formData.categories.includes(newCategory)) {
-      setFormData((prev: any) => ({ ...prev, categories: [...prev.categories, newCategory] }));
-      setNewCategory('');
-    }
-  };
-
-  const removeCategory = (cat: string) => {
-    setFormData((prev: any) => ({ ...prev, categories: prev.categories.filter((c: string) => c !== cat) }));
+  const handleSeoSync = () => {
+    setFormData((prev: any) => ({
+      ...prev,
+      seo: {
+        ...prev.seo,
+        title: prev.seo.title || `${prev.title} | Kartik Jindal`,
+        description: prev.seo.description || prev.summary.substring(0, 155) + (prev.summary.length > 155 ? '...' : ''),
+        keywords: prev.seo.keywords || prev.categories.join(', ')
+      }
+    }));
+    toast({ title: 'Editorial Sync', description: 'SEO fields populated from entry content.' });
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -218,14 +219,28 @@ export default function EditBlogPostPage() {
           </div>
 
           <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
-            <div className="flex items-center gap-5 text-primary">
-              <Globe className="w-8 h-8" />
-              <h3 className="text-2xl font-headline font-black italic tracking-tight">Search Optimization</h3>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-5 text-primary">
+                <Globe className="w-8 h-8" />
+                <h3 className="text-2xl font-headline font-black italic tracking-tight">Search Optimization</h3>
+              </div>
+              <Button 
+                variant="outline" 
+                onClick={handleSeoSync}
+                className="h-10 rounded-xl border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-black transition-all"
+              >
+                Sync with Content <RefreshCcw className="w-3 h-3 ml-2" />
+              </Button>
             </div>
             <div className="space-y-8">
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="space-y-3">
-                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">SEO Title Override</Label>
+                  <div className="flex justify-between items-end px-1">
+                    <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">SEO Title Override</Label>
+                    <span className={`text-[10px] font-mono ${formData.seo.title.length > 60 ? 'text-red-500' : 'text-white/20'}`}>
+                      {formData.seo.title.length} / 60
+                    </span>
+                  </div>
                   <Input 
                     value={formData.seo.title} 
                     onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
@@ -245,7 +260,12 @@ export default function EditBlogPostPage() {
               </div>
 
               <div className="space-y-3">
-                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
+                <div className="flex justify-between items-end px-1">
+                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
+                  <span className={`text-[10px] font-mono ${formData.seo.description.length > 160 ? 'text-red-500' : 'text-white/20'}`}>
+                    {formData.seo.description.length} / 160
+                  </span>
+                </div>
                 <Textarea 
                   value={formData.seo.description} 
                   onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })} 
@@ -295,6 +315,7 @@ export default function EditBlogPostPage() {
             description={formData.seo.description || formData.summary}
             keywords={formData.seo.keywords}
             ogImage={formData.seo.ogImage || formData.image}
+            url={`blog/${formData.slug || formData.id}`}
           />
 
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-10">

@@ -268,7 +268,12 @@ function ProjectFormContent() {
             <div className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title</Label>
+                  <div className="flex justify-between items-end px-1">
+                    <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">SEO Title</Label>
+                    <span className={`text-[9px] font-mono ${formData.seo.title.length > 60 ? 'text-red-500' : 'text-white/20'}`}>
+                      {formData.seo.title.length} / 60
+                    </span>
+                  </div>
                   <Input 
                     value={formData.seo.title} 
                     onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
@@ -287,7 +292,12 @@ function ProjectFormContent() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
+                <div className="flex justify-between items-end px-1">
+                  <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
+                  <span className={`text-[9px] font-mono ${formData.seo.description.length > 160 ? 'text-red-500' : 'text-white/20'}`}>
+                    {formData.seo.description.length} / 160
+                  </span>
+                </div>
                 <Textarea 
                   value={formData.seo.description} 
                   onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })} 
@@ -337,6 +347,7 @@ function ProjectFormContent() {
             description={formData.seo.description || formData.desc}
             keywords={formData.seo.keywords}
             ogImage={formData.seo.ogImage || formData.image}
+            url={`work/${formData.slug || 'new-build'}`}
           />
           
           <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
@@ -428,13 +439,5 @@ function ProjectFormContent() {
         </div>
       </div>
     </div>
-  );
-}
-
-export default function NewProjectPage() {
-  return (
-    <Suspense fallback={<div>Loading Lab...</div>}>
-      <ProjectFormContent />
-    </Suspense>
   );
 }

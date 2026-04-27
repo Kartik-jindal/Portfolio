@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ShieldCheck, Info, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Info, AlertTriangle, CheckCircle2, Search, ExternalLink } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 interface SeoHudProps {
@@ -10,9 +10,10 @@ interface SeoHudProps {
   description?: string;
   keywords?: string;
   ogImage?: string;
+  url?: string;
 }
 
-export const SeoHud = ({ title = '', description = '', keywords = '', ogImage = '' }: SeoHudProps) => {
+export const SeoHud = ({ title = '', description = '', keywords = '', ogImage = '', url = 'yourdomain.com/path' }: SeoHudProps) => {
   const calculateScore = () => {
     let score = 0;
     
@@ -72,6 +73,25 @@ export const SeoHud = ({ title = '', description = '', keywords = '', ogImage = 
           <span className={`text-3xl font-headline font-black italic ${score > 70 ? 'text-primary' : 'text-yellow-500'}`}>{score}<span className="text-white/20 text-sm not-italic font-sans">/100</span></span>
         </div>
         <Progress value={score} className="h-1.5 bg-white/5" />
+      </div>
+
+      {/* SERP Preview */}
+      <div className="space-y-6">
+        <h4 className="text-[10px] font-black uppercase tracking-widest text-white/20 flex items-center gap-2">
+          <Search className="w-3 h-3" /> Search Result Preview
+        </h4>
+        <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
+           <div className="flex items-center gap-2 text-[12px] text-white/40 mb-1 truncate">
+             <span>https://{url}</span>
+             <ExternalLink className="w-2.5 h-2.5" />
+           </div>
+           <div className="text-xl text-[#8ab4f8] font-medium leading-tight line-clamp-1 hover:underline cursor-pointer">
+             {title || "Untitled Digital Build"}
+           </div>
+           <p className="text-[14px] text-white/60 leading-relaxed line-clamp-2">
+             {description || "Provide a meta description to see how your content will appear in search results. An optimal length is between 120 and 160 characters."}
+           </p>
+        </div>
       </div>
 
       <div className="grid gap-8">

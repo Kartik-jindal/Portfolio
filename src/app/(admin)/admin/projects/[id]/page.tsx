@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -7,7 +6,7 @@ import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box, Globe, Calendar } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box, Globe, Calendar, RefreshCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -110,6 +109,19 @@ export default function EditProjectPage() {
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleSeoSync = () => {
+    setFormData((prev: any) => ({
+      ...prev,
+      seo: {
+        ...prev.seo,
+        title: prev.seo.title || `${prev.title} | Kartik Jindal`,
+        description: prev.seo.description || prev.desc.substring(0, 155) + (prev.desc.length > 155 ? '...' : ''),
+        keywords: prev.seo.keywords || prev.tech.join(', ')
+      }
+    }));
+    toast({ title: 'Metadata Synced', description: 'SEO fields populated from build content.' });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -258,9 +270,18 @@ export default function EditProjectPage() {
           </div>
 
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
-            <div className="flex items-center gap-4 text-primary">
-              <Globe className="w-6 h-6" />
-              <h3 className="text-lg font-headline font-black italic tracking-tight">Search Optimization</h3>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4 text-primary">
+                <Globe className="w-6 h-6" />
+                <h3 className="text-lg font-headline font-black italic tracking-tight">Search Optimization</h3>
+              </div>
+              <Button 
+                variant="outline" 
+                onClick={handleSeoSync}
+                className="h-10 rounded-xl border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-black transition-all"
+              >
+                Sync with Content <RefreshCcw className="w-3 h-3 ml-2" />
+              </Button>
             </div>
             
             <div className="space-y-6">
@@ -342,10 +363,11 @@ export default function EditProjectPage() {
 
         <div className="lg:col-span-4 space-y-10">
           <SeoHud 
-            title={formData.seo.title}
-            description={formData.seo.description}
+            title={formData.seo.title || formData.title}
+            description={formData.seo.description || formData.desc}
             keywords={formData.seo.keywords}
             ogImage={formData.seo.ogImage || formData.image}
+            url={`work/${formData.slug || formData.id}`}
           />
 
           <div className="glass p-8 rounded-[2rem] border-white/5 space-y-8">
