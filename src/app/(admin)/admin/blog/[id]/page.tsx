@@ -5,7 +5,7 @@ import { db } from '@/lib/firebase/config';
 import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, RefreshCcw, Database, MessageSquare, HelpCircle, Lightbulb, AlertTriangle, Code, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -366,7 +366,7 @@ export default function EditBlogPostPage() {
             </div>
           </div>
 
-          {/* Generative Intelligence Section (GEO/AEO) */}
+          {/* Generative Intelligence Section (GEO) */}
           <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
              <div className="flex items-center gap-5 text-primary">
               <Database className="w-8 h-8" />
