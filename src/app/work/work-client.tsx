@@ -1,19 +1,22 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Navbar } from '@/components/portfolio/navbar';
 import { Footer } from '@/components/portfolio/footer';
 import { Projects } from '@/components/portfolio/projects';
+import { ProjectDetailContent } from '@/components/portfolio/project-detail-content';
 import { ArrowUpRight, Binary } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 
 export default function WorkClient({ config, initialExperiments, initialFlagships }: { config: any, initialExperiments: any[], initialFlagships: any[] }) {
+  const [selectedExperiment, setSelectedExperiment] = useState<any>(null);
+
   return (
     <main className="bg-transparent min-h-screen">
       <Navbar resumeUrl={config?.resume?.fileUrl} />
-      
+
       <section className="pt-48 pb-12 px-6 relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -72,8 +75,12 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
                     transition={{ delay: i * 0.1 }}
                     className="glass p-8 rounded-3xl border-white/5 hover:border-primary/30 transition-all duration-500 group relative flex flex-col justify-between min-h-[480px] cursor-none"
                   >
-                    <Link href={`/work/${project.slug || project.id}`} scroll={false} className="absolute inset-0 z-10" />
-                    
+                    <button
+                      onClick={() => setSelectedExperiment(project)}
+                      className="absolute inset-0 z-10 cursor-none"
+                      aria-label={`View ${project.title} case study`}
+                    />
+
                     <div className="space-y-6">
                       <div className="flex justify-between items-start">
                         <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-primary transition-colors duration-500">
@@ -81,13 +88,14 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-widest text-white/20">{project.type}</span>
                       </div>
-                      
+
                       <div className="relative aspect-video rounded-xl overflow-hidden mb-8 border border-white/5 shadow-2xl">
-                        <Image 
-                          src={project.image || 'https://picsum.photos/seed/placeholder/600/400'} 
-                          alt={project.title} 
-                          fill 
+                        <Image
+                          src={project.image || 'https://picsum.photos/seed/placeholder/600/400'}
+                          alt={project.title}
+                          fill
                           className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                           data-ai-hint={project.imageHint || "experiment cover"}
                         />
                       </div>
@@ -96,7 +104,7 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
                         <div className="flex items-center gap-3">
                           <h3 className="text-2xl font-headline font-bold text-white group-hover:text-primary transition-colors">{project.title}</h3>
                           {project.date && (
-                             <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">{project.date}</span>
+                            <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">{project.date}</span>
                           )}
                         </div>
                         <p className="text-sm text-muted-foreground leading-relaxed line-clamp-4">{project.desc}</p>
@@ -122,6 +130,14 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
       )}
 
       <Footer config={config} />
+
+      {/* Experiment modal — opens inline without routing */}
+      <Dialog open={!!selectedExperiment} onOpenChange={(open) => !open && setSelectedExperiment(null)}>
+        <DialogContent className="max-w-5xl bg-background/95 backdrop-blur-3xl border-white/5 p-0 overflow-hidden rounded-[3rem] shadow-2xl outline-none z-[5000] cursor-none">
+          <DialogTitle className="sr-only">Project Detail</DialogTitle>
+          {selectedExperiment && <ProjectDetailContent project={selectedExperiment} isModal />}
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }

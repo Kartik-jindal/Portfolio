@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Code2, Zap, Globe, Sparkles, Cpu } from 'lucide-react';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/firestore';
 import { doc, getDoc } from 'firebase/firestore';
 
 const ICON_MAP: Record<string, any> = {

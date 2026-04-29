@@ -6,7 +6,7 @@ import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, RefreshCcw, Database, MessageSquare, HelpCircle, Lightbulb, AlertTriangle, Code, ChevronDown, ChevronUp } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, RefreshCcw, Database, MessageSquare, HelpCircle, Lightbulb, AlertTriangle, Code, ChevronDown, ChevronUp, Bookmark } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -47,7 +47,7 @@ export default function EditBlogPostPage() {
         const docSnap = await getDoc(doc(db, 'blog', id as string));
         if (docSnap.exists()) {
           const data = docSnap.data();
-          
+
           // Handle legacy single-category field
           let categories = data.categories || [];
           if (!data.categories && data.category) {
@@ -57,8 +57,8 @@ export default function EditBlogPostPage() {
             categories = ['Engineering'];
           }
 
-          setFormData({ 
-            id: docSnap.id, 
+          setFormData({
+            id: docSnap.id,
             title: data.title || '',
             slug: data.slug || '',
             categories: categories,
@@ -70,6 +70,7 @@ export default function EditBlogPostPage() {
             imageHint: data.imageHint || '',
             altText: data.altText || '',
             status: data.status || 'draft',
+            featured: data.featured || false,
             seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' },
             entity: data.entity || { facts: [], citations: [] },
             aeo: data.aeo || { quickAnswer: '', takeaways: [], faqs: [] }
@@ -141,9 +142,9 @@ export default function EditBlogPostPage() {
       const uploadFormData = new FormData();
       uploadFormData.append('file', file);
       uploadFormData.append('path', 'blog');
-      
+
       const result = await uploadToS3(uploadFormData);
-      
+
       if (result.success && result.url) {
         setFormData({ ...formData, image: result.url });
         toast({ title: 'Success', description: 'Asset synced to S3' });
@@ -226,7 +227,7 @@ export default function EditBlogPostPage() {
             <h1 className="text-6xl font-headline font-black italic tracking-tighter text-white">Modify Entry.</h1>
           </div>
         </div>
-        <Button 
+        <Button
           onClick={handleSubmit}
           disabled={saving}
           className="h-16 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-10 group text-base"
@@ -242,7 +243,7 @@ export default function EditBlogPostPage() {
               <FileText className="w-8 h-8" />
               <h3 className="text-2xl font-headline font-black italic tracking-tight">Editorial Identity</h3>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-3">
                 <div className="flex justify-between items-end px-1">
@@ -256,13 +257,13 @@ export default function EditBlogPostPage() {
                   <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Slug</Label>
                   {!/^[a-z0-9-]+$/.test(formData.slug) && formData.slug && <span className="text-[9px] text-red-500 font-black uppercase tracking-widest">Invalid Format</span>}
                 </div>
-                <Input 
-                  value={formData.slug} 
+                <Input
+                  value={formData.slug}
                   onChange={e => {
                     setIsSlugManual(true);
                     setFormData({ ...formData, slug: e.target.value });
-                  }} 
-                  className={`bg-white/5 border-white/5 rounded-xl h-16 text-lg font-mono ${!/^[a-z0-9-]+$/.test(formData.slug) && formData.slug ? 'border-red-500/50' : ''}`} 
+                  }}
+                  className={`bg-white/5 border-white/5 rounded-xl h-16 text-lg font-mono ${!/^[a-z0-9-]+$/.test(formData.slug) && formData.slug ? 'border-red-500/50' : ''}`}
                 />
               </div>
             </div>
@@ -301,11 +302,11 @@ export default function EditBlogPostPage() {
 
           {/* Answer Engine Optimization (AEO) Section */}
           <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
-             <div className="flex items-center gap-5 text-primary">
+            <div className="flex items-center gap-5 text-primary">
               <MessageSquare className="w-8 h-8" />
               <h3 className="text-2xl font-headline font-black italic tracking-tight">Answer Engine (AEO)</h3>
             </div>
-            
+
             <div className="space-y-8">
               <div className="space-y-3">
                 <div className="flex justify-between items-end px-1">
@@ -314,10 +315,10 @@ export default function EditBlogPostPage() {
                     {formData.aeo?.quickAnswer?.length || 0} / 250
                   </span>
                 </div>
-                <Textarea 
-                  value={formData.aeo?.quickAnswer || ''} 
-                  onChange={e => setFormData({ ...formData, aeo: { ...formData.aeo, quickAnswer: e.target.value } })} 
-                  className="bg-white/5 border-white/5 rounded-xl min-h-[100px] text-base italic" 
+                <Textarea
+                  value={formData.aeo?.quickAnswer || ''}
+                  onChange={e => setFormData({ ...formData, aeo: { ...formData.aeo, quickAnswer: e.target.value } })}
+                  className="bg-white/5 border-white/5 rounded-xl min-h-[100px] text-base italic"
                   placeholder="Provide a concise 1-2 sentence answer for AI snippet engines..."
                 />
               </div>
@@ -368,11 +369,11 @@ export default function EditBlogPostPage() {
 
           {/* Generative Intelligence Section (GEO) */}
           <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
-             <div className="flex items-center gap-5 text-primary">
+            <div className="flex items-center gap-5 text-primary">
               <Database className="w-8 h-8" />
               <h3 className="text-2xl font-headline font-black italic tracking-tight">Generative Intelligence (GEO)</h3>
             </div>
-            
+
             <div className="space-y-8">
               <div className="space-y-4">
                 <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Hard Facts (Key Data Points)</Label>
@@ -415,8 +416,8 @@ export default function EditBlogPostPage() {
                 <Globe className="w-8 h-8" />
                 <h3 className="text-2xl font-headline font-black italic tracking-tight">Search Optimization</h3>
               </div>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={handleSeoSync}
                 className="h-12 rounded-xl border-white/10 text-[11px] font-black uppercase tracking-widest hover:bg-primary hover:text-black transition-all"
               >
@@ -432,18 +433,18 @@ export default function EditBlogPostPage() {
                       {formData.seo.title.length} / 60
                     </span>
                   </div>
-                  <Input 
-                    value={formData.seo.title} 
-                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" 
+                  <Input
+                    value={formData.seo.title}
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })}
+                    className="bg-white/5 border-white/5 rounded-xl h-16 text-lg"
                   />
                 </div>
                 <div className="space-y-3">
                   <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Keywords (CSV)</Label>
-                  <Input 
-                    value={formData.seo.keywords} 
-                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, keywords: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" 
+                  <Input
+                    value={formData.seo.keywords}
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, keywords: e.target.value } })}
+                    className="bg-white/5 border-white/5 rounded-xl h-16 text-lg"
                   />
                 </div>
               </div>
@@ -455,28 +456,28 @@ export default function EditBlogPostPage() {
                     {formData.seo.description.length} / 160
                   </span>
                 </div>
-                <Textarea 
-                  value={formData.seo.description} 
-                  onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })} 
-                  className="bg-white/5 border-white/5 rounded-xl min-h-[140px] text-lg" 
+                <Textarea
+                  value={formData.seo.description}
+                  onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })}
+                  className="bg-white/5 border-white/5 rounded-xl min-h-[140px] text-lg"
                 />
               </div>
 
               <div className="grid md:grid-cols-2 gap-8 pt-8 border-t border-white/5">
                 <div className="space-y-3">
                   <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Canonical URL</Label>
-                  <Input 
-                    value={formData.seo.canonicalUrl} 
-                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, canonicalUrl: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-16 font-mono text-base" 
+                  <Input
+                    value={formData.seo.canonicalUrl}
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, canonicalUrl: e.target.value } })}
+                    className="bg-white/5 border-white/5 rounded-xl h-16 font-mono text-base"
                   />
                 </div>
                 <div className="space-y-3">
                   <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">OG Image Override</Label>
-                  <Input 
-                    value={formData.seo.ogImage} 
-                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, ogImage: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-16 font-mono text-base" 
+                  <Input
+                    value={formData.seo.ogImage}
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, ogImage: e.target.value } })}
+                    className="bg-white/5 border-white/5 rounded-xl h-16 font-mono text-base"
                   />
                 </div>
               </div>
@@ -486,8 +487,8 @@ export default function EditBlogPostPage() {
                   <Label className="text-[15px] uppercase font-black tracking-widest text-white">Indexable</Label>
                   <p className="text-[11px] text-white/30 uppercase font-black">Allow bots to crawl</p>
                 </div>
-                <Switch 
-                  checked={formData.seo.indexable} 
+                <Switch
+                  checked={formData.seo.indexable}
                   onCheckedChange={v => setFormData({ ...formData, seo: { ...formData.seo, indexable: v } })}
                 />
               </div>
@@ -496,7 +497,7 @@ export default function EditBlogPostPage() {
 
           {/* Schema Preview HUD */}
           <div className="glass rounded-[3rem] border-white/5 overflow-hidden">
-            <button 
+            <button
               onClick={() => setShowSchema(!showSchema)}
               className="w-full flex items-center justify-between p-10 hover:bg-white/[0.02] transition-colors"
             >
@@ -527,7 +528,7 @@ export default function EditBlogPostPage() {
         </div>
 
         <div className="lg:col-span-4 space-y-10">
-          <SeoHud 
+          <SeoHud
             title={formData.seo.title || formData.title}
             description={formData.seo.description || formData.summary}
             keywords={formData.seo.keywords}
@@ -538,27 +539,27 @@ export default function EditBlogPostPage() {
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-10">
             <h3 className="text-[13px] uppercase font-black tracking-widest text-white/40">Visual Context (S3)</h3>
             <div className="space-y-8">
-               <div className="relative aspect-video rounded-3xl overflow-hidden bg-white/5 border border-white/5 shadow-2xl">
-                 {formData.image ? (
-                   <img src={formData.image} alt="" className="w-full h-full object-cover" />
-                 ) : (
-                   <div className="w-full h-full flex items-center justify-center text-white/10">
-                     <ImageIcon className="w-16 h-16" />
-                   </div>
-                 )}
-                 <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileUpload} />
-                    <span className="text-[13px] font-black uppercase tracking-widest text-white">{uploading ? 'Syncing...' : 'Update Cover (S3)'}</span>
-                 </div>
-               </div>
-               <div className="space-y-3">
-                 <div className="flex justify-between items-end px-1">
-                   <Label className="text-[11px] uppercase font-black text-white/30 ml-2">Image Alt Text (SEO)</Label>
-                   {!formData.altText && formData.image && <span className="text-[9px] text-yellow-500 font-black uppercase tracking-widest flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Missing</span>}
-                 </div>
-                 <Input value={formData.altText} onChange={e => setFormData({ ...formData, altText: e.target.value })} className={`bg-white/5 border-white/5 rounded-xl h-14 text-sm ${!formData.altText && formData.image ? 'border-yellow-500/30' : ''}`} placeholder="Descriptive alt text..." />
-               </div>
-               <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm font-mono" placeholder="Direct Image URL" />
+              <div className="relative aspect-video rounded-3xl overflow-hidden bg-white/5 border border-white/5 shadow-2xl">
+                {formData.image ? (
+                  <img src={formData.image} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-white/10">
+                    <ImageIcon className="w-16 h-16" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileUpload} />
+                  <span className="text-[13px] font-black uppercase tracking-widest text-white">{uploading ? 'Syncing...' : 'Update Cover (S3)'}</span>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-end px-1">
+                  <Label className="text-[11px] uppercase font-black text-white/30 ml-2">Image Alt Text (SEO)</Label>
+                  {!formData.altText && formData.image && <span className="text-[9px] text-yellow-500 font-black uppercase tracking-widest flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Missing</span>}
+                </div>
+                <Input value={formData.altText} onChange={e => setFormData({ ...formData, altText: e.target.value })} className={`bg-white/5 border-white/5 rounded-xl h-14 text-sm ${!formData.altText && formData.image ? 'border-yellow-500/30' : ''}`} placeholder="Descriptive alt text..." />
+              </div>
+              <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm font-mono" placeholder="Direct Image URL" />
             </div>
           </div>
 
@@ -591,6 +592,23 @@ export default function EditBlogPostPage() {
                   <SelectItem value="published">Published</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="h-px bg-white/5" />
+
+            {/* Featured toggle */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Bookmark className={`w-4 h-4 transition-colors ${formData.featured ? 'text-primary' : 'text-white/20'}`} />
+                <div className="space-y-0.5">
+                  <span className="text-[13px] font-black uppercase tracking-widest text-white">Featured</span>
+                  <p className="text-[10px] text-white/30 uppercase font-black tracking-widest">Pin to top of journal</p>
+                </div>
+              </div>
+              <Switch
+                checked={!!formData.featured}
+                onCheckedChange={v => setFormData({ ...formData, featured: v })}
+              />
             </div>
           </div>
         </div>

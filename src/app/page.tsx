@@ -1,4 +1,5 @@
 
+import { cache } from 'react';
 import { Navbar } from '@/components/portfolio/navbar';
 import { Hero } from '@/components/portfolio/hero';
 import { About } from '@/components/portfolio/about';
@@ -8,8 +9,7 @@ import { Testimonials } from '@/components/portfolio/testimonials';
 import { Contact } from '@/components/portfolio/contact';
 import { Footer } from '@/components/portfolio/footer';
 import { ScrollIndicator } from '@/components/portfolio/scroll-indicator';
-import { IntroScreen } from '@/components/portfolio/intro-screen';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/firestore';
 import { doc, getDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import type { Metadata } from 'next';
 
@@ -25,63 +25,63 @@ function serialize(data: any) {
   }));
 }
 
-async function getGlobalConfig() {
+const getGlobalConfig = cache(async function getGlobalConfig() {
   try {
     const docRef = doc(db, 'site_config', 'global');
     const docSnap = await getDoc(docRef);
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (err) { return null; }
-}
+});
 
-async function getSeoPageConfig() {
+const getSeoPageConfig = cache(async function getSeoPageConfig() {
   try {
     const docRef = doc(db, 'site_config', 'seo_pages');
     const docSnap = await getDoc(docRef);
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (err) { return null; }
-}
+});
 
-async function getHeroData() {
+const getHeroData = cache(async function getHeroData() {
   try {
     const docRef = doc(db, 'site_config', 'hero');
     const docSnap = await getDoc(docRef);
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (err) { return null; }
-}
+});
 
-async function getNavbarData() {
+const getNavbarData = cache(async function getNavbarData() {
   try {
     const docRef = doc(db, 'site_config', 'navbar');
     const docSnap = await getDoc(docRef);
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (err) { return null; }
-}
+});
 
-async function getFooterData() {
+const getFooterData = cache(async function getFooterData() {
   try {
     const docRef = doc(db, 'site_config', 'footer');
     const docSnap = await getDoc(docRef);
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (err) { return null; }
-}
+});
 
-async function getAboutData() {
+const getAboutData = cache(async function getAboutData() {
   try {
     const docRef = doc(db, 'site_config', 'about');
     const docSnap = await getDoc(docRef);
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (err) { return null; }
-}
+});
 
-async function getContactData() {
+const getContactData = cache(async function getContactData() {
   try {
     const docRef = doc(db, 'site_config', 'contact');
     const docSnap = await getDoc(docRef);
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (err) { return null; }
-}
+});
 
-async function getProjects(count: number) {
+const getProjects = cache(async function getProjects(count: number) {
   try {
     const q = query(
       collection(db, 'projects'),
@@ -93,24 +93,24 @@ async function getProjects(count: number) {
       .filter((p: any) => p.type === 'FLAGSHIP');
     return data.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)).slice(0, count);
   } catch (err) { return []; }
-}
+});
 
-async function getExperience() {
+const getExperience = cache(async function getExperience() {
   try {
     const q = collection(db, 'experience');
     const snap = await getDocs(q);
     const data = snap.docs.map(doc => serialize({ id: doc.id, ...doc.data() }));
     return data.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
   } catch (err) { return []; }
-}
+});
 
-async function getTestimonials() {
+const getTestimonials = cache(async function getTestimonials() {
   try {
     const q = collection(db, 'testimonials');
     const snap = await getDocs(q);
     return snap.docs.map(doc => serialize({ id: doc.id, ...doc.data() }));
   } catch (err) { return []; }
-}
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   const globalConfig = await getGlobalConfig();
@@ -160,10 +160,10 @@ export default async function Home() {
   const testimonials = await getTestimonials();
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com';
-  const branding = config?.identity?.authorName || (heroData?.titleMain && heroData?.titleHighlight 
-    ? `${heroData.titleMain} ${heroData.titleHighlight}` 
+  const branding = config?.identity?.authorName || (heroData?.titleMain && heroData?.titleHighlight
+    ? `${heroData.titleMain} ${heroData.titleHighlight}`
     : "Kartik Jindal");
-  
+
   const jobTitle = config?.identity?.jobTitle || heroData?.badge || "Full Stack Architect";
 
   const visibility = config?.visibility || {
@@ -174,17 +174,16 @@ export default async function Home() {
 
   return (
     <main className="relative">
-      <IntroScreen />
       <Navbar navConfig={navData} resumeUrl={config?.resume?.fileUrl} />
       <ScrollIndicator />
       <Hero initialData={heroData} />
       <About initialData={aboutData} />
-      <Projects initialData={initialProjects} limit={3} />
+      <Projects initialData={initialProjects} limit={3} useModal />
       {visibility.showExperience && <Experience initialData={experiences} />}
       {visibility.showTestimonials && <Testimonials initialData={testimonials} />}
       <Contact initialData={contactData} />
       <Footer config={config} footerLayout={footerLayout} />
-      
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

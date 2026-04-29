@@ -1,5 +1,6 @@
+import { cache } from 'react';
 import React from 'react';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/firestore';
 import { collection, query, where, getDocs, doc, getDoc, limit } from 'firebase/firestore';
 import type { Metadata } from 'next';
 import { Navbar } from '@/components/portfolio/navbar';
@@ -17,7 +18,7 @@ function serialize(data: any) {
   }));
 }
 
-async function getProject(slug: string) {
+const getProject = cache(async function getProject(slug: string) {
   try {
     const q = query(collection(db, 'projects'), where('slug', '==', slug), limit(1));
     const snap = await getDocs(q);
@@ -29,14 +30,14 @@ async function getProject(slug: string) {
     
     return null;
   } catch (e) { return null; }
-}
+});
 
-async function getGlobalConfig() {
+const getGlobalConfig = cache(async function getGlobalConfig() {
   try {
     const docSnap = await getDoc(doc(db, 'site_config', 'global'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (e) { return null; }
-}
+});
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;

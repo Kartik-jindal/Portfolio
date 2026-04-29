@@ -91,6 +91,7 @@ export default function PostClient({ post, config }: { post: any, config: any })
               fill 
               className="object-cover"
               priority
+              sizes="(min-width: 1600px) 1600px, 100vw"
               data-ai-hint={post.imageHint || "blog post"}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />

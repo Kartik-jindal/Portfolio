@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Quote } from 'lucide-react';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/firestore';
 import { collection, getDocs } from 'firebase/firestore';
 
 export const Testimonials = ({ initialData }: { initialData?: any[] }) => {

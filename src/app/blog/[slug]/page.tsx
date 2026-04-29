@@ -1,5 +1,6 @@
+import { cache } from 'react';
 import React from 'react';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/firestore';
 import { collection, query, where, getDocs, doc, getDoc, limit } from 'firebase/firestore';
 import type { Metadata } from 'next';
 import PostClient from './post-client';
@@ -14,7 +15,7 @@ function serialize(data: any) {
   }));
 }
 
-async function getPost(slug: string) {
+const getPost = cache(async function getPost(slug: string) {
   try {
     // Try by slug first
     const q = query(collection(db, 'blog'), where('slug', '==', slug), limit(1));
@@ -27,14 +28,14 @@ async function getPost(slug: string) {
 
     return null;
   } catch (e) { return null; }
-}
+});
 
-async function getGlobalConfig() {
+const getGlobalConfig = cache(async function getGlobalConfig() {
   try {
     const docSnap = await getDoc(doc(db, 'site_config', 'global'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (e) { return null; }
-}
+});
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
