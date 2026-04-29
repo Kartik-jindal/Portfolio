@@ -60,7 +60,11 @@ export const CustomCursor = () => {
     return () => window.removeEventListener('mousemove', moveCursor);
   }, [mouseX, mouseY, isVisible]);
 
-  if (!mounted || !isVisible) return null;
+  if (
+    !mounted ||
+    !isVisible ||
+    window.innerWidth < 768
+  ) return null;
 
   const variants = {
     default: {
@@ -87,7 +91,7 @@ export const CustomCursor = () => {
   };
 
   const cursorContent = (
-    <div className="fixed inset-0 pointer-events-none z-[999999999]">
+    <div className=" hidden md:block fixed inset-0 pointer-events-none z-[999999999]">
       <motion.div
         className="fixed top-0 left-0 flex items-center justify-center overflow-hidden"
         animate={cursorVariant}
