@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ArrowUpRight, Plus } from 'lucide-react';
 import Link from 'next/link';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/firestore';
 import { doc, getDoc } from 'firebase/firestore';
 
 interface NavbarProps {
@@ -20,7 +20,7 @@ export const Navbar = ({ resumeUrl, navConfig }: NavbarProps) => {
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 

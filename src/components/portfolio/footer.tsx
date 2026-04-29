@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Github, Twitter, Linkedin, Instagram, ExternalLink, Mail } from 'lucide-react';
 import Link from 'next/link';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/firestore';
 import { doc, getDoc } from 'firebase/firestore';
 
 interface FooterProps {

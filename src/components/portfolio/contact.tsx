@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Send, X, CheckCircle2, Globe, Shield, Terminal } from 'lucide-react';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/firestore';
 import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';

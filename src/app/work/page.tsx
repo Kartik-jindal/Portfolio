@@ -1,8 +1,9 @@
 
+import { cache } from 'react';
 import { Navbar } from '@/components/portfolio/navbar';
 import { Footer } from '@/components/portfolio/footer';
 import { Projects } from '@/components/portfolio/projects';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/firestore';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import type { Metadata } from 'next';
 import WorkClient from './work-client';
@@ -19,21 +20,21 @@ function serialize(data: any) {
   }));
 }
 
-async function getGlobalConfig() {
+const getGlobalConfig = cache(async function getGlobalConfig() {
   try {
     const docSnap = await getDoc(doc(db, 'site_config', 'global'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (e) { return null; }
-}
+});
 
-async function getSeoPageConfig() {
+const getSeoPageConfig = cache(async function getSeoPageConfig() {
   try {
     const docSnap = await getDoc(doc(db, 'site_config', 'seo_pages'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (e) { return null; }
-}
+});
 
-async function getExperiments() {
+const getPublishedProjects = cache(async function getPublishedProjects() {
   try {
     const q = query(
       collection(db, 'projects'),
@@ -42,24 +43,19 @@ async function getExperiments() {
     const snap = await getDocs(q);
     return snap.docs
       .map(d => serialize({ id: d.id, ...d.data() }))
-      .filter((p: any) => p.type === 'EXPERIMENT')
       .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
   } catch (err) { return []; }
-}
+});
 
-async function getFlagships() {
-  try {
-    const q = query(
-      collection(db, 'projects'),
-      where('status', '==', 'published')
-    );
-    const snap = await getDocs(q);
-    return snap.docs
-      .map(d => serialize({ id: d.id, ...d.data() }))
-      .filter((p: any) => p.type === 'FLAGSHIP')
-      .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
-  } catch (err) { return []; }
-}
+const getExperiments = cache(async function getExperiments() {
+  const projects = await getPublishedProjects();
+  return projects.filter((p: any) => p.type === 'EXPERIMENT');
+});
+
+const getFlagships = cache(async function getFlagships() {
+  const projects = await getPublishedProjects();
+  return projects.filter((p: any) => p.type === 'FLAGSHIP');
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   const globalConfig = await getGlobalConfig();

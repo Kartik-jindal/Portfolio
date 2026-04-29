@@ -8,13 +8,12 @@ import { usePathname } from 'next/navigation';
 export const IntroScreen = () => {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith('/admin');
+  const isHome = pathname === '/';
   const [stage, setStage] = useState(0); // 0: Welcome, 1: Phrases, 2: Exiting
-  const [isVisible, setIsVisible] = useState(false);
-  const [hasMounted, setHasMounted] = useState(false);
+  const [isVisible, setIsVisible] = useState(isHome && !isAdmin);
 
   useEffect(() => {
-    setHasMounted(true);
-    if (isAdmin) {
+    if (isAdmin || !isHome) {
       setIsVisible(false);
       return;
     }
@@ -48,9 +47,9 @@ export const IntroScreen = () => {
       clearTimeout(timer2);
       clearTimeout(timer3);
     };
-  }, [isAdmin]);
+  }, [isAdmin, isHome]);
 
-  if (!hasMounted || !isVisible || isAdmin) return null;
+  if (!isVisible || isAdmin || !isHome) return null;
 
   const phrases = [
     { text: "DESIGN", label: "Let's" },

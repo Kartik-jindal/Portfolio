@@ -3,7 +3,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/firestore';
 import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 
 export const Experience = ({ initialData }: { initialData?: any[] }) => {

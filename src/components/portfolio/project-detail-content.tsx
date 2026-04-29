@@ -1,48 +1,39 @@
-'use client';
-
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Github, ArrowUpRight, ExternalLink, Target, Code, Calendar, Terminal } from 'lucide-react';
+import { Github, ArrowUpRight, ExternalLink, Target, Code, Calendar } from 'lucide-react';
 import Image from 'next/image';
 
 interface ProjectDetailContentProps {
   project: any;
-  onClose?: () => void;
   isModal?: boolean;
 }
 
-export const ProjectDetailContent = ({ project, onClose, isModal = false }: ProjectDetailContentProps) => {
+export const ProjectDetailContent = ({ project, isModal = false }: ProjectDetailContentProps) => {
   if (!project) return null;
 
   return (
     <div className={isModal ? "flex flex-col h-full max-h-[90vh]" : "flex flex-col min-h-screen pt-32 pb-24"}>
       <div className="relative h-64 md:h-96 w-full shrink-0 overflow-hidden">
-        <Image 
-          src={project.image || 'https://picsum.photos/seed/placeholder/1600/1000'} 
-          alt={project.title} 
-          fill 
-          className="object-cover opacity-60" 
+        <Image
+          src={project.image || 'https://picsum.photos/seed/placeholder/1600/1000'}
+          alt={project.title}
+          fill
+          className="object-cover opacity-60"
           priority
+          sizes="100vw"
           data-ai-hint={project.imageHint || "project hero"}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-        
-        {isModal && onClose && (
-          <button onClick={onClose} className="absolute top-8 right-8 w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-colors z-[6000] group">
-            <span className="w-6 h-6 text-white group-hover:rotate-90 transition-transform">✕</span>
-          </button>
-        )}
 
         <div className="absolute bottom-8 left-12 right-12 z-20">
-           <div className="flex items-center gap-4 mb-1">
-              <span className="text-primary font-black tracking-[0.4em] text-[10px] uppercase">{project.role}</span>
-              {project.date && (
-                <span className="text-white/30 text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
-                   <Calendar className="w-3 h-3" /> {project.date}
-                </span>
-              )}
-           </div>
-           <h1 className="text-4xl md:text-7xl font-headline font-black text-white italic tracking-tighter break-words leading-none">{project.title}</h1>
+          <div className="flex items-center gap-4 mb-1">
+            <span className="text-primary font-black tracking-[0.4em] text-[10px] uppercase">{project.role}</span>
+            {project.date && (
+              <span className="text-white/30 text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
+                <Calendar className="w-3 h-3" /> {project.date}
+              </span>
+            )}
+          </div>
+          <h1 className="text-4xl md:text-7xl font-headline font-black text-white italic tracking-tighter break-words leading-none">{project.title}</h1>
         </div>
       </div>
 
@@ -98,7 +89,7 @@ export const ProjectDetailContent = ({ project, onClose, isModal = false }: Proj
                   </div>
                 </div>
               )}
-              
+
               <div>
                 <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Core Arsenal</h4>
                 <div className="flex flex-wrap gap-2">
@@ -113,8 +104,8 @@ export const ProjectDetailContent = ({ project, onClose, isModal = false }: Proj
               <div className="flex items-center justify-between px-2">
                 <span className="text-[9px] font-black text-white/20 tracking-[0.4em] uppercase">STATUS: DEPLOYED</span>
                 <div className="flex gap-4">
-                   {project.githubUrl && <a href={project.githubUrl} target="_blank" rel="noopener"><Github className="w-5 h-5 text-white/20 hover:text-white transition-colors cursor-pointer" /></a>}
-                   {project.liveUrl && <a href={project.liveUrl} target="_blank" rel="noopener"><ExternalLink className="w-5 h-5 text-white/20 hover:text-white transition-colors cursor-pointer" /></a>}
+                  {project.githubUrl && <a href={project.githubUrl} target="_blank" rel="noopener"><Github className="w-5 h-5 text-white/20 hover:text-white transition-colors cursor-pointer" /></a>}
+                  {project.liveUrl && <a href={project.liveUrl} target="_blank" rel="noopener"><ExternalLink className="w-5 h-5 text-white/20 hover:text-white transition-colors cursor-pointer" /></a>}
                 </div>
               </div>
             </div>

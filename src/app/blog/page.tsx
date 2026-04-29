@@ -1,9 +1,10 @@
+import { cache } from 'react';
 import React from 'react';
 import { Navbar } from '@/components/portfolio/navbar';
 import { Contact } from '@/components/portfolio/contact';
 import { Footer } from '@/components/portfolio/footer';
 import { BlogListClient } from '@/components/portfolio/blog-list-client';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/firestore';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import type { Metadata } from 'next';
 
@@ -19,7 +20,7 @@ function serialize(data: any) {
   }));
 }
 
-async function getBlogData() {
+const getBlogData = cache(async function getBlogData() {
   try {
     const q = query(
       collection(db, 'blog'),
@@ -36,21 +37,21 @@ async function getBlogData() {
   } catch (err) {
     return [];
   }
-}
+});
 
-async function getGlobalConfig() {
+const getGlobalConfig = cache(async function getGlobalConfig() {
   try {
     const docSnap = await getDoc(doc(db, 'site_config', 'global'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (e) { return null; }
-}
+});
 
-async function getSeoPageConfig() {
+const getSeoPageConfig = cache(async function getSeoPageConfig() {
   try {
     const docSnap = await getDoc(doc(db, 'site_config', 'seo_pages'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (e) { return null; }
-}
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   const globalConfig = await getGlobalConfig();

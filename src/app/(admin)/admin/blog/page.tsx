@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase/config';
 import { collection, query, orderBy, getDocs, deleteDoc, doc, writeBatch, updateDoc } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Edit2, Trash2, FileText, Calendar, Copy, CheckSquare, Square, X, Filter, Eye, EyeOff } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, FileText, Calendar, Copy, CheckSquare, Square, X, Filter, Eye, EyeOff, Bookmark } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,6 +42,17 @@ export default function BlogAdminPage() {
       await updateDoc(doc(db, 'blog', id), { status: newStatus });
       setPosts(prev => prev.map(p => p.id === id ? { ...p, status: newStatus } : p));
       toast({ title: 'Editorial Sync', description: `Entry visibility marked as ${newStatus}` });
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Sync Failed', description: error.message });
+    }
+  };
+
+  const toggleFeatured = async (id: string, currentFeatured: boolean) => {
+    const newFeatured = !currentFeatured;
+    try {
+      await updateDoc(doc(db, 'blog', id), { featured: newFeatured });
+      setPosts(prev => prev.map(p => p.id === id ? { ...p, featured: newFeatured } : p));
+      toast({ title: 'Editorial Sync', description: newFeatured ? 'Entry pinned as featured' : 'Entry removed from featured' });
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Sync Failed', description: error.message });
     }
@@ -111,22 +122,22 @@ export default function BlogAdminPage() {
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="relative flex-1">
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20" />
-          <Input 
-            placeholder="Search journal entries..." 
+          <Input
+            placeholder="Search journal entries..."
             className="bg-white/5 border-white/5 h-16 pl-16 rounded-2xl text-white text-lg font-light focus:border-primary/50 transition-all"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="bg-white/5 border-white/5 h-16 w-48 rounded-2xl text-white/60 font-black uppercase tracking-widest text-[10px]">
-              <SelectValue placeholder="All Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="published">Published</SelectItem>
-              <SelectItem value="draft">Draft</SelectItem>
-            </SelectContent>
+          <SelectTrigger className="bg-white/5 border-white/5 h-16 w-48 rounded-2xl text-white/60 font-black uppercase tracking-widest text-[10px]">
+            <SelectValue placeholder="All Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="published">Published</SelectItem>
+            <SelectItem value="draft">Draft</SelectItem>
+          </SelectContent>
         </Select>
       </div>
 
@@ -151,7 +162,7 @@ export default function BlogAdminPage() {
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
                 <div className="flex items-center gap-6 flex-1">
-                  <button 
+                  <button
                     onClick={() => toggleSelect(post.id)}
                     className="w-10 h-10 rounded-xl flex items-center justify-center text-white/20 hover:text-primary transition-colors"
                   >
@@ -164,7 +175,12 @@ export default function BlogAdminPage() {
                           {cat}
                         </span>
                       ))}
-                      <button 
+                      {post.featured && (
+                        <span className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-primary/5 border border-primary/10 text-[10px] font-black uppercase tracking-widest text-primary/70">
+                          <Bookmark className="w-3 h-3" /> Featured
+                        </span>
+                      )}
+                      <button
                         onClick={() => toggleStatus(post.id, post.status)}
                         className={`text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:opacity-100 transition-opacity ${post.status === 'published' ? 'text-green-500/60' : 'text-yellow-500/60'}`}
                       >
@@ -186,6 +202,15 @@ export default function BlogAdminPage() {
                 </div>
 
                 <div className="flex items-center gap-3 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`w-12 h-12 rounded-xl hover:bg-primary/10 transition-colors ${post.featured ? 'text-primary' : 'text-white/20 hover:text-primary'}`}
+                    onClick={() => toggleFeatured(post.id, !!post.featured)}
+                    title={post.featured ? 'Remove from featured' : 'Mark as featured'}
+                  >
+                    <Bookmark className="w-5 h-5" />
+                  </Button>
                   <Link href={`/admin/blog/new?clone=${post.id}`}>
                     <Button variant="ghost" size="icon" className="w-12 h-12 rounded-xl hover:bg-white/5 text-white/40 hover:text-primary" title="Clone Entry">
                       <Copy className="w-5 h-5" />
@@ -196,9 +221,9 @@ export default function BlogAdminPage() {
                       Edit Entry
                     </Button>
                   </Link>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     className="w-12 h-12 rounded-xl hover:bg-destructive/10 text-white/40 hover:text-destructive"
                     onClick={() => handleDelete(post.id)}
                   >
@@ -221,16 +246,16 @@ export default function BlogAdminPage() {
             className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] w-full max-w-2xl px-6"
           >
             <div className="bg-black/90 backdrop-blur-3xl border border-primary/30 rounded-full h-20 flex items-center justify-between px-10 shadow-[0_0_50px_rgba(16,185,129,0.2)]">
-               <div className="flex items-center gap-4">
-                  <span className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-black font-black text-xs">{selectedIds.length}</span>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Selected</span>
-                  <button onClick={() => setSelectedIds([])} className="ml-4 hover:text-primary transition-colors"><X className="w-4 h-4" /></button>
-               </div>
-               <div className="flex items-center gap-4">
-                  <Button onClick={() => handleBulkStatus('published')} variant="outline" className="h-10 rounded-xl border-white/10 text-[10px] uppercase font-black tracking-widest">Publish</Button>
-                  <Button onClick={() => handleBulkStatus('draft')} variant="outline" className="h-10 rounded-xl border-white/10 text-[10px] uppercase font-black tracking-widest">Draft</Button>
-                  <Button onClick={handleBulkDelete} variant="ghost" className="h-10 rounded-xl text-destructive hover:bg-destructive/10 text-[10px] uppercase font-black tracking-widest">Delete</Button>
-               </div>
+              <div className="flex items-center gap-4">
+                <span className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-black font-black text-xs">{selectedIds.length}</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Selected</span>
+                <button onClick={() => setSelectedIds([])} className="ml-4 hover:text-primary transition-colors"><X className="w-4 h-4" /></button>
+              </div>
+              <div className="flex items-center gap-4">
+                <Button onClick={() => handleBulkStatus('published')} variant="outline" className="h-10 rounded-xl border-white/10 text-[10px] uppercase font-black tracking-widest">Publish</Button>
+                <Button onClick={() => handleBulkStatus('draft')} variant="outline" className="h-10 rounded-xl border-white/10 text-[10px] uppercase font-black tracking-widest">Draft</Button>
+                <Button onClick={handleBulkDelete} variant="ghost" className="h-10 rounded-xl text-destructive hover:bg-destructive/10 text-[10px] uppercase font-black tracking-widest">Delete</Button>
+              </div>
             </div>
           </motion.div>
         )}

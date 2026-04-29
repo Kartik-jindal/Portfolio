@@ -5,7 +5,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Sparkles, ArrowRight } from 'lucide-react';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/firestore';
 import { doc, getDoc } from 'firebase/firestore';
 
 export const Hero = ({ initialData }: { initialData?: any }) => {

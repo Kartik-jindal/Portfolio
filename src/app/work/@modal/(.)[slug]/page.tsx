@@ -1,5 +1,5 @@
 import React from 'react';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/firestore';
 import { collection, query, where, getDocs, doc, getDoc, limit } from 'firebase/firestore';
 import { ProjectDetailContent } from '@/components/portfolio/project-detail-content';
 import { ModalWrapper } from '@/components/portfolio/modal-wrapper';
