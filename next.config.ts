@@ -32,12 +32,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/:path*",
-        has: [
-          {
-            type: "host",
-            value: "kartikjindal.site",
-          },
-        ],
+        has: [{ type: "host", value: "kartikjindal.site" }],
         destination: "https://www.kartikjindal.site/:path*",
         permanent: true,
       },

@@ -8,7 +8,7 @@ import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firesto
 import type { Metadata } from 'next';
 import WorkClient from './work-client';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 function serialize(data: any) {
   if (!data) return data;

@@ -24,7 +24,7 @@ export const ProjectDetailContent = ({ project, isModal = false }: ProjectDetail
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
 
-        <div className="absolute bottom-8 left-12 right-12 z-20">
+        <div className="absolute bottom-6 left-6 right-6 sm:bottom-8 sm:left-12 sm:right-12 z-20">
           <div className="flex items-center gap-4 mb-1">
             <span className="text-primary font-black tracking-[0.4em] text-[10px] uppercase">{project.role}</span>
             {project.date && (
@@ -33,7 +33,7 @@ export const ProjectDetailContent = ({ project, isModal = false }: ProjectDetail
               </span>
             )}
           </div>
-          <h1 className="text-4xl md:text-7xl font-headline font-black text-white italic tracking-tighter break-words leading-none">{project.title}</h1>
+          <h1 className="text-3xl sm:text-4xl md:text-7xl font-headline font-black text-white italic tracking-tighter break-words leading-none">{project.title}</h1>
         </div>
       </div>
 
@@ -111,7 +111,7 @@ export const ProjectDetailContent = ({ project, isModal = false }: ProjectDetail
             </div>
 
             {project.liveUrl && (
-              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3 w-full py-10 rounded-[2rem] bg-white text-black hover:bg-primary transition-all font-black uppercase tracking-[0.3em] shadow-2xl group text-sm">
+              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3 w-full py-6 sm:py-10 rounded-[1.5rem] sm:rounded-[2rem] bg-white text-black hover:bg-primary transition-all font-black uppercase tracking-[0.3em] shadow-2xl group text-sm">
                 Check Live <ArrowUpRight className="w-5 h-5 ml-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </a>
             )}

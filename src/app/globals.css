@@ -31,17 +31,31 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground font-body antialiased selection:bg-primary selection:text-primary-foreground;
     overflow-x: hidden;
   }
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-headline tracking-tight;
   }
-  
+
   @media (min-width: 1024px) {
+
     /* Broad cursor none to handle portals and overlays */
-    html, body, a, button, [role="button"], [role="dialog"], div {
+    html,
+    body,
+    a,
+    button,
+    [role="button"],
+    [role="dialog"],
+    div {
       cursor: none !important;
     }
   }
@@ -51,9 +65,11 @@
 ::-webkit-scrollbar {
   width: 4px;
 }
+
 ::-webkit-scrollbar-track {
   @apply bg-background;
 }
+
 ::-webkit-scrollbar-thumb {
   @apply bg-primary/20 rounded-full hover:bg-primary/50 transition-colors;
 }
@@ -62,9 +78,11 @@
 .custom-scrollbar::-webkit-scrollbar {
   width: 3px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
   @apply bg-transparent;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
   @apply bg-white/10 rounded-full hover:bg-primary/40 transition-all;
 }
@@ -108,6 +126,30 @@
 }
 
 @keyframes reveal {
-  from { mask-position: 100% 0; }
-  to { mask-position: 0% 0; }
+  from {
+    mask-position: 100% 0;
+  }
+
+  to {
+    mask-position: 0% 0;
+  }
+}
+
+/*
+  Intro screen — page content fade-in.
+  When IntroScreen removes #intro-hide and adds .intro-revealing,
+  the content fades in smoothly underneath the sliding intro.
+*/
+#page-content.intro-revealing {
+  animation: page-fade-in 0.9s ease-out forwards;
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }

@@ -8,10 +8,14 @@ export const Hero3D = () => {
   const mouseRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    if (!mountRef.current) return;
+    const mount = mountRef.current;
+    if (!mount) return;
 
-    const width = mountRef.current.clientWidth;
-    const height = mountRef.current.clientHeight;
+    // Guard: if a canvas is already mounted (StrictMode double-invoke), skip
+    if (mount.querySelector('canvas')) return;
+
+    const width = mount.clientWidth;
+    const height = mount.clientHeight;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 100);
@@ -20,12 +24,11 @@ export const Hero3D = () => {
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    mountRef.current.appendChild(renderer.domElement);
+    mount.appendChild(renderer.domElement);
 
     // ========================================
     // 1. WHITISH STAR FIELD (Background)
     // ========================================
-    // Reduced from 2500 to 1000 for a more refined look
     const starCount = 1000;
     const starPositions = new Float32Array(starCount * 3);
     const starColors = new Float32Array(starCount * 3);
@@ -169,7 +172,7 @@ export const Hero3D = () => {
     // 4. CONNECTION LINES
     // ========================================
     const lineGroup = new THREE.Group();
-    
+
     const updateConnections = () => {
       while (lineGroup.children.length > 0) {
         const child = lineGroup.children[0] as THREE.Line;
@@ -204,18 +207,19 @@ export const Hero3D = () => {
     // ========================================
     // 5. ENHANCED RINGS SYSTEM
     // ========================================
-    
+
     const createStreamRing = (
-      radiusX: number, 
-      radiusY: number, 
-      y: number, 
-      color: number, 
+      radiusX: number,
+      radiusY: number,
+      y: number,
+      color: number,
       opacity: number,
       tubeRadius: number,
       segments: number = 120
     ) => {
       const points = [];
-      for (let i = 0; i <= segments; i++) {
+      // Do NOT include the endpoint — CatmullRomCurve3 closed=true closes it automatically
+      for (let i = 0; i < segments; i++) {
         const angle = (i / segments) * Math.PI * 2;
         points.push(new THREE.Vector3(
           Math.cos(angle) * radiusX,
@@ -224,13 +228,14 @@ export const Hero3D = () => {
         ));
       }
       const curve = new THREE.CatmullRomCurve3(points, true);
-      const tubeGeo = new THREE.TubeGeometry(curve, 100, tubeRadius, 8, true);
+      const tubeGeo = new THREE.TubeGeometry(curve, 200, tubeRadius, 8, true);
       const tubeMat = new THREE.MeshBasicMaterial({
         color,
         transparent: true,
         opacity,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
+        side: THREE.DoubleSide,
       });
       return new THREE.Mesh(tubeGeo, tubeMat);
     };
@@ -245,22 +250,22 @@ export const Hero3D = () => {
     ) => {
       const group = new THREE.Group();
       for (let i = 0; i < dashCount; i++) {
-        const angle = (i / dashCount) * Math.PI * 2;
-        const nextAngle = ((i + 0.7) / dashCount) * Math.PI * 2;
-        
+        const startAngle = (i / dashCount) * Math.PI * 2;
+        const endAngle = ((i + 0.65) / dashCount) * Math.PI * 2;
+
         const points = [];
-        const arcSteps = 8;
+        const arcSteps = 12;
         for (let j = 0; j <= arcSteps; j++) {
-          const a = angle + (j / arcSteps) * (nextAngle - angle);
+          const a = startAngle + (j / arcSteps) * (endAngle - startAngle);
           points.push(new THREE.Vector3(
             Math.cos(a) * radiusX,
             y,
             Math.sin(a) * radiusY
           ));
         }
-        
-        const curve = new THREE.CatmullRomCurve3(points);
-        const tubeGeo = new THREE.TubeGeometry(curve, 6, 0.012, 6, false);
+
+        const curve = new THREE.CatmullRomCurve3(points, false);
+        const tubeGeo = new THREE.TubeGeometry(curve, 12, 0.012, 6, false);
         const tubeMat = new THREE.MeshBasicMaterial({
           color,
           transparent: true,
@@ -316,7 +321,7 @@ export const Hero3D = () => {
       mesh: dashedRing1,
       data: { type: 'dashed', speed: 0.0015, axis: 'y' }
     });
-    
+
     rings.push({
       mesh: createDoubleRing(4.5, 1.6, -1.2, 0x8899CC, 0.12, 0.12),
       data: { type: 'double', speed: 0.0015, axis: 'x' }
@@ -335,11 +340,15 @@ export const Hero3D = () => {
 
     const clock = new THREE.Clock();
     let frameCount = 0;
-    
+    let rafId: number;
+    let alive = true; // flag so cleanup stops the loop immediately
+
     const animate = () => {
+      if (!alive) return;
+      rafId = requestAnimationFrame(animate);
+
       const time = clock.getElapsedTime();
       frameCount++;
-      requestAnimationFrame(animate);
 
       stars.rotation.y += (mouseRef.current.x * 0.15 - stars.rotation.y) * 0.01;
       stars.rotation.x += (mouseRef.current.y * 0.06 - stars.rotation.x) * 0.01;
@@ -359,10 +368,10 @@ export const Hero3D = () => {
       nodeMeshes.forEach((mesh, i) => {
         const floatY = Math.sin(time * 0.7 + i * 0.5) * 0.35;
         const floatX = Math.cos(time * 0.5 + i * 0.3) * 0.2;
-        
+
         mesh.position.y = nodeBaseY[i] + floatY;
         mesh.position.x = nodePositions[i].x + floatX;
-        
+
         if (mesh.userData.sprite) {
           mesh.userData.sprite.position.copy(mesh.position);
           const pulse = 0.5 + Math.sin(time * 2 + i * 0.3) * 0.15;
@@ -380,26 +389,27 @@ export const Hero3D = () => {
       rings.forEach(({ mesh, data }) => {
         const speed = data.speed;
         const axis = data.axis as string;
-        
+
         if (axis === 'x') mesh.rotation.x += speed;
         if (axis === 'y') mesh.rotation.y += speed;
         if (axis === 'z') mesh.rotation.z += speed;
-        
+
         if (data.type === 'stream') {
           mesh.rotation.z += Math.sin(time * 2) * 0.0005;
           mesh.position.y += Math.sin(time * 1.5 + mesh.position.x) * 0.0005;
         }
-        
+
         if (data.type === 'dashed') {
-          mesh.children.forEach((child: THREE.Mesh) => {
-            if (child.material instanceof THREE.MeshBasicMaterial) {
-              child.material.opacity = data.speed > 0 
+          mesh.children.forEach((child: THREE.Object3D) => {
+            const m = child as THREE.Mesh;
+            if (m.material instanceof THREE.MeshBasicMaterial) {
+              m.material.opacity = data.speed > 0
                 ? 0.1 + Math.sin(time * 3) * 0.04
                 : 0.08 + Math.cos(time * 2.5) * 0.04;
             }
           });
         }
-        
+
         const dist = Math.abs(mesh.position.z);
         if (dist < 2) {
           mesh.rotation.y += mouseRef.current.x * 0.003;
@@ -412,9 +422,9 @@ export const Hero3D = () => {
     animate();
 
     const handleResize = () => {
-      if (!mountRef.current) return;
-      const w = mountRef.current.clientWidth;
-      const h = mountRef.current.clientHeight;
+      if (!mount) return;
+      const w = mount.clientWidth;
+      const h = mount.clientHeight;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
@@ -422,9 +432,17 @@ export const Hero3D = () => {
     window.addEventListener('resize', handleResize);
 
     return () => {
+      // Stop the loop FIRST before any disposal
+      alive = false;
+      cancelAnimationFrame(rafId);
+
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
-      mountRef.current?.removeChild(renderer.domElement);
+
+      if (renderer.domElement.parentNode === mount) {
+        mount.removeChild(renderer.domElement);
+      }
+
       starGeometry.dispose();
       starMaterial.dispose();
       lineGroup.children.forEach((child) => {

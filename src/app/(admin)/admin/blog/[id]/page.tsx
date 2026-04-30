@@ -6,7 +6,7 @@ import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, RefreshCcw, Database, MessageSquare, HelpCircle, Lightbulb, AlertTriangle, Code, ChevronDown, ChevronUp, Bookmark } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, RefreshCcw, Database, MessageSquare, HelpCircle, Lightbulb, AlertTriangle, Code, ChevronDown, ChevronUp, Bookmark, Link2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -28,6 +28,7 @@ export default function EditBlogPostPage() {
   const [newCitation, setNewCitation] = useState('');
   const [newTakeaway, setNewTakeaway] = useState('');
   const [newFaq, setNewFaq] = useState({ q: '', a: '' });
+  const [newInternalLink, setNewInternalLink] = useState({ label: '', href: '' });
   const [formData, setFormData] = useState<any>(null);
   const [isSlugManual, setIsSlugManual] = useState(false);
   const router = useRouter();
@@ -73,7 +74,8 @@ export default function EditBlogPostPage() {
             featured: data.featured || false,
             seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' },
             entity: data.entity || { facts: [], citations: [] },
-            aeo: data.aeo || { quickAnswer: '', takeaways: [], faqs: [] }
+            aeo: data.aeo || { quickAnswer: '', takeaways: [], faqs: [] },
+            internalLinks: data.internalLinks || []
           });
         } else {
           router.push('/admin/blog');
@@ -405,6 +407,61 @@ export default function EditBlogPostPage() {
                     </div>
                   ))}
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Internal Links Section */}
+          <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
+            <div className="flex items-center gap-5 text-primary">
+              <Link2 className="w-8 h-8" />
+              <h3 className="text-2xl font-headline font-black italic tracking-tight">Internal Links</h3>
+            </div>
+            <p className="text-[12px] text-white/30 uppercase font-black tracking-widest -mt-4">
+              Links shown in the "Further Reading" sidebar block on the post page.
+            </p>
+            <div className="space-y-4">
+              <div className="grid gap-4 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+                <Input
+                  value={newInternalLink.label}
+                  onChange={e => setNewInternalLink({ ...newInternalLink, label: e.target.value })}
+                  className="bg-transparent border-white/10 h-12"
+                  placeholder="Label (e.g. How I Built This)"
+                />
+                <Input
+                  value={newInternalLink.href}
+                  onChange={e => setNewInternalLink({ ...newInternalLink, href: e.target.value })}
+                  className="bg-transparent border-white/10 h-12 font-mono"
+                  placeholder="Path (e.g. /blog/my-post or /work/project)"
+                />
+                <Button
+                  onClick={() => {
+                    if (newInternalLink.label && newInternalLink.href) {
+                      setFormData({ ...formData, internalLinks: [...(formData.internalLinks || []), newInternalLink] });
+                      setNewInternalLink({ label: '', href: '' });
+                    }
+                  }}
+                  variant="outline"
+                  className="h-12 w-full rounded-xl border-white/10 uppercase font-black tracking-widest text-[10px]"
+                >
+                  Add Internal Link
+                </Button>
+              </div>
+              <div className="grid gap-3">
+                {(formData.internalLinks || []).map((link: { label: string; href: string }, i: number) => (
+                  <div key={i} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between group">
+                    <div className="space-y-0.5">
+                      <span className="text-sm font-bold text-white/70 block">{link.label}</span>
+                      <span className="text-[11px] font-mono text-white/30">{link.href}</span>
+                    </div>
+                    <button
+                      onClick={() => setFormData({ ...formData, internalLinks: formData.internalLinks.filter((_: any, idx: number) => idx !== i) })}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

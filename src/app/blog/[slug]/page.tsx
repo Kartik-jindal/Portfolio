@@ -1,7 +1,7 @@
 import { cache } from 'react';
 import React from 'react';
 import { db } from '@/lib/firebase/firestore';
-import { collection, query, where, getDocs, doc, getDoc, limit } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, limit, orderBy } from 'firebase/firestore';
 import type { Metadata } from 'next';
 import PostClient from './post-client';
 
@@ -36,6 +36,61 @@ const getGlobalConfig = cache(async function getGlobalConfig() {
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch (e) { return null; }
 });
+
+// Fetch related posts: same categories, exclude current, max 3
+async function getRelatedPosts(currentId: string, categories: string[]) {
+  try {
+    const q = query(
+      collection(db, 'blog'),
+      where('status', '==', 'published'),
+      limit(10)
+    );
+    const snap = await getDocs(q);
+    const all = snap.docs
+      .map(d => serialize({ id: d.id, ...d.data() }))
+      .filter((p: any) => p.id !== currentId);
+
+    // Score by category overlap
+    const scored = all.map((p: any) => {
+      const pCats: string[] = p.categories || (p.category ? [p.category] : []);
+      const overlap = pCats.filter(c => categories.includes(c)).length;
+      return { ...p, _score: overlap };
+    });
+
+    return scored
+      .sort((a: any, b: any) => b._score - a._score || b.createdAt - a.createdAt)
+      .slice(0, 3);
+  } catch (e) { return []; }
+}
+
+// Fetch related projects: match by categories/tech overlap, max 3
+async function getRelatedProjects(categories: string[]) {
+  try {
+    const q = query(
+      collection(db, 'projects'),
+      where('status', '==', 'published'),
+      limit(20)
+    );
+    const snap = await getDocs(q);
+    const all = snap.docs.map(d => serialize({ id: d.id, ...d.data() }));
+
+    // Score by tech/category overlap with post categories
+    const scored = all.map((p: any) => {
+      const pTech: string[] = (p.tech || []).map((t: string) => t.toLowerCase());
+      const pRole: string = (p.role || '').toLowerCase();
+      const overlap = categories.filter(c =>
+        pTech.some(t => t.includes(c.toLowerCase()) || c.toLowerCase().includes(t)) ||
+        pRole.includes(c.toLowerCase())
+      ).length;
+      return { ...p, _score: overlap };
+    });
+
+    return scored
+      .filter((p: any) => p._score > 0 || scored.length <= 3)
+      .sort((a: any, b: any) => b._score - a._score || (a.order || 0) - (b.order || 0))
+      .slice(0, 3);
+  } catch (e) { return []; }
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -74,5 +129,23 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
   const post = await getPost(slug);
   const config = await getGlobalConfig();
 
-  return <PostClient post={post} config={config} />;
+  const categories: string[] = post
+    ? (post.categories || (post.category ? [post.category] : ['Engineering']))
+    : [];
+
+  const [relatedPosts, relatedProjects] = post
+    ? await Promise.all([
+      getRelatedPosts(post.id, categories),
+      getRelatedProjects(categories),
+    ])
+    : [[], []];
+
+  return (
+    <PostClient
+      post={post}
+      config={config}
+      relatedPosts={relatedPosts}
+      relatedProjects={relatedProjects}
+    />
+  );
 }

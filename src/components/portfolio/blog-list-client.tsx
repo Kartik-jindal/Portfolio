@@ -265,7 +265,7 @@ export const BlogListClient = ({ posts }: BlogListClientProps) => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search articles, topics, categories..."
-            className="w-full h-16 bg-white/[0.02] border border-white/5 focus:border-primary/30 rounded-2xl pl-16 pr-16 text-white text-lg font-light placeholder:text-white/20 outline-none transition-all duration-300 focus:bg-white/[0.04] focus:shadow-[0_0_30px_rgba(16,185,129,0.06)]"
+            className="w-full h-14 sm:h-16 bg-white/[0.02] border border-white/5 focus:border-primary/30 rounded-2xl pl-12 sm:pl-16 pr-12 sm:pr-16 text-white text-lg font-light placeholder:text-white/20 outline-none transition-all duration-300 focus:bg-white/[0.04] focus:shadow-[0_0_30px_rgba(16,185,129,0.06)]"
           />
           <AnimatePresence>
             {searchQuery && (
@@ -402,7 +402,7 @@ export const BlogListClient = ({ posts }: BlogListClientProps) => {
                   <Link href={`/blog/${post.slug || post.id}`} className="block relative z-10 p-8 md:p-12 rounded-[2rem] hover:bg-white/[0.02] border border-transparent hover:border-white/5 transition-all duration-500">
                     <div className="grid md:grid-cols-12 gap-10 items-center">
                       <div className="md:col-span-5 flex flex-col md:flex-row gap-10 items-center md:items-start">
-                        <div className="relative w-full md:w-48 lg:w-72 aspect-square rounded-2xl overflow-hidden bg-white/5 border border-white/5 shrink-0 group-hover:border-primary/30 transition-all duration-500 shadow-xl">
+                        <div className="relative w-full sm:w-64 md:w-48 lg:w-72 aspect-[4/3] sm:aspect-square rounded-2xl overflow-hidden bg-white/5 border border-white/5 shrink-0 group-hover:border-primary/30 transition-all duration-500 shadow-xl">
                           <Image
                             src={post.image || `https://picsum.photos/seed/${post.id}/600/600`}
                             alt={post.title}
@@ -450,8 +450,8 @@ export const BlogListClient = ({ posts }: BlogListClientProps) => {
                       </div>
 
                       <div className="md:col-span-2 flex justify-end">
-                        <div className="w-20 h-20 rounded-full border border-white/10 flex items-center justify-center group-hover:border-primary group-hover:bg-primary group-hover:text-black transition-all duration-500 shadow-2xl">
-                          <ArrowRight className="w-8 h-8 group-hover:translate-x-1 transition-transform" />
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full border border-white/10 flex items-center justify-center group-hover:border-primary group-hover:bg-primary group-hover:text-black transition-all duration-500 shadow-2xl">
+                          <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
                     </div>

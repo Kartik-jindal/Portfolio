@@ -7,7 +7,8 @@ import {
   signOut as firebaseSignOut 
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase/config';
+import { auth } from '@/lib/firebase/auth';
+import { db } from '@/lib/firebase/firestore';
 
 interface AuthContextType {
   user: User | null;

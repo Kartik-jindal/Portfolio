@@ -13,7 +13,7 @@ import { db } from '@/lib/firebase/firestore';
 import { doc, getDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import type { Metadata } from 'next';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 function serialize(data: any) {
   if (!data) return data;
