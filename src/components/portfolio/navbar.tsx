@@ -29,9 +29,15 @@ export const Navbar = ({ resumeUrl, navConfig }: NavbarProps) => {
     { label: "Journal", href: "/blog" },
   ];
 
-  const scrollToContact = () => {
+  const openContactForm = () => {
     setIsMenuOpen(false);
-    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+    // If the contact section exists on this page, open its dialog directly
+    if (document.getElementById('contact')) {
+      window.dispatchEvent(new CustomEvent('open-contact'));
+    } else {
+      // On pages without the contact section, navigate home and open
+      window.location.href = '/#contact';
+    }
   };
 
   return (
@@ -67,7 +73,7 @@ export const Navbar = ({ resumeUrl, navConfig }: NavbarProps) => {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={scrollToContact}
+              onClick={openContactForm}
               className="flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-black text-[12px] uppercase font-black tracking-widest hover:bg-accent transition-all group"
             >
               Start Project <Plus className="w-3.5 h-3.5 group-hover:rotate-90 transition-transform" />
@@ -130,7 +136,7 @@ export const Navbar = ({ resumeUrl, navConfig }: NavbarProps) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
-                onClick={scrollToContact}
+                onClick={openContactForm}
                 className="mt-8 px-8 py-5 sm:px-10 sm:py-6 md:px-12 md:py-6 rounded-full bg-primary text-black font-black uppercase tracking-widest text-base sm:text-lg md:text-xl"
               >
                 Start Project
