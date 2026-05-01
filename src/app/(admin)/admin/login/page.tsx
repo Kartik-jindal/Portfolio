@@ -4,9 +4,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { auth, db } from '@/lib/firebase/config';
-import { 
-  signInWithEmailAndPassword, 
-  GoogleAuthProvider, 
+import {
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
   signInWithPopup,
   User
 } from 'firebase/auth';
@@ -31,12 +31,12 @@ export default function AdminLoginPage() {
   const checkAdminAccess = async (user: User) => {
     const userRef = doc(db, 'users', user.uid);
     const userDoc = await getDoc(userRef);
-    
+
     if (userDoc.exists()) {
       const role = userDoc.data().role;
       return role === 'ADMIN' || role === 'SUPER_ADMIN';
-    } 
-    
+    }
+
     // If user record doesn't exist but it's the owner email, bootstrap it now
     if (user.email === OWNER_EMAIL) {
       try {
@@ -53,8 +53,26 @@ export default function AdminLoginPage() {
         return false;
       }
     }
-    
+
     return false;
+  };
+
+  /**
+   * After Firebase auth succeeds and role is confirmed, exchange the Firebase
+   * ID token for a server-side HttpOnly session cookie.
+   */
+  const createServerSession = async (user: User, role: string): Promise<boolean> => {
+    try {
+      const idToken = await user.getIdToken();
+      const res = await fetch('/api/admin/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken, role }),
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
   };
 
   const handleEmailLogin = async (e: React.FormEvent) => {
@@ -62,9 +80,17 @@ export default function AdminLoginPage() {
     setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const isAdmin = await checkAdminAccess(userCredential.user);
-      
-      if (isAdmin) {
+      const roleResult = await checkAdminAccess(userCredential.user);
+
+      if (roleResult) {
+        // Determine the actual role string for the session cookie
+        const userRef = doc(db, 'users', userCredential.user.uid);
+        const userDoc = await getDoc(userRef);
+        const role = userDoc.exists() ? userDoc.data().role : 'ADMIN';
+
+        const sessionOk = await createServerSession(userCredential.user, role);
+        if (!sessionOk) throw new Error('Session creation failed. Please try again.');
+
         toast({ title: 'Welcome Commander', description: 'Initializing administrative session...' });
         router.push('/admin');
       } else {
@@ -91,9 +117,16 @@ export default function AdminLoginPage() {
     const provider = new GoogleAuthProvider();
     try {
       const userCredential = await signInWithPopup(auth, provider);
-      const isAdmin = await checkAdminAccess(userCredential.user);
-      
-      if (isAdmin) {
+      const roleResult = await checkAdminAccess(userCredential.user);
+
+      if (roleResult) {
+        const userRef = doc(db, 'users', userCredential.user.uid);
+        const userDoc = await getDoc(userRef);
+        const role = userDoc.exists() ? userDoc.data().role : 'ADMIN';
+
+        const sessionOk = await createServerSession(userCredential.user, role);
+        if (!sessionOk) throw new Error('Session creation failed. Please try again.');
+
         toast({ title: 'Identity Verified', description: 'Redirecting to command center...' });
         router.push('/admin');
       } else {
@@ -145,9 +178,9 @@ export default function AdminLoginPage() {
                 <Label className="text-[10px] font-black uppercase tracking-widest text-white/50 ml-1">Identifier</Label>
                 <div className="relative">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
-                  <Input 
-                    type="email" 
-                    placeholder="email@kartikjindal.com" 
+                  <Input
+                    type="email"
+                    placeholder="email@kartikjindal.com"
                     className="bg-white/5 border-white/10 rounded-xl h-12 pl-12 text-white placeholder:text-white/20 focus:border-primary/50 transition-all"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -160,9 +193,9 @@ export default function AdminLoginPage() {
                 <Label className="text-[10px] font-black uppercase tracking-widest text-white/50 ml-1">Access Key</Label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
-                  <Input 
-                    type="password" 
-                    placeholder="••••••••" 
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
                     className="bg-white/5 border-white/10 rounded-xl h-12 pl-12 text-white placeholder:text-white/20 focus:border-primary/50 transition-all"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -172,8 +205,8 @@ export default function AdminLoginPage() {
               </div>
             </div>
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full h-14 rounded-xl bg-primary text-black font-black uppercase tracking-widest hover:bg-accent transition-all group"
               disabled={loading}
             >
@@ -194,8 +227,8 @@ export default function AdminLoginPage() {
             </div>
           </div>
 
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={handleGoogleLogin}
             className="w-full h-14 rounded-xl border-white/10 bg-white/5 text-white font-black uppercase tracking-widest hover:bg-white/10 transition-all"
             disabled={loading}
@@ -203,7 +236,7 @@ export default function AdminLoginPage() {
             Google Identity
           </Button>
         </div>
-        
+
         <p className="text-center mt-12 text-[9px] uppercase tracking-[0.5em] text-white/20 font-black">
           Architectural_Management_System v1.0
         </p>

@@ -14,6 +14,10 @@ export const Hero3D = () => {
     // Guard: if a canvas is already mounted (StrictMode double-invoke), skip
     if (mount.querySelector('canvas')) return;
 
+    // Skip the entire WebGL scene for users who prefer reduced motion.
+    // The grain overlay and background color still provide visual depth.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
     const width = mount.clientWidth;
     const height = mount.clientHeight;
 

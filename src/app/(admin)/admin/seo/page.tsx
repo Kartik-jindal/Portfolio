@@ -18,6 +18,7 @@ export default function SeoAdminPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [pageData, setPageData] = useState<any>({
+    home: { title: '', description: '', keywords: '', ogImage: '', indexable: true },
     work: { title: '', description: '', keywords: '', ogImage: '', indexable: true },
     blog: { title: '', description: '', keywords: '', ogImage: '', indexable: true }
   });
@@ -27,7 +28,7 @@ export default function SeoAdminPage() {
     keywords: '',
     ogImage: ''
   });
-  
+
   const { toast } = useToast();
 
   useEffect(() => {
@@ -36,7 +37,12 @@ export default function SeoAdminPage() {
         const seoPagesRef = doc(db, 'site_config', 'seo_pages');
         const seoPagesSnap = await getDoc(seoPagesRef);
         if (seoPagesSnap.exists()) {
-          setPageData(seoPagesSnap.data());
+          const data = seoPagesSnap.data();
+          setPageData({
+            home: data.home || { title: '', description: '', keywords: '', ogImage: '', indexable: true },
+            work: data.work || { title: '', description: '', keywords: '', ogImage: '', indexable: true },
+            blog: data.blog || { title: '', description: '', keywords: '', ogImage: '', indexable: true },
+          });
         }
 
         const globalRef = doc(db, 'site_config', 'global');
@@ -56,14 +62,14 @@ export default function SeoAdminPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // Save page overrides
+      // Save all page-level overrides (home, work, blog) to seo_pages
       await setDoc(doc(db, 'site_config', 'seo_pages'), pageData);
-      
-      // Save global defaults (merged)
+
+      // Save global defaults separately (fallback when page override is empty)
       await updateDoc(doc(db, 'site_config', 'global'), {
         seo: globalSeo
       });
-      
+
       toast({ title: 'SEO Synced', description: 'All metadata parameters updated successfully.' });
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Sync Failed', description: error.message });
@@ -95,7 +101,7 @@ export default function SeoAdminPage() {
           <span className="text-primary font-black uppercase tracking-[0.6em] text-[10px]">Search Intelligence</span>
           <h1 className="text-5xl font-headline font-black italic tracking-tighter text-white">SEO Command.</h1>
         </div>
-        <Button 
+        <Button
           onClick={handleSave}
           disabled={saving}
           className="h-14 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-8 group"
@@ -120,39 +126,43 @@ export default function SeoAdminPage() {
         <TabsContent value="home">
           <div className="grid lg:grid-cols-12 gap-10">
             <div className="lg:col-span-8 space-y-10">
+              {/* Home-specific override — written to seo_pages.home */}
               <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">
                 <div className="flex items-center gap-4 text-primary">
                   <Globe className="w-6 h-6" />
-                  <h3 className="text-lg font-headline font-black italic tracking-tight">Homepage Defaults</h3>
+                  <h3 className="text-lg font-headline font-black italic tracking-tight">Homepage SEO Override</h3>
                 </div>
-                
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/20">
+                  Overrides global defaults for the homepage only. Leave blank to fall back to global defaults below.
+                </p>
+
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <div className="flex justify-between items-end px-1">
-                      <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Default Title Tag</Label>
-                      <span className={`text-[9px] font-mono ${globalSeo.defaultTitle?.length > 60 ? 'text-red-500' : 'text-white/20'}`}>
-                        {globalSeo.defaultTitle?.length || 0} / 60
+                      <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Title Tag</Label>
+                      <span className={`text-[9px] font-mono ${(pageData.home?.title?.length || 0) > 60 ? 'text-red-500' : 'text-white/20'}`}>
+                        {pageData.home?.title?.length || 0} / 60
                       </span>
                     </div>
-                    <Input 
-                      value={globalSeo.defaultTitle} 
-                      onChange={e => updateGlobal('defaultTitle', e.target.value)} 
-                      className="bg-white/5 border-white/5 rounded-xl h-14" 
-                      placeholder="Kartik Jindal | Cinematic Portfolio"
+                    <Input
+                      value={pageData.home?.title || ''}
+                      onChange={e => updatePage('home', 'title', e.target.value)}
+                      className="bg-white/5 border-white/5 rounded-xl h-14"
+                      placeholder="Kartik Jindal | Full Stack Architect"
                     />
                   </div>
 
                   <div className="space-y-2">
                     <div className="flex justify-between items-end px-1">
-                      <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Default Meta Description</Label>
-                      <span className={`text-[9px] font-mono ${globalSeo.defaultDescription?.length > 160 ? 'text-red-500' : 'text-white/20'}`}>
-                        {globalSeo.defaultDescription?.length || 0} / 160
+                      <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Meta Description</Label>
+                      <span className={`text-[9px] font-mono ${(pageData.home?.description?.length || 0) > 160 ? 'text-red-500' : 'text-white/20'}`}>
+                        {pageData.home?.description?.length || 0} / 160
                       </span>
                     </div>
-                    <Textarea 
-                      value={globalSeo.defaultDescription} 
-                      onChange={e => updateGlobal('defaultDescription', e.target.value)} 
-                      className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" 
+                    <Textarea
+                      value={pageData.home?.description || ''}
+                      onChange={e => updatePage('home', 'description', e.target.value)}
+                      className="bg-white/5 border-white/5 rounded-xl min-h-[120px]"
                       placeholder="A high-fidelity showcase of digital architecture..."
                     />
                   </div>
@@ -160,19 +170,79 @@ export default function SeoAdminPage() {
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Keywords (CSV)</Label>
-                      <Input 
-                        value={globalSeo.keywords} 
-                        onChange={e => updateGlobal('keywords', e.target.value)} 
-                        className="bg-white/5 border-white/5 rounded-xl h-14" 
+                      <Input
+                        value={pageData.home?.keywords || ''}
+                        onChange={e => updatePage('home', 'keywords', e.target.value)}
+                        className="bg-white/5 border-white/5 rounded-xl h-14"
                         placeholder="Design, Engineering, React"
                       />
                     </div>
                     <div className="space-y-2">
                       <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">OG Image URL</Label>
-                      <Input 
-                        value={globalSeo.ogImage} 
-                        onChange={e => updateGlobal('ogImage', e.target.value)} 
-                        className="bg-white/5 border-white/5 rounded-xl h-14" 
+                      <Input
+                        value={pageData.home?.ogImage || ''}
+                        onChange={e => updatePage('home', 'ogImage', e.target.value)}
+                        className="bg-white/5 border-white/5 rounded-xl h-14"
+                        placeholder="https://..."
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Global defaults — fallback for all pages */}
+              <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8 opacity-80">
+                <div className="flex items-center gap-4 text-white/40">
+                  <Globe className="w-5 h-5" />
+                  <h3 className="text-base font-headline font-black italic tracking-tight">Global Defaults (Fallback)</h3>
+                </div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/20">
+                  Used as fallback for any page that has no override set.
+                </p>
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-end px-1">
+                      <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Default Title Tag</Label>
+                      <span className={`text-[9px] font-mono ${(globalSeo.defaultTitle?.length || 0) > 60 ? 'text-red-500' : 'text-white/20'}`}>
+                        {globalSeo.defaultTitle?.length || 0} / 60
+                      </span>
+                    </div>
+                    <Input
+                      value={globalSeo.defaultTitle || ''}
+                      onChange={e => updateGlobal('defaultTitle', e.target.value)}
+                      className="bg-white/5 border-white/5 rounded-xl h-14"
+                      placeholder="Kartik Jindal | Cinematic Portfolio"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-end px-1">
+                      <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Default Meta Description</Label>
+                      <span className={`text-[9px] font-mono ${(globalSeo.defaultDescription?.length || 0) > 160 ? 'text-red-500' : 'text-white/20'}`}>
+                        {globalSeo.defaultDescription?.length || 0} / 160
+                      </span>
+                    </div>
+                    <Textarea
+                      value={globalSeo.defaultDescription || ''}
+                      onChange={e => updateGlobal('defaultDescription', e.target.value)}
+                      className="bg-white/5 border-white/5 rounded-xl min-h-[100px]"
+                      placeholder="Engineering digital landscapes..."
+                    />
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Global Keywords</Label>
+                      <Input
+                        value={globalSeo.keywords || ''}
+                        onChange={e => updateGlobal('keywords', e.target.value)}
+                        className="bg-white/5 border-white/5 rounded-xl h-14"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Global OG Image URL</Label>
+                      <Input
+                        value={globalSeo.ogImage || ''}
+                        onChange={e => updateGlobal('ogImage', e.target.value)}
+                        className="bg-white/5 border-white/5 rounded-xl h-14"
                         placeholder="https://..."
                       />
                     </div>
@@ -182,11 +252,11 @@ export default function SeoAdminPage() {
             </div>
 
             <div className="lg:col-span-4">
-              <SeoHud 
-                title={globalSeo.defaultTitle || ''}
-                description={globalSeo.defaultDescription || ''}
-                keywords={globalSeo.keywords || ''}
-                ogImage={globalSeo.ogImage || ''}
+              <SeoHud
+                title={pageData.home?.title || globalSeo.defaultTitle || ''}
+                description={pageData.home?.description || globalSeo.defaultDescription || ''}
+                keywords={pageData.home?.keywords || globalSeo.keywords || ''}
+                ogImage={pageData.home?.ogImage || globalSeo.ogImage || ''}
               />
             </div>
           </div>
@@ -200,7 +270,7 @@ export default function SeoAdminPage() {
                   <Globe className="w-6 h-6" />
                   <h3 className="text-lg font-headline font-black italic tracking-tight">Work Archive Metadata</h3>
                 </div>
-                
+
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <div className="flex justify-between items-end px-1">
@@ -209,10 +279,10 @@ export default function SeoAdminPage() {
                         {pageData.work.title.length} / 60
                       </span>
                     </div>
-                    <Input 
-                      value={pageData.work.title} 
-                      onChange={e => updatePage('work', 'title', e.target.value)} 
-                      className="bg-white/5 border-white/5 rounded-xl h-14" 
+                    <Input
+                      value={pageData.work.title}
+                      onChange={e => updatePage('work', 'title', e.target.value)}
+                      className="bg-white/5 border-white/5 rounded-xl h-14"
                       placeholder="Portfolio Archive | Kartik Jindal"
                     />
                   </div>
@@ -224,10 +294,10 @@ export default function SeoAdminPage() {
                         {pageData.work.description.length} / 160
                       </span>
                     </div>
-                    <Textarea 
-                      value={pageData.work.description} 
-                      onChange={e => updatePage('work', 'description', e.target.value)} 
-                      className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" 
+                    <Textarea
+                      value={pageData.work.description}
+                      onChange={e => updatePage('work', 'description', e.target.value)}
+                      className="bg-white/5 border-white/5 rounded-xl min-h-[120px]"
                       placeholder="Explore selected builds and experiments..."
                     />
                   </div>
@@ -235,18 +305,18 @@ export default function SeoAdminPage() {
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Keywords (CSV)</Label>
-                      <Input 
-                        value={pageData.work.keywords} 
-                        onChange={e => updatePage('work', 'keywords', e.target.value)} 
-                        className="bg-white/5 border-white/5 rounded-xl h-14" 
+                      <Input
+                        value={pageData.work.keywords}
+                        onChange={e => updatePage('work', 'keywords', e.target.value)}
+                        className="bg-white/5 border-white/5 rounded-xl h-14"
                       />
                     </div>
                     <div className="space-y-2">
                       <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">OG Image URL</Label>
-                      <Input 
-                        value={pageData.work.ogImage} 
-                        onChange={e => updatePage('work', 'ogImage', e.target.value)} 
-                        className="bg-white/5 border-white/5 rounded-xl h-14" 
+                      <Input
+                        value={pageData.work.ogImage}
+                        onChange={e => updatePage('work', 'ogImage', e.target.value)}
+                        className="bg-white/5 border-white/5 rounded-xl h-14"
                       />
                     </div>
                   </div>
@@ -255,7 +325,7 @@ export default function SeoAdminPage() {
             </div>
 
             <div className="lg:col-span-4">
-              <SeoHud 
+              <SeoHud
                 title={pageData.work.title}
                 description={pageData.work.description}
                 keywords={pageData.work.keywords}
@@ -273,7 +343,7 @@ export default function SeoAdminPage() {
                   <Globe className="w-6 h-6" />
                   <h3 className="text-lg font-headline font-black italic tracking-tight">Journal Archive Metadata</h3>
                 </div>
-                
+
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <div className="flex justify-between items-end px-1">
@@ -282,10 +352,10 @@ export default function SeoAdminPage() {
                         {pageData.blog.title.length} / 60
                       </span>
                     </div>
-                    <Input 
-                      value={pageData.blog.title} 
-                      onChange={e => updatePage('blog', 'title', e.target.value)} 
-                      className="bg-white/5 border-white/5 rounded-xl h-14" 
+                    <Input
+                      value={pageData.blog.title}
+                      onChange={e => updatePage('blog', 'title', e.target.value)}
+                      className="bg-white/5 border-white/5 rounded-xl h-14"
                       placeholder="Journal of Digital Architecture | Kartik Jindal"
                     />
                   </div>
@@ -297,10 +367,10 @@ export default function SeoAdminPage() {
                         {pageData.blog.description.length} / 160
                       </span>
                     </div>
-                    <Textarea 
-                      value={pageData.blog.description} 
-                      onChange={e => updatePage('blog', 'description', e.target.value)} 
-                      className="bg-white/5 border-white/5 rounded-xl min-h-[120px]" 
+                    <Textarea
+                      value={pageData.blog.description}
+                      onChange={e => updatePage('blog', 'description', e.target.value)}
+                      className="bg-white/5 border-white/5 rounded-xl min-h-[120px]"
                       placeholder="Deep dives into engineering and creative code..."
                     />
                   </div>
@@ -309,7 +379,7 @@ export default function SeoAdminPage() {
             </div>
 
             <div className="lg:col-span-4">
-              <SeoHud 
+              <SeoHud
                 title={pageData.blog.title}
                 description={pageData.blog.description}
                 keywords={pageData.blog.keywords}

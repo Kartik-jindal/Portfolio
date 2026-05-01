@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Playfair_Display, PT_Sans } from 'next/font/google';
 import { Hero3D, IntroScreen, CustomCursor } from '@/components/portfolio/client-wrappers';
+import { GlobalContactDialog } from '@/components/portfolio/contact-dialog';
+import { GoogleAnalytics } from '@/components/analytics/google-analytics';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -20,6 +22,11 @@ const ptSans = PT_Sans({
 export const metadata: Metadata = {
   title: 'Kartik Jindal | Full Stack Developer & Creative Engineer',
   description: 'Portfolio of Kartik Jindal, a Full Stack Developer specializing in cinematic, high-performance web experiences.',
+  alternates: {
+    types: {
+      'application/rss+xml': `${process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com'}/feed.xml`,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -53,6 +60,8 @@ export default function RootLayout({
         </div>
 
         <CustomCursor />
+        <GlobalContactDialog />
+        <GoogleAnalytics />
       </body>
     </html>
   );

@@ -1,22 +1,13 @@
 import { cache } from 'react';
 import { db } from '@/lib/firebase/firestore';
 import { doc, getDoc } from 'firebase/firestore';
+import { serialize } from '@/lib/serialize';
 import { Navbar } from '@/components/portfolio/navbar';
 import { Footer } from '@/components/portfolio/footer';
 import type { Metadata } from 'next';
 import LegalPageClient from '@/components/portfolio/legal-page-client';
 
 export const revalidate = 3600;
-
-function serialize(data: any) {
-    if (!data) return data;
-    return JSON.parse(JSON.stringify(data, (key, value) => {
-        if (value && typeof value === 'object' && value.seconds !== undefined) {
-            return new Date(value.seconds * 1000).getTime();
-        }
-        return value;
-    }));
-}
 
 const getGlobalConfig = cache(async () => {
     try {

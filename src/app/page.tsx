@@ -10,166 +10,183 @@ import { Contact } from '@/components/portfolio/contact';
 import { Footer } from '@/components/portfolio/footer';
 import { ScrollIndicator } from '@/components/portfolio/scroll-indicator';
 import { db } from '@/lib/firebase/firestore';
-import { doc, getDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { serialize } from '@/lib/serialize';
 import type { Metadata } from 'next';
 
 export const revalidate = 60;
 
-function serialize(data: any) {
-  if (!data) return data;
-  return JSON.parse(JSON.stringify(data, (key, value) => {
-    if (value && typeof value === 'object' && value.seconds !== undefined && value.nanoseconds !== undefined) {
-      return new Date(value.seconds * 1000).getTime();
-    }
-    return value;
-  }));
-}
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com';
 
 const getGlobalConfig = cache(async function getGlobalConfig() {
   try {
-    const docRef = doc(db, 'site_config', 'global');
-    const docSnap = await getDoc(docRef);
+    const docSnap = await getDoc(doc(db, 'site_config', 'global'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
-  } catch (err) { return null; }
+  } catch { return null; }
 });
 
 const getSeoPageConfig = cache(async function getSeoPageConfig() {
   try {
-    const docRef = doc(db, 'site_config', 'seo_pages');
-    const docSnap = await getDoc(docRef);
+    const docSnap = await getDoc(doc(db, 'site_config', 'seo_pages'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
-  } catch (err) { return null; }
+  } catch { return null; }
 });
 
 const getHeroData = cache(async function getHeroData() {
   try {
-    const docRef = doc(db, 'site_config', 'hero');
-    const docSnap = await getDoc(docRef);
+    const docSnap = await getDoc(doc(db, 'site_config', 'hero'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
-  } catch (err) { return null; }
+  } catch { return null; }
 });
 
 const getNavbarData = cache(async function getNavbarData() {
   try {
-    const docRef = doc(db, 'site_config', 'navbar');
-    const docSnap = await getDoc(docRef);
+    const docSnap = await getDoc(doc(db, 'site_config', 'navbar'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
-  } catch (err) { return null; }
+  } catch { return null; }
 });
 
 const getFooterData = cache(async function getFooterData() {
   try {
-    const docRef = doc(db, 'site_config', 'footer');
-    const docSnap = await getDoc(docRef);
+    const docSnap = await getDoc(doc(db, 'site_config', 'footer'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
-  } catch (err) { return null; }
+  } catch { return null; }
 });
 
 const getAboutData = cache(async function getAboutData() {
   try {
-    const docRef = doc(db, 'site_config', 'about');
-    const docSnap = await getDoc(docRef);
+    const docSnap = await getDoc(doc(db, 'site_config', 'about'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
-  } catch (err) { return null; }
+  } catch { return null; }
 });
 
 const getContactData = cache(async function getContactData() {
   try {
-    const docRef = doc(db, 'site_config', 'contact');
-    const docSnap = await getDoc(docRef);
+    const docSnap = await getDoc(doc(db, 'site_config', 'contact'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
-  } catch (err) { return null; }
+  } catch { return null; }
 });
 
 const getProjects = cache(async function getProjects(count: number) {
   try {
-    const q = query(
-      collection(db, 'projects'),
-      where('status', '==', 'published')
-    );
-    const snap = await getDocs(q);
-    const data = snap.docs
-      .map(doc => serialize({ id: doc.id, ...doc.data() }))
-      .filter((p: any) => p.type === 'FLAGSHIP');
-    return data.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)).slice(0, count);
-  } catch (err) { return []; }
+    const snap = await getDocs(query(collection(db, 'projects'), where('status', '==', 'published')));
+    return snap.docs
+      .map(d => serialize({ id: d.id, ...d.data() }))
+      .filter((p: any) => p.type === 'FLAGSHIP')
+      .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
+      .slice(0, count);
+  } catch { return []; }
 });
 
 const getExperience = cache(async function getExperience() {
   try {
-    const q = collection(db, 'experience');
-    const snap = await getDocs(q);
-    const data = snap.docs.map(doc => serialize({ id: doc.id, ...doc.data() }));
-    return data.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
-  } catch (err) { return []; }
+    const snap = await getDocs(collection(db, 'experience'));
+    return snap.docs
+      .map(d => serialize({ id: d.id, ...d.data() }))
+      .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+  } catch { return []; }
 });
 
 const getTestimonials = cache(async function getTestimonials() {
   try {
-    const q = collection(db, 'testimonials');
-    const snap = await getDocs(q);
-    return snap.docs.map(doc => serialize({ id: doc.id, ...doc.data() }));
-  } catch (err) { return []; }
+    const snap = await getDocs(collection(db, 'testimonials'));
+    return snap.docs.map(d => serialize({ id: d.id, ...d.data() }));
+  } catch { return []; }
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const globalConfig = await getGlobalConfig();
-  const seoPageConfig = await getSeoPageConfig();
+  const [globalConfig, seoPageConfig] = await Promise.all([getGlobalConfig(), getSeoPageConfig()]);
   const homeSeo = seoPageConfig?.home || {};
 
   const title = homeSeo.title || globalConfig?.seo?.defaultTitle || 'Kartik Jindal | Full Stack Architect';
   const description = homeSeo.description || globalConfig?.seo?.defaultDescription || 'Engineering digital landscapes where architectural precision meets artistic motion.';
   const keywords = homeSeo.keywords || globalConfig?.seo?.keywords || 'Portfolio, Full Stack, Developer, Creative Engineering';
-  const ogImage = homeSeo.ogImage || globalConfig?.seo?.ogImage || 'https://picsum.photos/seed/portfolio/1200/630';
+  // No picsum fallback — only use a real image if one is set
+  const ogImage = homeSeo.ogImage || globalConfig?.seo?.ogImage || null;
 
   return {
     title,
     description,
     keywords,
-    alternates: {
-      canonical: process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com',
-    },
+    alternates: { canonical: BASE_URL },
     openGraph: {
       title,
       description,
-      images: [{ url: ogImage }],
+      url: BASE_URL,
+      siteName: 'Kartik Jindal',
+      ...(ogImage && { images: [{ url: ogImage, width: 1200, height: 630, alt: title }] }),
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [ogImage],
+      ...(ogImage && { images: [ogImage] }),
     },
-    robots: {
-      index: homeSeo.indexable ?? true,
-      follow: homeSeo.indexable ?? true,
-    }
+    robots: { index: homeSeo.indexable ?? true, follow: homeSeo.indexable ?? true },
   };
 }
 
 export default async function Home() {
-  const config = await getGlobalConfig();
-  const heroData = await getHeroData();
-  const navData = await getNavbarData();
-  const footerLayout = await getFooterData();
-  const aboutData = await getAboutData();
-  const contactData = await getContactData();
-  const initialProjects = await getProjects(3);
-  const experiences = await getExperience();
-  const testimonials = await getTestimonials();
+  const [
+    config, heroData, navData, footerLayout,
+    aboutData, contactData, initialProjects,
+    experiences, testimonials,
+  ] = await Promise.all([
+    getGlobalConfig(),
+    getHeroData(),
+    getNavbarData(),
+    getFooterData(),
+    getAboutData(),
+    getContactData(),
+    getProjects(3),
+    getExperience(),
+    getTestimonials(),
+  ]);
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com';
-  const branding = config?.identity?.authorName || (heroData?.titleMain && heroData?.titleHighlight
-    ? `${heroData.titleMain} ${heroData.titleHighlight}`
-    : "Kartik Jindal");
-
-  const jobTitle = config?.identity?.jobTitle || heroData?.badge || "Full Stack Architect";
+  const authorName = config?.identity?.authorName || 'Kartik Jindal';
+  const jobTitle = config?.identity?.jobTitle || 'Full Stack Architect';
+  const bio = config?.identity?.bio || 'Engineering digital landscapes where architectural precision meets artistic motion.';
+  const expertise: string[] = config?.identity?.expertise || [];
+  const services: string[] = config?.identity?.services || [];
+  const sameAs = [
+    config?.socials?.github,
+    config?.socials?.linkedin,
+    config?.socials?.twitter,
+    ...(config?.identity?.sameAs || []),
+  ].filter(Boolean);
+  const profileImage = config?.identity?.photoURL || config?.seo?.ogImage || null;
+  const email = config?.socials?.email || null;
 
   const visibility = config?.visibility || {
     showTestimonials: true,
     showExperience: true,
-    showExperiments: true
+    showExperiments: true,
+  };
+
+  // Person JSON-LD — server-rendered, fully enriched for GEO
+  const personSchema: Record<string, any> = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: authorName,
+    jobTitle,
+    url: BASE_URL,
+    description: bio,
+    sameAs,
+    ...(profileImage && { image: profileImage }),
+    ...(email && { email }),
+    ...(expertise.length > 0 && { knowsAbout: expertise }),
+    ...(services.length > 0 && { hasOfferCatalog: { '@type': 'OfferCatalog', name: 'Services', itemListElement: services.map(s => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: s } })) } }),
+  };
+
+  // WebSite JSON-LD
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Kartik Jindal',
+    url: BASE_URL,
+    description: bio,
+    author: { '@type': 'Person', name: authorName, url: BASE_URL },
   };
 
   return (
@@ -184,24 +201,8 @@ export default async function Home() {
       <Contact initialData={contactData} />
       <Footer config={config} footerLayout={footerLayout} />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Person",
-            "name": branding,
-            "jobTitle": jobTitle,
-            "url": baseUrl,
-            "description": config?.seo?.defaultDescription || "Engineering digital landscapes where architectural precision meets artistic motion.",
-            "sameAs": [
-              config?.socials?.github,
-              config?.socials?.linkedin,
-              config?.socials?.twitter
-            ].filter(Boolean)
-          })
-        }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
     </main>
   );
 }

@@ -143,7 +143,7 @@ const ProjectCard = ({
             <div className="flex items-center justify-center lg:justify-start gap-4">
               <span className="text-primary font-black tracking-[0.5em] text-[10px] uppercase">{project.role}</span>
               {project.date && (
-                <span className="text-white/20 text-[9px] font-black uppercase tracking-widest">{project.date}</span>
+                <time dateTime={project.date} className="text-white/20 text-[9px] font-black uppercase tracking-widest">{project.date}</time>
               )}
             </div>
 

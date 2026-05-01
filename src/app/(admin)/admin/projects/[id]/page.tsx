@@ -6,7 +6,7 @@ import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box, Globe, Calendar, RefreshCcw, Database, ShieldCheck, Quote, MessageSquare, HelpCircle, Lightbulb, AlertTriangle, Code, ChevronDown, ChevronUp } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, Plus, Trash2, Box, Globe, Calendar, RefreshCcw, Database, ShieldCheck, Quote, MessageSquare, HelpCircle, Lightbulb, AlertTriangle, Code, ChevronDown, ChevronUp, Eye, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -16,11 +16,18 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { SeoHud } from '@/components/admin/seo-hud';
+import { revalidateProject, generatePreviewUrl } from '@/lib/revalidate-actions';
+import { RichTextEditor } from '@/components/admin/rich-text-editor';
+import { generateAeoGeoFieldsForProject } from '@/lib/ai-actions';
+import { writeAuditLog } from '@/lib/audit-log';
+import { useAuth } from '@/context/auth-context';
 
 export default function EditProjectPage() {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
+  const [aiGenerating, setAiGenerating] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [showSchema, setShowSchema] = useState(false);
   const [formData, setFormData] = useState<any>(null);
@@ -34,6 +41,7 @@ export default function EditProjectPage() {
   const [isSlugManual, setIsSlugManual] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { user, role } = useAuth();
 
   const slugify = (text: string) => {
     return text
@@ -49,8 +57,8 @@ export default function EditProjectPage() {
         const docSnap = await getDoc(doc(db, 'projects', id as string));
         if (docSnap.exists()) {
           const data = docSnap.data();
-          setFormData({ 
-            id: docSnap.id, 
+          setFormData({
+            id: docSnap.id,
             title: data.title || '',
             slug: data.slug || '',
             type: data.type || 'FLAGSHIP',
@@ -129,9 +137,9 @@ export default function EditProjectPage() {
       const uploadFormData = new FormData();
       uploadFormData.append('file', file);
       uploadFormData.append('path', 'projects');
-      
+
       const result = await uploadToS3(uploadFormData);
-      
+
       if (result.success && result.url) {
         setFormData({ ...formData, image: result.url });
         toast({ title: 'Success', description: 'Asset synced to S3' });
@@ -167,12 +175,71 @@ export default function EditProjectPage() {
         ...updateData,
         updatedAt: serverTimestamp(),
       });
+      await revalidateProject(formData.slug);
+      writeAuditLog('UPDATE', 'project', {
+        entityId: id as string,
+        entityTitle: formData.title,
+        actorEmail: user?.email ?? undefined,
+        actorRole: role ?? undefined,
+        detail: `Type: ${formData.type} · Status: ${formData.status}`,
+      });
       toast({ title: 'Build Updated', description: 'Changes synced successfully' });
       router.push('/admin/projects');
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Error', description: error.message });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handlePreview = async () => {
+    if (!formData?.slug) {
+      toast({ variant: 'destructive', title: 'Slug Required', description: 'Add a slug before previewing.' });
+      return;
+    }
+    setPreviewing(true);
+    try {
+      const url = await generatePreviewUrl(formData.slug, 'project');
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } catch {
+      toast({ variant: 'destructive', title: 'Preview Failed', description: 'Could not generate preview link.' });
+    } finally {
+      setPreviewing(false);
+    }
+  };
+
+  const handleAiGenerate = async () => {
+    if (!formData?.title && !formData?.desc && !formData?.longDesc) {
+      toast({ variant: 'destructive', title: 'Content Required', description: 'Add a title and description before generating.' });
+      return;
+    }
+    setAiGenerating(true);
+    try {
+      const result = await generateAeoGeoFieldsForProject(
+        formData.title,
+        formData.desc,
+        formData.longDesc,
+        formData.tech,
+        formData.role,
+      );
+      setFormData((prev: any) => ({
+        ...prev,
+        aeo: {
+          ...prev.aeo,
+          quickAnswer: result.quickAnswer || prev.aeo.quickAnswer,
+          takeaways: result.takeaways.length > 0 ? result.takeaways : prev.aeo.takeaways,
+          faqs: result.faqs.length > 0 ? result.faqs : prev.aeo.faqs,
+        },
+        entity: {
+          ...prev.entity,
+          facts: result.facts.length > 0 ? result.facts : prev.entity.facts,
+        },
+      }));
+      toast({ title: 'AI Complete', description: 'AEO/GEO fields populated from your project content.' });
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: 'AI Failed', description: err.message });
+    } finally {
+      setAiGenerating(false);
     }
   };
 
@@ -223,13 +290,24 @@ export default function EditProjectPage() {
             <h1 className="text-6xl font-headline font-black italic tracking-tighter text-white">Modify Build.</h1>
           </div>
         </div>
-        <Button 
-          onClick={handleSubmit}
-          disabled={saving}
-          className="h-16 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-10 group text-base"
-        >
-          {saving ? 'Syncing...' : 'Sync Changes'} <Save className="w-6 h-6 ml-3 group-hover:scale-110 transition-transform" />
-        </Button>
+        <div className="flex items-center gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handlePreview}
+            disabled={previewing || !formData?.slug}
+            className="h-16 rounded-2xl border-white/10 text-white/60 font-black uppercase tracking-widest px-8 group hover:border-primary/40 hover:text-primary transition-all"
+          >
+            {previewing ? 'Opening...' : 'Preview'} <Eye className="w-5 h-5 ml-3 group-hover:scale-110 transition-transform" />
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={saving}
+            className="h-16 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-10 group text-base"
+          >
+            {saving ? 'Syncing...' : 'Sync Changes'} <Save className="w-6 h-6 ml-3 group-hover:scale-110 transition-transform" />
+          </Button>
+        </div>
       </header>
 
       <div className="grid lg:grid-cols-12 gap-10">
@@ -240,7 +318,7 @@ export default function EditProjectPage() {
               <Box className="w-8 h-8" />
               <h3 className="text-2xl font-headline font-black italic tracking-tight">Core Identity</h3>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-3">
                 <div className="flex justify-between items-end px-1">
@@ -254,13 +332,13 @@ export default function EditProjectPage() {
                   <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Slug (URL Path)</Label>
                   {!/^[a-z0-9-]+$/.test(formData.slug) && formData.slug && <span className="text-[9px] text-red-500 font-black uppercase tracking-widest">Invalid Format</span>}
                 </div>
-                <Input 
-                  value={formData.slug} 
+                <Input
+                  value={formData.slug}
                   onChange={e => {
                     setIsSlugManual(true);
                     setFormData({ ...formData, slug: e.target.value });
-                  }} 
-                  className={`bg-white/5 border-white/5 rounded-xl h-16 text-lg font-mono ${!/^[a-z0-9-]+$/.test(formData.slug) && formData.slug ? 'border-red-500/50' : ''}`} 
+                  }}
+                  className={`bg-white/5 border-white/5 rounded-xl h-16 text-lg font-mono ${!/^[a-z0-9-]+$/.test(formData.slug) && formData.slug ? 'border-red-500/50' : ''}`}
                 />
               </div>
             </div>
@@ -285,8 +363,8 @@ export default function EditProjectPage() {
               <div className="space-y-3">
                 <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Completion Date</Label>
                 <div className="relative">
-                   <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20" />
-                   <Input value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="bg-white/5 border-white/10 rounded-xl h-16 pl-14 text-lg" placeholder="e.g. June 2024" />
+                  <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20" />
+                  <Input value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} className="bg-white/5 border-white/10 rounded-xl h-16 pl-14 text-lg" placeholder="e.g. June 2024" />
                 </div>
               </div>
             </div>
@@ -306,20 +384,39 @@ export default function EditProjectPage() {
               <div className="space-y-3">
                 <div className="flex justify-between items-end px-1">
                   <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Case Study (Deep Dive)</Label>
-                  {!formData.longDesc && <span className="text-[9px] text-yellow-500 font-black uppercase tracking-widest flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Content Missing</span>}
                 </div>
-                <Textarea value={formData.longDesc} onChange={e => setFormData({ ...formData, longDesc: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[400px] text-lg leading-relaxed" />
+                <RichTextEditor
+                  value={formData.longDesc}
+                  onChange={(html) => setFormData((prev: any) => ({ ...prev, longDesc: html }))}
+                  placeholder="Write the full case study — architecture decisions, challenges, solutions..."
+                  minHeight="400px"
+                />
               </div>
             </div>
           </div>
 
           {/* Answer Engine Optimization (AEO) Section */}
           <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
-             <div className="flex items-center gap-5 text-primary">
-              <MessageSquare className="w-8 h-8" />
-              <h3 className="text-2xl font-headline font-black italic tracking-tight">Answer Engine (AEO)</h3>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-5 text-primary">
+                <MessageSquare className="w-8 h-8" />
+                <h3 className="text-2xl font-headline font-black italic tracking-tight">Answer Engine (AEO)</h3>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleAiGenerate}
+                disabled={aiGenerating || (!formData?.title && !formData?.desc)}
+                className="h-12 rounded-xl border-primary/30 text-primary/70 font-black uppercase tracking-widest text-[10px] px-6 hover:bg-primary/10 hover:text-primary hover:border-primary/60 transition-all group"
+              >
+                {aiGenerating ? (
+                  <><span className="w-3 h-3 rounded-full bg-primary animate-ping mr-2 inline-block" />Generating...</>
+                ) : (
+                  <><Sparkles className="w-3.5 h-3.5 mr-2 group-hover:scale-110 transition-transform" />Auto-fill with AI</>
+                )}
+              </Button>
             </div>
-            
+
             <div className="space-y-8">
               <div className="space-y-3">
                 <div className="flex justify-between items-end px-1">
@@ -328,10 +425,10 @@ export default function EditProjectPage() {
                     {formData.aeo?.quickAnswer?.length || 0} / 250
                   </span>
                 </div>
-                <Textarea 
-                  value={formData.aeo?.quickAnswer || ''} 
-                  onChange={e => setFormData({ ...formData, aeo: { ...formData.aeo, quickAnswer: e.target.value } })} 
-                  className="bg-white/5 border-white/5 rounded-xl min-h-[100px] text-base italic" 
+                <Textarea
+                  value={formData.aeo?.quickAnswer || ''}
+                  onChange={e => setFormData({ ...formData, aeo: { ...formData.aeo, quickAnswer: e.target.value } })}
+                  className="bg-white/5 border-white/5 rounded-xl min-h-[100px] text-base italic"
                   placeholder="Summarize the core technical achievement in 1-2 sentences for AI snippets..."
                 />
               </div>
@@ -382,11 +479,11 @@ export default function EditProjectPage() {
 
           {/* Generative Intelligence Section (GEO/AEO) */}
           <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
-             <div className="flex items-center gap-5 text-primary">
+            <div className="flex items-center gap-5 text-primary">
               <Database className="w-8 h-8" />
               <h3 className="text-2xl font-headline font-black italic tracking-tight">Generative Intelligence (GEO)</h3>
             </div>
-            
+
             <div className="space-y-8">
               <div className="space-y-4">
                 <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Project Outcomes (Success Markers)</Label>
@@ -445,15 +542,15 @@ export default function EditProjectPage() {
                 <Globe className="w-8 h-8" />
                 <h3 className="text-2xl font-headline font-black italic tracking-tight">Search Optimization</h3>
               </div>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={handleSeoSync}
                 className="h-12 rounded-xl border-white/10 text-[11px] font-black uppercase tracking-widest hover:bg-primary hover:text-black transition-all"
               >
                 Sync with Content <RefreshCcw className="w-3.5 h-3.5 ml-2" />
               </Button>
             </div>
-            
+
             <div className="space-y-8">
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="space-y-3">
@@ -463,18 +560,18 @@ export default function EditProjectPage() {
                       {formData.seo.title.length} / 60
                     </span>
                   </div>
-                  <Input 
-                    value={formData.seo.title} 
-                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" 
+                  <Input
+                    value={formData.seo.title}
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })}
+                    className="bg-white/5 border-white/5 rounded-xl h-16 text-lg"
                   />
                 </div>
                 <div className="space-y-3">
-                   <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Keywords (CSV)</Label>
-                   <Input 
-                    value={formData.seo.keywords} 
-                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, keywords: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" 
+                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Keywords (CSV)</Label>
+                  <Input
+                    value={formData.seo.keywords}
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, keywords: e.target.value } })}
+                    className="bg-white/5 border-white/5 rounded-xl h-16 text-lg"
                   />
                 </div>
               </div>
@@ -486,28 +583,28 @@ export default function EditProjectPage() {
                     {formData.seo.description.length} / 160
                   </span>
                 </div>
-                <Textarea 
-                  value={formData.seo.description} 
-                  onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })} 
-                  className="bg-white/5 border-white/5 rounded-xl min-h-[140px] text-lg" 
+                <Textarea
+                  value={formData.seo.description}
+                  onChange={e => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })}
+                  className="bg-white/5 border-white/5 rounded-xl min-h-[140px] text-lg"
                 />
               </div>
 
               <div className="grid md:grid-cols-2 gap-8 pt-8 border-t border-white/5">
                 <div className="space-y-3">
                   <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Canonical URL</Label>
-                  <Input 
-                    value={formData.seo.canonicalUrl} 
-                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, canonicalUrl: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-16 font-mono text-base" 
+                  <Input
+                    value={formData.seo.canonicalUrl}
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, canonicalUrl: e.target.value } })}
+                    className="bg-white/5 border-white/5 rounded-xl h-16 font-mono text-base"
                   />
                 </div>
                 <div className="space-y-3">
                   <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">OG Image Override</Label>
-                  <Input 
-                    value={formData.seo.ogImage} 
-                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, ogImage: e.target.value } })} 
-                    className="bg-white/5 border-white/5 rounded-xl h-16 font-mono text-base" 
+                  <Input
+                    value={formData.seo.ogImage}
+                    onChange={e => setFormData({ ...formData, seo: { ...formData.seo, ogImage: e.target.value } })}
+                    className="bg-white/5 border-white/5 rounded-xl h-16 font-mono text-base"
                   />
                 </div>
               </div>
@@ -517,8 +614,8 @@ export default function EditProjectPage() {
                   <Label className="text-[15px] uppercase font-black tracking-widest text-white">Indexable</Label>
                   <p className="text-[11px] text-white/30 uppercase font-black">Visibility for search crawlers</p>
                 </div>
-                <Switch 
-                  checked={formData.seo.indexable} 
+                <Switch
+                  checked={formData.seo.indexable}
                   onCheckedChange={v => setFormData({ ...formData, seo: { ...formData.seo, indexable: v } })}
                 />
               </div>
@@ -527,7 +624,7 @@ export default function EditProjectPage() {
 
           {/* Schema Preview HUD */}
           <div className="glass rounded-[3rem] border-white/5 overflow-hidden">
-            <button 
+            <button
               onClick={() => setShowSchema(!showSchema)}
               className="w-full flex items-center justify-between p-10 hover:bg-white/[0.02] transition-colors"
             >
@@ -558,7 +655,7 @@ export default function EditProjectPage() {
         </div>
 
         <div className="lg:col-span-4 space-y-10">
-          <SeoHud 
+          <SeoHud
             title={formData.seo.title || formData.title}
             description={formData.seo.description || formData.desc}
             keywords={formData.seo.keywords}
@@ -569,46 +666,46 @@ export default function EditProjectPage() {
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-10">
             <h3 className="text-[13px] uppercase font-black tracking-widest text-white/40">Visual Context (S3)</h3>
             <div className="space-y-8">
-               <div className="relative aspect-video rounded-3xl overflow-hidden bg-white/5 border border-white/5 shadow-2xl">
-                 {formData.image ? (
-                   <img src={formData.image} alt="" className="w-full h-full object-cover" />
-                 ) : (
-                   <div className="w-full h-full flex items-center justify-center text-white/10">
-                     <ImageIcon className="w-16 h-16" />
-                   </div>
-                 )}
-                 <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileUpload} />
-                    <span className="text-[13px] font-black uppercase tracking-widest text-white">{uploading ? 'Syncing...' : 'Update Cover (S3)'}</span>
-                 </div>
-               </div>
-               <div className="space-y-3">
-                 <div className="flex justify-between items-end px-1">
-                   <Label className="text-[11px] uppercase font-black text-white/30 ml-2">Image Alt Text (SEO)</Label>
-                   {!formData.altText && formData.image && <span className="text-[9px] text-yellow-500 font-black uppercase tracking-widest flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Missing</span>}
-                 </div>
-                 <Input value={formData.altText} onChange={e => setFormData({ ...formData, altText: e.target.value })} className={`bg-white/5 border-white/5 rounded-xl h-14 text-sm ${!formData.altText && formData.image ? 'border-yellow-500/30' : ''}`} placeholder="Descriptive alt text for image search..." />
-               </div>
-               <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm font-mono" placeholder="Direct Image URL" />
-               <Input value={formData.accentColor} onChange={e => setFormData({ ...formData, accentColor: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm font-mono" placeholder="Accent Color (HEX)" />
+              <div className="relative aspect-video rounded-3xl overflow-hidden bg-white/5 border border-white/5 shadow-2xl">
+                {formData.image ? (
+                  <img src={formData.image} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-white/10">
+                    <ImageIcon className="w-16 h-16" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileUpload} />
+                  <span className="text-[13px] font-black uppercase tracking-widest text-white">{uploading ? 'Syncing...' : 'Update Cover (S3)'}</span>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-end px-1">
+                  <Label className="text-[11px] uppercase font-black text-white/30 ml-2">Image Alt Text (SEO)</Label>
+                  {!formData.altText && formData.image && <span className="text-[9px] text-yellow-500 font-black uppercase tracking-widest flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Missing</span>}
+                </div>
+                <Input value={formData.altText} onChange={e => setFormData({ ...formData, altText: e.target.value })} className={`bg-white/5 border-white/5 rounded-xl h-14 text-sm ${!formData.altText && formData.image ? 'border-yellow-500/30' : ''}`} placeholder="Descriptive alt text for image search..." />
+              </div>
+              <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm font-mono" placeholder="Direct Image URL" />
+              <Input value={formData.accentColor} onChange={e => setFormData({ ...formData, accentColor: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm font-mono" placeholder="Accent Color (HEX)" />
             </div>
           </div>
 
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-10">
-             <div className="space-y-6">
-                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Tools Used (GEO Tech)</Label>
-                <div className="flex gap-3">
-                  <Input value={newTech} onChange={e => setNewTech(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTech())} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="Add tool..." />
-                  <Button onClick={addTech} variant="outline" className="h-14 w-14 rounded-xl border-white/10 text-xl">+</Button>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  {formData.tech?.map((t: string) => (
-                    <span key={t} className="px-4 py-2 rounded-xl bg-primary/10 border border-primary/20 text-[12px] font-bold text-primary flex items-center gap-3">
-                      {t} <button onClick={() => setFormData({ ...formData, tech: formData.tech.filter((x: string) => x !== t) })}><Plus className="w-4 h-4 rotate-45" /></button>
-                    </span>
-                  ))}
-                </div>
-             </div>
+            <div className="space-y-6">
+              <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Tools Used (GEO Tech)</Label>
+              <div className="flex gap-3">
+                <Input value={newTech} onChange={e => setNewTech(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTech())} className="bg-white/5 border-white/5 rounded-xl h-14" placeholder="Add tool..." />
+                <Button onClick={addTech} variant="outline" className="h-14 w-14 rounded-xl border-white/10 text-xl">+</Button>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                {formData.tech?.map((t: string) => (
+                  <span key={t} className="px-4 py-2 rounded-xl bg-primary/10 border border-primary/20 text-[12px] font-bold text-primary flex items-center gap-3">
+                    {t} <button onClick={() => setFormData({ ...formData, tech: formData.tech.filter((x: string) => x !== t) })}><Plus className="w-4 h-4 rotate-45" /></button>
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-8">

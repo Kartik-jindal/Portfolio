@@ -31,6 +31,9 @@ export const CustomCursor = () => {
     // Also skip on narrow viewports (touch-primary devices)
     if (window.innerWidth < 768) return;
 
+    // Respect the user's motion preference — the OS cursor is more accessible
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
     const moveCursor = (e: MouseEvent) => {
       if (!isVisible) setIsVisible(true);
 

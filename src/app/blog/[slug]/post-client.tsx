@@ -14,6 +14,7 @@ interface PostClientProps {
   config: any;
   relatedPosts?: any[];
   relatedProjects?: any[];
+  sanitizedContent?: string;
 }
 
 const AuthorTrustBlock = ({ config }: { config: any }) => {
@@ -145,7 +146,9 @@ const RelatedPosts = ({ posts }: { posts: any[] }) => {
                 <div className="flex items-center justify-between pt-2">
                   <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white/30">
                     <Calendar className="w-3 h-3 text-primary/30" />
-                    <span>{post.date}</span>
+                    <time dateTime={post.createdAt ? new Date(post.createdAt).toISOString().split('T')[0] : undefined}>
+                      {post.date}
+                    </time>
                   </div>
                   <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-primary group-hover:bg-primary group-hover:text-black transition-all duration-300">
                     <ArrowUpRight className="w-3.5 h-3.5" />
@@ -208,7 +211,7 @@ const RelatedProjects = ({ projects }: { projects: any[] }) => {
   );
 };
 
-export default function PostClient({ post, config, relatedPosts = [], relatedProjects = [] }: PostClientProps) {
+export default function PostClient({ post, config, relatedPosts = [], relatedProjects = [], sanitizedContent = '' }: PostClientProps) {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
@@ -228,7 +231,6 @@ export default function PostClient({ post, config, relatedPosts = [], relatedPro
   const postCategories = post.categories || (post.category ? [post.category] : ['Engineering']);
   const authorName = config?.identity?.authorName || 'Kartik Jindal';
   const citations: string[] = post.entity?.citations || [];
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com';
 
   return (
     <main className="bg-transparent min-h-screen">
@@ -244,14 +246,19 @@ export default function PostClient({ post, config, relatedPosts = [], relatedPro
             <div className="flex flex-wrap justify-center items-center gap-4 text-[10px] uppercase font-black tracking-[0.3em] text-primary">
               <div className="flex flex-wrap gap-2 justify-center">
                 {postCategories.map((cat: string) => (
-                  <Link key={cat} href={`/blog`} className="bg-primary/5 px-3 py-1 rounded-md border border-primary/10 hover:bg-primary/10 transition-colors">{cat}</Link>
+                  <Link key={cat} href={`/blog/category/${encodeURIComponent(cat.toLowerCase())}`} className="bg-primary/5 px-3 py-1 rounded-md border border-primary/10 hover:bg-primary/10 transition-colors">{cat}</Link>
                 ))}
               </div>
               <span className="w-1 h-1 rounded-full bg-white/20" />
               <span className="text-white/40">{post.readTime}</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-headline font-bold text-white tracking-tight leading-[1.1] break-words">{post.title}</h1>
-            <div className="text-white/30 text-xs font-bold uppercase tracking-[0.2em] pt-4">Published {post.date}</div>
+            <div className="text-white/30 text-xs font-bold uppercase tracking-[0.2em] pt-4">
+              Published{' '}
+              <time dateTime={post.createdAt ? new Date(post.createdAt).toISOString().split('T')[0] : undefined}>
+                {post.date}
+              </time>
+            </div>
           </motion.div>
         </header>
 
@@ -275,7 +282,7 @@ export default function PostClient({ post, config, relatedPosts = [], relatedPro
                 prose-blockquote:border-l-2 prose-blockquote:border-primary/50 prose-blockquote:bg-white/[0.02] prose-blockquote:py-8 prose-blockquote:px-8 prose-blockquote:rounded-r-2xl prose-blockquote:text-white prose-blockquote:not-italic prose-blockquote:text-xl prose-blockquote:my-12
                 prose-ul:list-none prose-ul:pl-0 prose-ul:space-y-4
                 prose-li:relative prose-li:pl-8 prose-li:before:content-[''] prose-li:before:absolute prose-li:before:left-0 prose-li:before:top-[0.6em] prose-li:before:w-1.5 prose-li:before:h-1.5 prose-li:before:bg-primary prose-li:before:rounded-full break-words"
-              dangerouslySetInnerHTML={{ __html: post.content }}
+              dangerouslySetInnerHTML={{ __html: sanitizedContent }}
             />
             <SourceReferences citations={citations} />
             <footer className="mt-20 pt-10 border-t border-white/5 flex items-center justify-between">
@@ -306,22 +313,6 @@ export default function PostClient({ post, config, relatedPosts = [], relatedPro
 
       <Footer config={config} />
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{
-        __html: JSON.stringify({
-          '@context': 'https://schema.org',
-          '@type': 'BlogPosting',
-          headline: post.title,
-          description: post.summary,
-          image: post.image,
-          datePublished: typeof post.createdAt === 'number' ? new Date(post.createdAt).toISOString() : undefined,
-          author: { '@type': 'Person', name: authorName, url: baseUrl },
-          publisher: { '@type': 'Person', name: authorName },
-          mainEntityOfPage: { '@type': 'WebPage', '@id': `${baseUrl}/blog/${post.slug || post.id}` },
-          ...(post.aeo?.quickAnswer && { abstract: post.aeo.quickAnswer }),
-          ...(citations.length > 0 && { citation: citations.map((c: string) => ({ '@type': 'CreativeWork', url: c })) }),
-          ...(post.aeo?.faqs?.length > 0 && { mainEntity: { '@type': 'FAQPage', mainEntity: post.aeo.faqs.map((f: any) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) } }),
-        })
-      }} />
     </main>
   );
 }

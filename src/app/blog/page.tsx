@@ -6,19 +6,12 @@ import { Footer } from '@/components/portfolio/footer';
 import { BlogListClient } from '@/components/portfolio/blog-list-client';
 import { db } from '@/lib/firebase/firestore';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import { serialize } from '@/lib/serialize';
 import type { Metadata } from 'next';
 
 export const revalidate = 60;
 
-function serialize(data: any) {
-  if (!data) return data;
-  return JSON.parse(JSON.stringify(data, (key, value) => {
-    if (value && typeof value === 'object' && value.seconds !== undefined && value.nanoseconds !== undefined) {
-      return new Date(value.seconds * 1000).getTime();
-    }
-    return value;
-  }));
-}
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com';
 
 const getBlogData = cache(async function getBlogData() {
   try {
@@ -65,24 +58,27 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com'}/blog`,
-    },
+    alternates: { canonical: `${BASE_URL}/blog` },
     openGraph: {
       title,
       description,
-      images: ogImage ? [{ url: ogImage }] : [],
+      url: `${BASE_URL}/blog`,
+      siteName: 'Kartik Jindal',
+      type: 'website',
+      ...(ogImage && { images: [{ url: ogImage, width: 1200, height: 630, alt: title }] }),
     },
-    robots: {
-      index: blogSeo.indexable ?? true,
-      follow: blogSeo.indexable ?? true,
-    }
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      ...(ogImage && { images: [ogImage] }),
+    },
+    robots: { index: blogSeo.indexable ?? true, follow: blogSeo.indexable ?? true },
   };
 }
 
 export default async function BlogPage() {
-  const posts = await getBlogData();
-  const config = await getGlobalConfig();
+  const [posts, config] = await Promise.all([getBlogData(), getGlobalConfig()]);
 
   return (
     <main className="bg-transparent min-h-screen">

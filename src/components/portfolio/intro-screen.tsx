@@ -27,6 +27,14 @@ export const IntroScreen = () => {
       return;
     }
 
+    // Skip for users who prefer reduced motion — show content immediately
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      const hideStyle = document.getElementById('intro-hide');
+      if (hideStyle) hideStyle.remove();
+      return;
+    }
+
     setIsVisible(true);
 
     // Stage 0 → 1: Welcome (0–1s)
@@ -167,6 +175,18 @@ export const IntroScreen = () => {
               />
             </div>
           </div>
+
+          {/* Skip button — appears after 1s, lets users bypass the intro */}
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2, duration: 0.4 }}
+            onClick={() => setStage(2)}
+            className="absolute top-8 right-8 text-[9px] font-black uppercase tracking-[0.4em] text-white/20 hover:text-white/60 transition-colors px-4 py-2 rounded-full border border-white/5 hover:border-white/20"
+            aria-label="Skip intro"
+          >
+            Skip
+          </motion.button>
         </motion.div>
       )}
     </AnimatePresence>
