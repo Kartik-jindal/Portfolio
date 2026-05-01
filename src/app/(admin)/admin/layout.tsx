@@ -22,7 +22,8 @@ import {
   Mail,
   Globe,
   Scale,
-  Activity
+  Activity,
+  Image,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Toaster } from '@/components/ui/toaster';
@@ -73,6 +74,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     { label: 'Voices', href: '/admin/testimonials', icon: Quote },
     { label: 'Contact Module', href: '/admin/contact', icon: Mail },
     { label: 'Journal', href: '/admin/blog', icon: FileText },
+    { label: 'Media', href: '/admin/media', icon: Image },
     { label: 'Layout Config', href: '/admin/interface', icon: Layers },
     { label: 'SEO Command', href: '/admin/seo', icon: Globe },
     { label: 'Legal Pages', href: '/admin/legal', icon: Scale },

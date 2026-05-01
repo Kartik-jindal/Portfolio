@@ -6,6 +6,8 @@ import type { NextConfig } from 'next';
 const ALLOWED_IMAGE_HOSTNAMES = [
   // AWS S3 — portfolio media bucket
   'kj-portfolio-bucket.s3.eu-north-1.amazonaws.com',
+  // CloudFront CDN — primary asset delivery
+  'assets.kartikjindal.site',
   // Fallback placeholder images used during development
   'picsum.photos',
   // Google user content (profile photos from Google OAuth)

@@ -8,6 +8,7 @@ import { Navbar } from '@/components/portfolio/navbar';
 import { Footer } from '@/components/portfolio/footer';
 import { ProjectDetailContent } from '@/components/portfolio/project-detail-content';
 import { Breadcrumbs } from '@/components/portfolio/breadcrumbs';
+import { getAssetUrl } from '@/lib/utils';
 
 export const revalidate = 3600; // ISR: revalidate project pages every hour
 
@@ -52,13 +53,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       url: canonical,
       siteName: 'Kartik Jindal',
       type: 'website',
-      ...(ogImage && { images: [{ url: ogImage, width: 1200, height: 630, alt: title }] }),
+      ...(ogImage && { images: [{ url: getAssetUrl(ogImage), width: 1200, height: 630, alt: title }] }),
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      ...(ogImage && { images: [ogImage] }),
+      ...(ogImage && { images: [getAssetUrl(ogImage)] }),
     },
     robots: {
       index: project.seo?.indexable ?? (project.status === 'published'),
@@ -92,7 +93,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
     description: project.longDesc || project.desc,
     url: canonical,
     ...(project.liveUrl && { sameAs: project.liveUrl }),
-    ...(project.image && { image: project.image }),
+    ...(project.image && { image: getAssetUrl(project.image) }),
     applicationCategory: 'WebApplication',
     operatingSystem: 'Web',
     author: { '@type': 'Person', name: authorName, url: BASE_URL },

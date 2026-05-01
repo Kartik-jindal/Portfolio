@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Github, ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
+import { cn, getAssetUrl } from '@/lib/utils';
 import { ProjectDetailContent } from '@/components/portfolio/project-detail-content';
 
 // Shared easing used throughout the design system
@@ -60,7 +60,7 @@ const ProjectCard = ({
     >
       <div className="relative aspect-[16/9] overflow-hidden rounded-[calc(1rem-1px)] md:rounded-[calc(1.5rem-1px)]">
         <Image
-          src={project.image || 'https://picsum.photos/seed/placeholder/1600/1000'}
+          src={getAssetUrl(project.image)}
           alt={project.title}
           fill
           className="object-cover"

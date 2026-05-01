@@ -2,6 +2,7 @@ import React from 'react';
 import { Github, ArrowUpRight, ExternalLink, Target, Code, Calendar } from 'lucide-react';
 import Image from 'next/image';
 import DOMPurify from 'isomorphic-dompurify';
+import { getAssetUrl } from '@/lib/utils';
 
 interface ProjectDetailContentProps {
   project: any;
@@ -36,7 +37,7 @@ export const ProjectDetailContent = ({ project, isModal = false }: ProjectDetail
     <div className={isModal ? "flex flex-col h-full max-h-[90vh]" : "flex flex-col min-h-screen pt-32 pb-24"}>
       <div className="relative h-64 md:h-96 w-full shrink-0 overflow-hidden">
         <Image
-          src={project.image || 'https://picsum.photos/seed/placeholder/1600/1000'}
+          src={getAssetUrl(project.image)}
           alt={project.title}
           fill
           className="object-cover opacity-60"

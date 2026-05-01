@@ -7,6 +7,7 @@ import { ArrowRight, ArrowLeft, Calendar, Clock, Tag, Bookmark, Search, X } from
 const POSTS_PER_PAGE = 8;
 import Link from 'next/link';
 import Image from 'next/image';
+import { getAssetUrl } from '@/lib/utils';
 
 interface BlogListClientProps {
   posts: any[];
@@ -65,7 +66,7 @@ const FeaturedSingle = ({ post, index }: { post: any; index: number }) => (
         {/* Image */}
         <div className="relative lg:w-[55%] aspect-[16/9] lg:aspect-auto overflow-hidden shrink-0">
           <Image
-            src={post.image || `https://picsum.photos/seed/${post.id}/1200/800`}
+            src={getAssetUrl(post.image)}
             alt={post.title}
             fill
             className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
@@ -115,7 +116,7 @@ const FeaturedGridCard = ({ post, index, large = false }: { post: any; index: nu
       {/* Image */}
       <div className={`relative w-full overflow-hidden shrink-0 ${large ? 'aspect-[16/9]' : 'aspect-[16/9]'}`}>
         <Image
-          src={post.image || `https://picsum.photos/seed/${post.id}/1200/800`}
+          src={getAssetUrl(post.image)}
           alt={post.title}
           fill
           className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
@@ -427,7 +428,7 @@ export const BlogListClient = ({ posts }: BlogListClientProps) => {
                       <div className="md:col-span-5 flex flex-col md:flex-row gap-10 items-center md:items-start">
                         <div className="relative w-full sm:w-64 md:w-48 lg:w-72 aspect-[4/3] sm:aspect-square rounded-2xl overflow-hidden bg-white/5 border border-white/5 shrink-0 group-hover:border-primary/30 transition-all duration-500 shadow-xl">
                           <Image
-                            src={post.image || `https://picsum.photos/seed/${post.id}/600/600`}
+                            src={getAssetUrl(post.image)}
                             alt={post.title}
                             fill
                             className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700"

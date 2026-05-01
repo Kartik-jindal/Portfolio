@@ -6,15 +6,8 @@
  * Handles secure server-side uploads to bypass client-side credential exposure.
  */
 
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-
-const s3Client = new S3Client({
-  region: process.env.AWS_REGION!,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
-});
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { s3Client } from "./s3-client";
 
 export async function uploadToS3(formData: FormData) {
   try {
@@ -32,13 +25,14 @@ export async function uploadToS3(formData: FormData) {
       Key: key,
       Body: buffer,
       ContentType: file.type,
+      CacheControl: 'public, max-age=31536000, immutable',
     });
 
     await s3Client.send(command);
 
-    // Construct the public URL
-    // Note: Ensure your bucket is configured for public read or use a CloudFront distribution
-    const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+    // Construct the CDN URL instead of direct S3 URL
+    const cdnBase = process.env.NEXT_PUBLIC_CDN_URL || 'https://assets.kartikjindal.site';
+    const url = `${cdnBase}/${key}`;
     
     return { success: true, url };
   } catch (error: any) {

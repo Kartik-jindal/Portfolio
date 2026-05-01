@@ -9,6 +9,7 @@ import { Projects } from '@/components/portfolio/projects';
 import { ProjectDetailContent } from '@/components/portfolio/project-detail-content';
 import { ArrowUpRight, Binary } from 'lucide-react';
 import Image from 'next/image';
+import { getAssetUrl } from '@/lib/utils';
 
 export default function WorkClient({ config, initialExperiments, initialFlagships }: { config: any, initialExperiments: any[], initialFlagships: any[] }) {
   const [selectedExperiment, setSelectedExperiment] = useState<any>(null);
@@ -91,7 +92,7 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
 
                       <div className="relative aspect-video rounded-xl overflow-hidden mb-8 border border-white/5 shadow-2xl">
                         <Image
-                          src={project.image || 'https://picsum.photos/seed/placeholder/600/400'}
+                          src={getAssetUrl(project.image)}
                           alt={project.title}
                           fill
                           className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"

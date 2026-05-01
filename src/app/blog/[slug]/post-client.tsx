@@ -8,6 +8,7 @@ import { ArrowLeft, Share2, ArrowUpRight, ExternalLink, Tag, Calendar, ChevronRi
 import Link from 'next/link';
 import Image from 'next/image';
 import { Breadcrumbs } from '@/components/portfolio/breadcrumbs';
+import { getAssetUrl } from '@/lib/utils';
 
 interface PostClientProps {
   post: any;
@@ -129,7 +130,7 @@ const RelatedPosts = ({ posts }: { posts: any[] }) => {
           <motion.article key={post.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }} className="group">
             <Link href={`/blog/${post.slug || post.id}`} className="flex flex-col h-full rounded-[2rem] overflow-hidden border border-white/5 hover:border-primary/20 bg-white/[0.02] transition-all duration-500">
               <div className="relative aspect-[16/9] overflow-hidden shrink-0">
-                <Image src={post.image || `https://picsum.photos/seed/${post.id}/800/450`} alt={post.title} fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" sizes="(min-width: 768px) 33vw, 100vw" data-ai-hint={post.imageHint || "blog post"} />
+                <Image src={getAssetUrl(post.image)} alt={post.title} fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" sizes="(min-width: 768px) 33vw, 100vw" data-ai-hint={post.imageHint || "blog post"} />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
               </div>
               <div className="p-6 flex flex-col flex-1 space-y-4">
@@ -179,7 +180,7 @@ const RelatedProjects = ({ projects }: { projects: any[] }) => {
           <motion.article key={project.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }} className="group">
             <Link href={`/work/${project.slug || project.id}`} className="flex flex-col h-full rounded-[2rem] overflow-hidden border border-white/5 hover:border-primary/20 bg-white/[0.02] transition-all duration-500">
               <div className="relative aspect-[16/9] overflow-hidden shrink-0">
-                <Image src={project.image || `https://picsum.photos/seed/${project.id}/800/450`} alt={project.title} fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" sizes="(min-width: 768px) 33vw, 100vw" data-ai-hint={project.imageHint || "project cover"} />
+                <Image src={getAssetUrl(project.image)} alt={project.title} fill className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" sizes="(min-width: 768px) 33vw, 100vw" data-ai-hint={project.imageHint || "project cover"} />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
               </div>
               <div className="p-6 flex flex-col flex-1 space-y-4">
@@ -264,7 +265,7 @@ export default function PostClient({ post, config, relatedPosts = [], relatedPro
 
         <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }} className="max-w-[1600px] mx-auto px-6 mb-20">
           <div className="relative aspect-video sm:aspect-[21/9] rounded-3xl overflow-hidden border border-white/5 shadow-2xl">
-            <Image src={post.image || 'https://picsum.photos/seed/blog/1600/900'} alt={post.altText || post.title} fill className="object-cover" priority sizes="(min-width: 1600px) 1600px, 100vw" data-ai-hint={post.imageHint || "blog post"} />
+            <Image src={getAssetUrl(post.image)} alt={post.altText || post.title} fill className="object-cover" priority sizes="(min-width: 1600px) 1600px, 100vw" data-ai-hint={post.imageHint || "blog post"} />
             <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
           </div>
         </motion.div>

@@ -19,6 +19,7 @@ A high-performance, white-label portfolio and blog platform built with **Next.js
 *   **Media Pipeline**: Secure, server-side asset uploads directly to AWS S3.
 *   **Leads Management**: A centralized dashboard to view and manage incoming inquiries.
 *   **Global Configuration**: Toggle UI sections and update site-wide settings in real-time.
+*   **Media Management**: Centralized S3-backed library with dual-source (Upload/Select) integration for all content editors.
 
 ---
 
@@ -30,7 +31,8 @@ A high-performance, white-label portfolio and blog platform built with **Next.js
 | **Styling** | Tailwind CSS, shadcn/ui, Radix UI |
 | **Animation** | Framer Motion, Three.js, GSAP |
 | **Database** | Firebase Firestore |
-| **Storage** | AWS S3 (via SDK v3) |
+| **Storage** | AWS S3 (Private Bucket via OAC) |
+| **CDN** | Amazon CloudFront (assets.kartikjindal.site) |
 | **Auth** | Custom HMAC-signed sessions |
 | **AI Integration** | Genkit + Google Gemini |
 

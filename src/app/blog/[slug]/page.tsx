@@ -7,6 +7,7 @@ import type { Metadata } from 'next';
 import PostClient from './post-client';
 import DOMPurify from 'isomorphic-dompurify';
 import { draftMode } from 'next/headers';
+import { getAssetUrl } from '@/lib/utils';
 
 export const revalidate = 3600; // ISR: revalidate blog posts every hour
 
@@ -143,13 +144,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       publishedTime: post.createdAt ? new Date(post.createdAt).toISOString() : undefined,
       modifiedTime: post.updatedAt ? new Date(post.updatedAt).toISOString() : undefined,
       authors: [authorName],
-      ...(ogImage && { images: [{ url: ogImage, width: 1200, height: 630, alt: title }] }),
+      ...(ogImage && { images: [{ url: getAssetUrl(ogImage), width: 1200, height: 630, alt: title }] }),
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      ...(ogImage && { images: [ogImage] }),
+      ...(ogImage && { images: [getAssetUrl(ogImage)] }),
     },
     robots: {
       index: post.seo?.indexable ?? (post.status === 'published'),
@@ -209,7 +210,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.summary,
-    ...(post.image && { image: post.image }),
+    ...(post.image && { image: getAssetUrl(post.image) }),
     datePublished: post.createdAt ? new Date(post.createdAt).toISOString() : undefined,
     dateModified: post.updatedAt
       ? new Date(post.updatedAt).toISOString()

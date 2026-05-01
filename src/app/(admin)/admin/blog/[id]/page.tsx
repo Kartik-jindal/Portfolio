@@ -3,10 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase/config';
 import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, RefreshCcw, Database, MessageSquare, HelpCircle, Lightbulb, AlertTriangle, Code, ChevronDown, ChevronUp, Bookmark, Link2, Eye, Sparkles } from 'lucide-react';
+import { Save, ArrowLeft, FileText, Globe, Plus, Trash2, RefreshCcw, Database, MessageSquare, HelpCircle, Lightbulb, AlertTriangle, Code, ChevronDown, ChevronUp, Bookmark, Link2, Eye, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,6 +21,8 @@ import { revalidateBlog, generatePreviewUrl } from '@/lib/revalidate-actions';
 import { generateAeoGeoFields } from '@/lib/ai-actions';
 import { writeAuditLog } from '@/lib/audit-log';
 import { useAuth } from '@/context/auth-context';
+import { getAssetUrl } from '@/lib/utils';
+import { ImageSelector } from '@/components/admin/image-selector';
 
 export default function EditBlogPostPage() {
   const { id } = useParams();
@@ -29,7 +30,6 @@ export default function EditBlogPostPage() {
   const [saving, setSaving] = useState(false);
   const [previewing, setPreviewing] = useState(false);
   const [aiGenerating, setAiGenerating] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [showSchema, setShowSchema] = useState(false);
   const [newCategory, setNewCategory] = useState('');
   const [newFact, setNewFact] = useState('');
@@ -145,29 +145,7 @@ export default function EditBlogPostPage() {
     toast({ title: 'Editorial Sync', description: 'SEO fields populated from entry content.' });
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const uploadFormData = new FormData();
-      uploadFormData.append('file', file);
-      uploadFormData.append('path', 'blog');
 
-      const result = await uploadToS3(uploadFormData);
-
-      if (result.success && result.url) {
-        setFormData({ ...formData, image: result.url });
-        toast({ title: 'Success', description: 'Asset synced to S3' });
-      } else {
-        throw new Error(result.error);
-      }
-    } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Upload Failed', description: error.message });
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -263,7 +241,7 @@ export default function EditBlogPostPage() {
       "@type": "BlogPosting",
       "headline": formData.title,
       "description": formData.summary,
-      "image": formData.image,
+      "image": getAssetUrl(formData.image),
       "datePublished": formData.date,
       "author": { "@type": "Person", "name": "Kartik Jindal" },
       "publisher": { "@type": "Person", "name": "Kartik Jindal" },
@@ -696,30 +674,20 @@ export default function EditBlogPostPage() {
           />
 
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-10">
-            <h3 className="text-[13px] uppercase font-black tracking-widest text-white/40">Visual Context (S3)</h3>
-            <div className="space-y-8">
-              <div className="relative aspect-video rounded-3xl overflow-hidden bg-white/5 border border-white/5 shadow-2xl">
-                {formData.image ? (
-                  <img src={formData.image} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-white/10">
-                    <ImageIcon className="w-16 h-16" />
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileUpload} />
-                  <span className="text-[13px] font-black uppercase tracking-widest text-white">{uploading ? 'Syncing...' : 'Update Cover (S3)'}</span>
-                </div>
+            <h3 className="text-[13px] uppercase font-black tracking-widest text-white/40">Visual Context (CDN)</h3>
+            <ImageSelector
+              value={formData.image}
+              onChange={(url) => setFormData({ ...formData, image: url })}
+              uploadPath="blog"
+            />
+            <div className="space-y-3">
+              <div className="flex justify-between items-end px-1">
+                <Label className="text-[11px] uppercase font-black text-white/30 ml-2">Image Alt Text (SEO)</Label>
+                {!formData.altText && formData.image && <span className="text-[9px] text-yellow-500 font-black uppercase tracking-widest flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Missing</span>}
               </div>
-              <div className="space-y-3">
-                <div className="flex justify-between items-end px-1">
-                  <Label className="text-[11px] uppercase font-black text-white/30 ml-2">Image Alt Text (SEO)</Label>
-                  {!formData.altText && formData.image && <span className="text-[9px] text-yellow-500 font-black uppercase tracking-widest flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Missing</span>}
-                </div>
-                <Input value={formData.altText} onChange={e => setFormData({ ...formData, altText: e.target.value })} className={`bg-white/5 border-white/5 rounded-xl h-14 text-sm ${!formData.altText && formData.image ? 'border-yellow-500/30' : ''}`} placeholder="Descriptive alt text..." />
-              </div>
-              <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm font-mono" placeholder="Direct Image URL" />
+              <Input value={formData.altText} onChange={e => setFormData({ ...formData, altText: e.target.value })} className={`bg-white/5 border-white/5 rounded-xl h-14 text-sm ${!formData.altText && formData.image ? 'border-yellow-500/30' : ''}`} placeholder="Descriptive alt text..." />
             </div>
+            <Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-14 text-sm font-mono" placeholder="Direct Image URL" />
           </div>
 
           <div className="glass p-10 rounded-[2.5rem] border-white/5 space-y-10">

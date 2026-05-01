@@ -12,6 +12,7 @@ import { ScrollIndicator } from '@/components/portfolio/scroll-indicator';
 import { db } from '@/lib/firebase/firestore';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { serialize } from '@/lib/serialize';
+import { getAssetUrl } from '@/lib/utils';
 import type { Metadata } from 'next';
 
 export const revalidate = 60;
@@ -114,14 +115,14 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       url: BASE_URL,
       siteName: 'Kartik Jindal',
-      ...(ogImage && { images: [{ url: ogImage, width: 1200, height: 630, alt: title }] }),
+      ...(ogImage && { images: [{ url: getAssetUrl(ogImage), width: 1200, height: 630, alt: title }] }),
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      ...(ogImage && { images: [ogImage] }),
+      ...(ogImage && { images: [getAssetUrl(ogImage)] }),
     },
     robots: { index: homeSeo.indexable ?? true, follow: homeSeo.indexable ?? true },
   };
@@ -173,7 +174,7 @@ export default async function Home() {
     url: BASE_URL,
     description: bio,
     sameAs,
-    ...(profileImage && { image: profileImage }),
+    ...(profileImage && { image: getAssetUrl(profileImage) }),
     ...(email && { email }),
     ...(expertise.length > 0 && { knowsAbout: expertise }),
     ...(services.length > 0 && { hasOfferCatalog: { '@type': 'OfferCatalog', name: 'Services', itemListElement: services.map(s => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: s } })) } }),
