@@ -6,7 +6,7 @@ import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { uploadToS3 } from '@/lib/aws/s3-actions';
 import { useRouter, useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, RefreshCcw, Database, MessageSquare, HelpCircle, Lightbulb, AlertTriangle, Code, ChevronDown, ChevronUp, Bookmark } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, FileText, Globe, Plus, Trash2, RefreshCcw, Database, MessageSquare, HelpCircle, Lightbulb, AlertTriangle, Code, ChevronDown, ChevronUp, Bookmark, Link2, Eye, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -16,11 +16,19 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { SeoHud } from '@/components/admin/seo-hud';
+import { computeReadTime } from '@/lib/read-time';
+import { RichTextEditor } from '@/components/admin/rich-text-editor';
+import { revalidateBlog, generatePreviewUrl } from '@/lib/revalidate-actions';
+import { generateAeoGeoFields } from '@/lib/ai-actions';
+import { writeAuditLog } from '@/lib/audit-log';
+import { useAuth } from '@/context/auth-context';
 
 export default function EditBlogPostPage() {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
+  const [aiGenerating, setAiGenerating] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [showSchema, setShowSchema] = useState(false);
   const [newCategory, setNewCategory] = useState('');
@@ -28,10 +36,12 @@ export default function EditBlogPostPage() {
   const [newCitation, setNewCitation] = useState('');
   const [newTakeaway, setNewTakeaway] = useState('');
   const [newFaq, setNewFaq] = useState({ q: '', a: '' });
+  const [newInternalLink, setNewInternalLink] = useState({ label: '', href: '' });
   const [formData, setFormData] = useState<any>(null);
   const [isSlugManual, setIsSlugManual] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { user, role } = useAuth();
 
   const slugify = (text: string) => {
     return text
@@ -73,7 +83,8 @@ export default function EditBlogPostPage() {
             featured: data.featured || false,
             seo: data.seo || { title: '', description: '', keywords: '', ogImage: '', indexable: true, canonicalUrl: '' },
             entity: data.entity || { facts: [], citations: [] },
-            aeo: data.aeo || { quickAnswer: '', takeaways: [], faqs: [] }
+            aeo: data.aeo || { quickAnswer: '', takeaways: [], faqs: [] },
+            internalLinks: data.internalLinks || []
           });
         } else {
           router.push('/admin/blog');
@@ -167,12 +178,70 @@ export default function EditBlogPostPage() {
         ...updateData,
         updatedAt: serverTimestamp(),
       });
+      await revalidateBlog(formData.slug);
+      writeAuditLog('UPDATE', 'blog', {
+        entityId: id as string,
+        entityTitle: formData.title,
+        actorEmail: user?.email ?? undefined,
+        actorRole: role ?? undefined,
+        detail: `Status: ${formData.status}`,
+      });
       toast({ title: 'Editorial Sync', description: 'Changes committed to database' });
       router.push('/admin/blog');
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Error', description: error.message });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleAiGenerate = async () => {
+    if (!formData?.title && !formData?.content) {
+      toast({ variant: 'destructive', title: 'Content Required', description: 'Add a title and some content before generating.' });
+      return;
+    }
+    setAiGenerating(true);
+    try {
+      const result = await generateAeoGeoFields(
+        formData.title,
+        formData.summary,
+        formData.content,
+        formData.categories,
+      );
+      setFormData((prev: any) => ({
+        ...prev,
+        aeo: {
+          ...prev.aeo,
+          quickAnswer: result.quickAnswer || prev.aeo.quickAnswer,
+          takeaways: result.takeaways.length > 0 ? result.takeaways : prev.aeo.takeaways,
+          faqs: result.faqs.length > 0 ? result.faqs : prev.aeo.faqs,
+        },
+        entity: {
+          ...prev.entity,
+          facts: result.facts.length > 0 ? result.facts : prev.entity.facts,
+        },
+      }));
+      toast({ title: 'AI Complete', description: 'AEO/GEO fields populated from your content.' });
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: 'AI Failed', description: err.message });
+    } finally {
+      setAiGenerating(false);
+    }
+  };
+
+  const handlePreview = async () => {
+    if (!formData?.slug) {
+      toast({ variant: 'destructive', title: 'Slug Required', description: 'Add a slug before previewing.' });
+      return;
+    }
+    setPreviewing(true);
+    try {
+      const url = await generatePreviewUrl(formData.slug, 'blog');
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } catch {
+      toast({ variant: 'destructive', title: 'Preview Failed', description: 'Could not generate preview link.' });
+    } finally {
+      setPreviewing(false);
     }
   };
 
@@ -227,13 +296,24 @@ export default function EditBlogPostPage() {
             <h1 className="text-6xl font-headline font-black italic tracking-tighter text-white">Modify Entry.</h1>
           </div>
         </div>
-        <Button
-          onClick={handleSubmit}
-          disabled={saving}
-          className="h-16 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-10 group text-base"
-        >
-          {saving ? 'Syncing...' : 'Sync Changes'} <Save className="w-6 h-6 ml-3 group-hover:scale-110 transition-transform" />
-        </Button>
+        <div className="flex items-center gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handlePreview}
+            disabled={previewing || !formData?.slug}
+            className="h-16 rounded-2xl border-white/10 text-white/60 font-black uppercase tracking-widest px-8 group hover:border-primary/40 hover:text-primary transition-all"
+          >
+            {previewing ? 'Opening...' : 'Preview'} <Eye className="w-5 h-5 ml-3 group-hover:scale-110 transition-transform" />
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={saving}
+            className="h-16 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-10 group text-base"
+          >
+            {saving ? 'Syncing...' : 'Sync Changes'} <Save className="w-6 h-6 ml-3 group-hover:scale-110 transition-transform" />
+          </Button>
+        </div>
       </header>
 
       <div className="grid lg:grid-cols-12 gap-10">
@@ -292,19 +372,43 @@ export default function EditBlogPostPage() {
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between items-end px-1">
-                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Article Body (HTML/Markdown)</Label>
-                  {!formData.content && <span className="text-[9px] text-yellow-500 font-black uppercase tracking-widest flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Body Empty</span>}
+                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Article Body</Label>
                 </div>
-                <Textarea value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} className="bg-white/5 border-white/5 rounded-xl min-h-[500px] font-mono text-sm leading-relaxed" />
+                <RichTextEditor
+                  value={formData.content}
+                  onChange={(html) => setFormData((prev: any) => ({ ...prev, content: html, readTime: computeReadTime(html) }))}
+                  placeholder="Begin the narrative..."
+                />
               </div>
             </div>
           </div>
 
           {/* Answer Engine Optimization (AEO) Section */}
           <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
-            <div className="flex items-center gap-5 text-primary">
-              <MessageSquare className="w-8 h-8" />
-              <h3 className="text-2xl font-headline font-black italic tracking-tight">Answer Engine (AEO)</h3>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-5 text-primary">
+                <MessageSquare className="w-8 h-8" />
+                <h3 className="text-2xl font-headline font-black italic tracking-tight">Answer Engine (AEO)</h3>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleAiGenerate}
+                disabled={aiGenerating || (!formData?.title && !formData?.content)}
+                className="h-12 rounded-xl border-primary/30 text-primary/70 font-black uppercase tracking-widest text-[10px] px-6 hover:bg-primary/10 hover:text-primary hover:border-primary/60 transition-all group"
+              >
+                {aiGenerating ? (
+                  <>
+                    <span className="w-3 h-3 rounded-full bg-primary animate-ping mr-2 inline-block" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5 mr-2 group-hover:scale-110 transition-transform" />
+                    Auto-fill with AI
+                  </>
+                )}
+              </Button>
             </div>
 
             <div className="space-y-8">
@@ -405,6 +509,61 @@ export default function EditBlogPostPage() {
                     </div>
                   ))}
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Internal Links Section */}
+          <div className="glass p-10 rounded-[3rem] border-white/5 space-y-10">
+            <div className="flex items-center gap-5 text-primary">
+              <Link2 className="w-8 h-8" />
+              <h3 className="text-2xl font-headline font-black italic tracking-tight">Internal Links</h3>
+            </div>
+            <p className="text-[12px] text-white/30 uppercase font-black tracking-widest -mt-4">
+              Links shown in the "Further Reading" sidebar block on the post page.
+            </p>
+            <div className="space-y-4">
+              <div className="grid gap-4 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+                <Input
+                  value={newInternalLink.label}
+                  onChange={e => setNewInternalLink({ ...newInternalLink, label: e.target.value })}
+                  className="bg-transparent border-white/10 h-12"
+                  placeholder="Label (e.g. How I Built This)"
+                />
+                <Input
+                  value={newInternalLink.href}
+                  onChange={e => setNewInternalLink({ ...newInternalLink, href: e.target.value })}
+                  className="bg-transparent border-white/10 h-12 font-mono"
+                  placeholder="Path (e.g. /blog/my-post or /work/project)"
+                />
+                <Button
+                  onClick={() => {
+                    if (newInternalLink.label && newInternalLink.href) {
+                      setFormData({ ...formData, internalLinks: [...(formData.internalLinks || []), newInternalLink] });
+                      setNewInternalLink({ label: '', href: '' });
+                    }
+                  }}
+                  variant="outline"
+                  className="h-12 w-full rounded-xl border-white/10 uppercase font-black tracking-widest text-[10px]"
+                >
+                  Add Internal Link
+                </Button>
+              </div>
+              <div className="grid gap-3">
+                {(formData.internalLinks || []).map((link: { label: string; href: string }, i: number) => (
+                  <div key={i} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between group">
+                    <div className="space-y-0.5">
+                      <span className="text-sm font-bold text-white/70 block">{link.label}</span>
+                      <span className="text-[11px] font-mono text-white/30">{link.href}</span>
+                    </div>
+                    <button
+                      onClick={() => setFormData({ ...formData, internalLinks: formData.internalLinks.filter((_: any, idx: number) => idx !== i) })}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

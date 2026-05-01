@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Calendar, Clock, Tag, Bookmark, Search, X } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Calendar, Clock, Tag, Bookmark, Search, X } from 'lucide-react';
+
+const POSTS_PER_PAGE = 8;
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -15,7 +17,9 @@ const PostMeta = ({ post }: { post: any }) => (
   <div className="flex items-center gap-6 text-white/40">
     <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest">
       <Calendar className="w-3.5 h-3.5 text-primary/40" />
-      <span>{post.date}</span>
+      <time dateTime={post.createdAt ? new Date(post.createdAt).toISOString().split('T')[0] : undefined}>
+        {post.date}
+      </time>
     </div>
     <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-widest">
       <Clock className="w-3.5 h-3.5 text-primary/40" />
@@ -199,7 +203,9 @@ const FeaturedSection = ({ posts }: { posts: any[] }) => {
 export const BlogListClient = ({ posts }: BlogListClientProps) => {
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const searchRef = useRef<HTMLInputElement>(null);
+  const listTopRef = useRef<HTMLDivElement>(null);
 
   // Cap featured at 4
   const allFeatured = posts.filter((p) => p.featured).slice(0, 4);
@@ -245,8 +251,25 @@ export const BlogListClient = ({ posts }: BlogListClientProps) => {
   const totalVisible = visibleFeatured.length + filteredRegular.length;
   const isFiltering = searchQuery.trim() !== '' || activeCategory !== 'All';
 
+  // ── Pagination ──────────────────────────────────────────────────────────────
+  const totalPages = Math.ceil(filteredRegular.length / POSTS_PER_PAGE);
+  const paginatedRegular = filteredRegular.slice(
+    (currentPage - 1) * POSTS_PER_PAGE,
+    currentPage * POSTS_PER_PAGE,
+  );
+
+  // Reset to page 1 whenever filter or search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCategory, searchQuery]);
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+    listTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
-    <div className="space-y-16">
+    <div className="space-y-16" ref={listTopRef}>
 
       {/* ── Search + Filter row ── */}
       <motion.div
@@ -265,7 +288,7 @@ export const BlogListClient = ({ posts }: BlogListClientProps) => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search articles, topics, categories..."
-            className="w-full h-16 bg-white/[0.02] border border-white/5 focus:border-primary/30 rounded-2xl pl-16 pr-16 text-white text-lg font-light placeholder:text-white/20 outline-none transition-all duration-300 focus:bg-white/[0.04] focus:shadow-[0_0_30px_rgba(16,185,129,0.06)]"
+            className="w-full h-14 sm:h-16 bg-white/[0.02] border border-white/5 focus:border-primary/30 rounded-2xl pl-12 sm:pl-16 pr-12 sm:pr-16 text-white text-lg font-light placeholder:text-white/20 outline-none transition-all duration-300 focus:bg-white/[0.04] focus:shadow-[0_0_30px_rgba(16,185,129,0.06)]"
           />
           <AnimatePresence>
             {searchQuery && (
@@ -373,7 +396,7 @@ export const BlogListClient = ({ posts }: BlogListClientProps) => {
       <AnimatePresence mode="wait">
         {showRegular && (
           <motion.div
-            key={`regular-${activeCategory}-${searchQuery}`}
+            key={`regular-${activeCategory}-${searchQuery}-p${currentPage}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -390,7 +413,7 @@ export const BlogListClient = ({ posts }: BlogListClientProps) => {
             )}
 
             <div className="grid gap-12">
-              {filteredRegular.map((post, i) => (
+              {paginatedRegular.map((post, i) => (
                 <motion.article
                   key={post.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -402,7 +425,7 @@ export const BlogListClient = ({ posts }: BlogListClientProps) => {
                   <Link href={`/blog/${post.slug || post.id}`} className="block relative z-10 p-8 md:p-12 rounded-[2rem] hover:bg-white/[0.02] border border-transparent hover:border-white/5 transition-all duration-500">
                     <div className="grid md:grid-cols-12 gap-10 items-center">
                       <div className="md:col-span-5 flex flex-col md:flex-row gap-10 items-center md:items-start">
-                        <div className="relative w-full md:w-48 lg:w-72 aspect-square rounded-2xl overflow-hidden bg-white/5 border border-white/5 shrink-0 group-hover:border-primary/30 transition-all duration-500 shadow-xl">
+                        <div className="relative w-full sm:w-64 md:w-48 lg:w-72 aspect-[4/3] sm:aspect-square rounded-2xl overflow-hidden bg-white/5 border border-white/5 shrink-0 group-hover:border-primary/30 transition-all duration-500 shadow-xl">
                           <Image
                             src={post.image || `https://picsum.photos/seed/${post.id}/600/600`}
                             alt={post.title}
@@ -430,7 +453,9 @@ export const BlogListClient = ({ posts }: BlogListClientProps) => {
                           <div className="flex flex-col gap-3">
                             <div className="flex items-center gap-3 text-white/70 text-xs font-bold uppercase tracking-widest justify-center md:justify-start">
                               <Calendar className="w-4 h-4 text-primary/40" />
-                              <span>{post.date}</span>
+                              <time dateTime={post.createdAt ? new Date(post.createdAt).toISOString().split('T')[0] : undefined}>
+                                {post.date}
+                              </time>
                             </div>
                             <div className="flex items-center gap-3 text-white/60 text-xs font-medium uppercase tracking-widest justify-center md:justify-start">
                               <Clock className="w-4 h-4 text-primary/40" />
@@ -450,8 +475,8 @@ export const BlogListClient = ({ posts }: BlogListClientProps) => {
                       </div>
 
                       <div className="md:col-span-2 flex justify-end">
-                        <div className="w-20 h-20 rounded-full border border-white/10 flex items-center justify-center group-hover:border-primary group-hover:bg-primary group-hover:text-black transition-all duration-500 shadow-2xl">
-                          <ArrowRight className="w-8 h-8 group-hover:translate-x-1 transition-transform" />
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full border border-white/10 flex items-center justify-center group-hover:border-primary group-hover:bg-primary group-hover:text-black transition-all duration-500 shadow-2xl">
+                          <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
                     </div>
@@ -460,6 +485,77 @@ export const BlogListClient = ({ posts }: BlogListClientProps) => {
                 </motion.article>
               ))}
             </div>
+
+            {/* ── Pagination controls ── */}
+            {totalPages > 1 && (
+              <motion.nav
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+                aria-label="Blog pagination"
+                className="flex items-center justify-center gap-3 pt-8"
+              >
+                {/* Prev */}
+                <button
+                  onClick={() => goToPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  aria-label="Previous page"
+                  className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center text-white/30 hover:text-primary hover:border-primary/40 hover:bg-primary/5 transition-all duration-300 disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:text-white/30 disabled:hover:border-white/10 disabled:hover:bg-transparent"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
+
+                {/* Page numbers */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                  const isFirst = page === 1;
+                  const isLast = page === totalPages;
+                  const isCurrent = page === currentPage;
+                  const isNeighbour = Math.abs(page - currentPage) <= 1;
+                  const show = isFirst || isLast || isCurrent || isNeighbour;
+
+                  if (!show) {
+                    // Only render one ellipsis per gap — skip if previous page was also hidden
+                    const prevHidden = !((page - 1) === 1 || (page - 1) === totalPages || Math.abs((page - 1) - currentPage) <= 1);
+                    if (prevHidden) return null;
+                    return (
+                      <span key={`ellipsis-${page}`} className="text-[10px] font-black text-white/20 tracking-widest px-1">
+                        ···
+                      </span>
+                    );
+                  }
+
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => goToPage(page)}
+                      aria-label={`Page ${page}`}
+                      aria-current={isCurrent ? 'page' : undefined}
+                      className={`w-11 h-11 rounded-full text-[11px] font-black border transition-all duration-300 ${isCurrent
+                          ? 'bg-primary text-black border-primary shadow-[0_0_20px_rgba(16,185,129,0.3)]'
+                          : 'border-white/10 text-white/40 hover:text-primary hover:border-primary/40 hover:bg-primary/5'
+                        }`}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
+
+                {/* Next */}
+                <button
+                  onClick={() => goToPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  aria-label="Next page"
+                  className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center text-white/30 hover:text-primary hover:border-primary/40 hover:bg-primary/5 transition-all duration-300 disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:text-white/30 disabled:hover:border-white/10 disabled:hover:bg-transparent"
+                >
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+
+                {/* Page counter */}
+                <span className="ml-4 text-[10px] font-black uppercase tracking-[0.4em] text-white/20">
+                  {currentPage} / {totalPages}
+                </span>
+              </motion.nav>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

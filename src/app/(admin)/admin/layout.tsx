@@ -4,12 +4,12 @@ import React, { useEffect } from 'react';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  LayoutDashboard, 
-  FolderKanban, 
-  FileText, 
-  Users, 
-  Settings, 
+import {
+  LayoutDashboard,
+  FolderKanban,
+  FileText,
+  Users,
+  Settings,
   LogOut,
   Menu,
   X,
@@ -20,7 +20,9 @@ import {
   Zap,
   Layers,
   Mail,
-  Globe
+  Globe,
+  Scale,
+  Activity
 } from 'lucide-react';
 import Link from 'next/link';
 import { Toaster } from '@/components/ui/toaster';
@@ -73,7 +75,9 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     { label: 'Journal', href: '/admin/blog', icon: FileText },
     { label: 'Layout Config', href: '/admin/interface', icon: Layers },
     { label: 'SEO Command', href: '/admin/seo', icon: Globe },
+    { label: 'Legal Pages', href: '/admin/legal', icon: Scale },
     { label: 'Leads', href: '/admin/leads', icon: Users },
+    { label: 'Audit Log', href: '/admin/audit', icon: Activity },
     { label: 'Settings', href: '/admin/settings', icon: Settings },
   ];
 
@@ -91,7 +95,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
               Admin<span className="text-primary">.</span>
             </div>
           </Link>
-          <button 
+          <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="p-2 hover:bg-white/5 rounded-lg transition-colors text-white/40 hover:text-primary"
           >
@@ -124,7 +128,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="p-4 mt-auto">
-          <button 
+          <button
             onClick={async () => {
               await signOut();
               router.push('/');
@@ -140,7 +144,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto relative">
         <div className="absolute inset-0 bg-grain pointer-events-none opacity-[0.03] z-0" />
-        
+
         <header className="h-24 border-b border-white/5 flex items-center justify-between px-10 bg-[#050505]/50 backdrop-blur-xl sticky top-0 z-40">
           <div className="flex items-center gap-4">
             <span className="text-[14px] font-black uppercase tracking-[0.4em] text-white/20">System Status:</span>
@@ -151,13 +155,13 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-8">
-             <div className="flex flex-col items-end">
-               <span className="text-base font-bold text-white">{user?.email}</span>
-               <span className="text-[13px] uppercase font-black tracking-widest text-white/30">{role}</span>
-             </div>
-             <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
-                <span className="text-lg font-black text-primary">{user?.email?.charAt(0).toUpperCase()}</span>
-             </div>
+            <div className="flex flex-col items-end">
+              <span className="text-base font-bold text-white">{user?.email}</span>
+              <span className="text-[13px] uppercase font-black tracking-widest text-white/30">{role}</span>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
+              <span className="text-lg font-black text-primary">{user?.email?.charAt(0).toUpperCase()}</span>
+            </div>
           </div>
         </header>
 

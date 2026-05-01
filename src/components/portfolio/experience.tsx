@@ -1,13 +1,11 @@
 
 "use client";
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { db } from '@/lib/firebase/firestore';
-import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 
 export const Experience = ({ initialData }: { initialData?: any[] }) => {
-  const [experiences, setExperiences] = useState<any[]>(initialData || []);
+  const experiences = initialData || [];
   const scrollRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: scrollRef,
@@ -15,17 +13,6 @@ export const Experience = ({ initialData }: { initialData?: any[] }) => {
   });
 
   const pathLength = useTransform(scrollYProgress, [0, 0.8], [0, 1]);
-
-  useEffect(() => {
-    if (!initialData) {
-      const fetchExp = async () => {
-        const q = query(collection(db, 'experience'), orderBy('order', 'asc'));
-        const snap = await getDocs(q);
-        setExperiences(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-      };
-      fetchExp();
-    }
-  }, [initialData]);
 
   if (experiences.length === 0) return null;
 
@@ -42,7 +29,7 @@ export const Experience = ({ initialData }: { initialData?: any[] }) => {
 
         <div className="lg:w-2/3 relative">
           <div className="absolute left-0 top-4 bottom-4 w-[1px] bg-white/5">
-            <motion.div 
+            <motion.div
               style={{ scaleY: pathLength, originY: 0 }}
               className="w-full h-full bg-primary"
             />
@@ -56,16 +43,16 @@ export const Experience = ({ initialData }: { initialData?: any[] }) => {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ delay: i * 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                className="relative pl-8 md:pl-20"
+                className="relative pl-10 md:pl-20"
               >
-                <div className="absolute left-0 top-4 md:top-6 -translate-x-1/2 w-3 md:w-5 h-3 md:h-5 bg-primary shadow-[0_0_15px_md:0_0_25px_rgba(16,185,129,0.6)]" />
-                
+                <div className="absolute left-0 top-4 md:top-6 -translate-x-1/2 w-3 md:w-5 h-3 md:h-5 bg-primary shadow-[0_0_15px_rgba(16,185,129,0.6)] md:shadow-[0_0_25px_rgba(16,185,129,0.6)]" />
+
                 <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-4 md:gap-6 mb-6 md:mb-8">
                   <div>
                     <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-headline font-bold text-white mb-2 md:mb-3">{exp.company}</h3>
                     <span className="text-primary font-black text-xs md:text-sm lg:text-base tracking-[0.3em] md:tracking-[0.4em] uppercase">{exp.role}</span>
                   </div>
-                  <div className="text-muted-foreground text-[10px] md:text-sm font-black tracking-widest uppercase border border-white/10 px-4 md:px-8 py-2 md:py-3 w-fit">
+                  <div className="text-muted-foreground text-[10px] md:text-sm font-black tracking-widest uppercase border border-white/10 px-4 md:px-8 py-3 w-fit">
                     {exp.period}
                   </div>
                 </div>

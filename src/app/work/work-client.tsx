@@ -25,10 +25,10 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
             className="mb-12"
           >
             <span className="text-primary uppercase tracking-[0.6em] text-sm font-black block mb-6">Portfolio Archive</span>
-            <h1 className="text-6xl md:text-[10rem] font-headline font-black tracking-tighter leading-none mb-12">
+            <h1 className="text-5xl sm:text-7xl md:text-[10rem] font-headline font-black tracking-tighter leading-none mb-12">
               The <span className="text-outline italic">Works</span>.
             </h1>
-            <p className="text-2xl md:text-4xl text-white/60 font-body font-light max-w-4xl leading-tight">
+            <p className="text-xl sm:text-2xl md:text-4xl text-white/60 font-body font-light max-w-4xl leading-tight">
               A comprehensive showcase of high-fidelity engineering, creative motion, and architectural precision.
             </p>
           </motion.div>
@@ -73,7 +73,7 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1 }}
-                    className="glass p-8 rounded-3xl border-white/5 hover:border-primary/30 transition-all duration-500 group relative flex flex-col justify-between min-h-[480px] cursor-none"
+                    className="glass p-6 sm:p-8 rounded-3xl border-white/5 hover:border-primary/30 transition-all duration-500 group relative flex flex-col justify-between min-h-[400px] sm:min-h-[480px] cursor-none"
                   >
                     <button
                       onClick={() => setSelectedExperiment(project)}
@@ -133,7 +133,7 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
 
       {/* Experiment modal — opens inline without routing */}
       <Dialog open={!!selectedExperiment} onOpenChange={(open) => !open && setSelectedExperiment(null)}>
-        <DialogContent className="max-w-5xl bg-background/95 backdrop-blur-3xl border-white/5 p-0 overflow-hidden rounded-[3rem] shadow-2xl outline-none z-[5000] cursor-none">
+        <DialogContent className="max-w-5xl bg-background/95 backdrop-blur-3xl border-white/5 p-0 overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] md:rounded-[3rem] shadow-2xl outline-none z-[5000] cursor-none">
           <DialogTitle className="sr-only">Project Detail</DialogTitle>
           {selectedExperiment && <ProjectDetailContent project={selectedExperiment} isModal />}
         </DialogContent>

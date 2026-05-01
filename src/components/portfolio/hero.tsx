@@ -1,15 +1,12 @@
 
 "use client";
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Sparkles, ArrowRight } from 'lucide-react';
-import { db } from '@/lib/firebase/firestore';
-import { doc, getDoc } from 'firebase/firestore';
 
 export const Hero = ({ initialData }: { initialData?: any }) => {
-  const [data, setData] = useState(initialData);
   const targetRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: targetRef,
@@ -19,17 +16,7 @@ export const Hero = ({ initialData }: { initialData?: any }) => {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const y = useTransform(scrollYProgress, [0, 0.5], [0, 100]);
 
-  useEffect(() => {
-    if (!initialData) {
-      const fetchHero = async () => {
-        const docSnap = await getDoc(doc(db, 'site_config', 'hero'));
-        if (docSnap.exists()) setData(docSnap.data());
-      };
-      fetchHero();
-    }
-  }, [initialData]);
-
-  const content = data || {
+  const content = initialData || {
     badge: "Full Stack Architect",
     titleMain: "KARTIK",
     titleHighlight: "JINDAL",
@@ -44,9 +31,9 @@ export const Hero = ({ initialData }: { initialData?: any }) => {
 
   return (
     <section ref={targetRef} className="relative min-h-[95vh] flex items-center justify-center overflow-hidden py-12 md:py-24 px-6">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background z-[2]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/40 to-background z-[2]" />
 
-      <motion.div 
+      <motion.div
         style={{ y, opacity }}
         className="relative z-10 max-w-7xl w-full mx-auto my-6 flex flex-col items-center text-center"
       >
@@ -67,16 +54,17 @@ export const Hero = ({ initialData }: { initialData?: any }) => {
             initial={{ opacity: 0, y: 80 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="text-[12vw] sm:text-[14vw] md:text-[9rem] my-4 font-headline font-black leading-[1.1] md:leading-[1.2] tracking-tight text-gradient px-4 break-words"
+            className="text-[12vw] sm:text-[14vw] md:text-[9rem] my-2 md:my-4 font-headline font-black leading-[1.1] md:leading-[1.2] tracking-tight text-gradient px-4 break-words"
           >
             {content.titleMain} <span className="text-outline italic">{content.titleHighlight}</span>
           </motion.h1>
-          
+
           <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: "40%" }}
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
             transition={{ duration: 2, delay: 0.6, ease: "circOut" }}
-            className="h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent mt-8 md:mt-12 mx-auto"
+            className="h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent mt-8 md:mt-12 mx-auto origin-left"
+            style={{ maxWidth: "40%" }}
           />
         </div>
 
@@ -95,9 +83,9 @@ export const Hero = ({ initialData }: { initialData?: any }) => {
           transition={{ duration: 1.2, delay: 1.3, ease: "backOut" }}
           className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto px-6 sm:px-0"
         >
-          <Button 
+          <Button
             onClick={scrollToContact}
-            size="lg" 
+            size="lg"
             className="h-16 rounded-full px-12 text-lg font-black bg-white text-black hover:bg-primary transition-all duration-500 hover:scale-105 shadow-2xl group relative overflow-hidden w-full sm:w-auto"
           >
             <span className="relative z-10 flex items-center gap-2">
@@ -105,9 +93,9 @@ export const Hero = ({ initialData }: { initialData?: any }) => {
             </span>
             <div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
           </Button>
-          <Button 
-            variant="outline" 
-            size="lg" 
+          <Button
+            variant="outline"
+            size="lg"
             onClick={() => document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' })}
             className="h-16 rounded-full px-12 text-lg font-black border-white/10 hover:bg-white/5 transition-all duration-500 backdrop-blur-md w-full sm:w-auto"
           >

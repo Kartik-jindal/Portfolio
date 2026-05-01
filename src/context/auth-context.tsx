@@ -1,13 +1,14 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { 
-  onAuthStateChanged, 
-  User, 
-  signOut as firebaseSignOut 
+import {
+  onAuthStateChanged,
+  User,
+  signOut as firebaseSignOut
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase/config';
+import { auth } from '@/lib/firebase/auth';
+import { db } from '@/lib/firebase/firestore';
 
 interface AuthContextType {
   user: User | null;
@@ -20,7 +21,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   role: null,
   loading: true,
-  signOut: async () => {},
+  signOut: async () => { },
 });
 
 // The designated owner email for automatic bootstrapping
@@ -39,13 +40,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           // Fetch role from Firestore
           const userRef = doc(db, 'users', user.uid);
           const userDoc = await getDoc(userRef);
-          
+
           if (userDoc.exists()) {
             setRole(userDoc.data().role);
           } else {
             // Self-promotion bootstrap for the designated owner
             const initialRole = user.email === OWNER_EMAIL ? 'SUPER_ADMIN' : 'GUEST';
-            
+
             await setDoc(userRef, {
               email: user.email,
               role: initialRole,
@@ -53,7 +54,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               photoURL: user.photoURL || '',
               createdAt: serverTimestamp()
             });
-            
+
             setRole(initialRole);
           }
         } catch (error) {
@@ -71,6 +72,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signOut = async () => {
+    // Clear the server-side session cookie first, then sign out of Firebase
+    try {
+      await fetch('/api/admin/session', { method: 'DELETE' });
+    } catch {
+      // Non-fatal — proceed with Firebase sign-out regardless
+    }
     await firebaseSignOut(auth);
   };
 

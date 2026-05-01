@@ -1,10 +1,32 @@
 import React from 'react';
 import { Github, ArrowUpRight, ExternalLink, Target, Code, Calendar } from 'lucide-react';
 import Image from 'next/image';
+import DOMPurify from 'isomorphic-dompurify';
 
 interface ProjectDetailContentProps {
   project: any;
   isModal?: boolean;
+}
+
+/** Sanitize HTML from the rich text editor before rendering. */
+function sanitizeHtml(html: string): string {
+  if (!html) return '';
+  // Check if it looks like plain text (no HTML tags) — render as-is wrapped in <p>
+  if (!/<[a-z][\s\S]*>/i.test(html)) {
+    return `<p>${html}</p>`;
+  }
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: [
+      'p', 'br', 'strong', 'em', 'u', 's', 'b', 'i',
+      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+      'ul', 'ol', 'li', 'blockquote', 'pre', 'code',
+      'a', 'img', 'figure', 'figcaption',
+      'table', 'thead', 'tbody', 'tr', 'th', 'td',
+      'hr', 'div', 'span',
+    ],
+    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel', 'width', 'height'],
+    ALLOW_DATA_ATTR: false,
+  });
 }
 
 export const ProjectDetailContent = ({ project, isModal = false }: ProjectDetailContentProps) => {
@@ -24,16 +46,17 @@ export const ProjectDetailContent = ({ project, isModal = false }: ProjectDetail
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
 
-        <div className="absolute bottom-8 left-12 right-12 z-20">
+        <div className="absolute bottom-6 left-6 right-6 sm:bottom-8 sm:left-12 sm:right-12 z-20">
           <div className="flex items-center gap-4 mb-1">
             <span className="text-primary font-black tracking-[0.4em] text-[10px] uppercase">{project.role}</span>
             {project.date && (
               <span className="text-white/30 text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
-                <Calendar className="w-3 h-3" /> {project.date}
+                <Calendar className="w-3 h-3" />
+                <time dateTime={project.date}>{project.date}</time>
               </span>
             )}
           </div>
-          <h1 className="text-4xl md:text-7xl font-headline font-black text-white italic tracking-tighter break-words leading-none">{project.title}</h1>
+          <h1 className="text-3xl sm:text-4xl md:text-7xl font-headline font-black text-white italic tracking-tighter break-words leading-none">{project.title}</h1>
         </div>
       </div>
 
@@ -43,18 +66,26 @@ export const ProjectDetailContent = ({ project, isModal = false }: ProjectDetail
             <div className="space-y-6">
               <div className="flex items-center gap-3 text-primary">
                 <Target className="w-4 h-4" />
-                <h4 className="text-xs font-black uppercase tracking-[0.4em]">The Architecture</h4>
+                <h2 className="text-xs font-black uppercase tracking-[0.4em]">The Architecture</h2>
               </div>
-              <p className="text-lg md:text-xl text-white/80 font-body font-light leading-relaxed first-letter:text-5xl first-letter:font-headline first-letter:font-black first-letter:text-primary first-letter:mr-3 first-letter:float-left break-words">
-                {project.longDesc || project.desc}
-              </p>
+              <div
+                className="prose prose-invert prose-lg max-w-none font-body text-white/80 leading-relaxed
+                  first-letter:text-5xl first-letter:font-headline first-letter:font-black first-letter:text-primary first-letter:mr-3 first-letter:float-left
+                  prose-headings:font-headline prose-headings:font-bold prose-headings:text-white prose-headings:tracking-tight
+                  prose-p:mb-4 prose-p:leading-relaxed
+                  prose-blockquote:border-l-2 prose-blockquote:border-primary/50 prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-white/60
+                  prose-code:bg-white/10 prose-code:rounded prose-code:px-1.5 prose-code:py-0.5 prose-code:text-primary/80
+                  prose-a:text-primary prose-a:underline prose-a:underline-offset-2 hover:prose-a:text-accent
+                  break-words"
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(project.longDesc || project.desc || '') }}
+              />
             </div>
 
             {project.methodology && (
               <div className="space-y-6">
                 <div className="flex items-center gap-3 text-accent">
                   <Code className="w-4 h-4" />
-                  <h4 className="text-xs font-black uppercase tracking-[0.4em]">Strategic Methodology</h4>
+                  <h2 className="text-xs font-black uppercase tracking-[0.4em]">Strategic Methodology</h2>
                 </div>
                 <p className="text-lg text-white/60 font-body border-l-2 border-accent/20 pl-8 italic leading-relaxed break-words">
                   {project.methodology}
@@ -64,7 +95,7 @@ export const ProjectDetailContent = ({ project, isModal = false }: ProjectDetail
 
             {project.challenges && project.challenges.length > 0 && (
               <div className="space-y-8">
-                <h4 className="text-xs font-black uppercase tracking-[0.4em] text-white/40">Engineering Challenges</h4>
+                <h2 className="text-xs font-black uppercase tracking-[0.4em] text-white/40">Engineering Challenges</h2>
                 <ul className="grid gap-6">
                   {project.challenges.map((c: string, i: number) => (
                     <li key={i} className="flex gap-6 items-start group">
@@ -81,7 +112,7 @@ export const ProjectDetailContent = ({ project, isModal = false }: ProjectDetail
             <div className="glass p-10 rounded-[2rem] border-white/5 space-y-10">
               {project.impact && (
                 <div>
-                  <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Project Impact</h4>
+                  <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Project Impact</h2>
                   <div className="bg-primary/5 p-8 rounded-2xl border border-primary/10">
                     <p className="text-sm md:text-base font-medium text-white/90 leading-relaxed italic break-words">
                       "{project.impact}"
@@ -91,7 +122,7 @@ export const ProjectDetailContent = ({ project, isModal = false }: ProjectDetail
               )}
 
               <div>
-                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Core Arsenal</h4>
+                <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">Core Arsenal</h2>
                 <div className="flex flex-wrap gap-2">
                   {project.tech?.map((t: string) => (
                     <span key={t} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-[10px] font-bold text-white/60 uppercase tracking-widest">{t}</span>
@@ -111,7 +142,7 @@ export const ProjectDetailContent = ({ project, isModal = false }: ProjectDetail
             </div>
 
             {project.liveUrl && (
-              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3 w-full py-10 rounded-[2rem] bg-white text-black hover:bg-primary transition-all font-black uppercase tracking-[0.3em] shadow-2xl group text-sm">
+              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3 w-full py-6 sm:py-10 rounded-[1.5rem] sm:rounded-[2rem] bg-white text-black hover:bg-primary transition-all font-black uppercase tracking-[0.3em] shadow-2xl group text-sm">
                 Check Live <ArrowUpRight className="w-5 h-5 ml-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </a>
             )}

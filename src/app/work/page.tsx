@@ -1,24 +1,15 @@
-
 import { cache } from 'react';
 import { Navbar } from '@/components/portfolio/navbar';
 import { Footer } from '@/components/portfolio/footer';
-import { Projects } from '@/components/portfolio/projects';
 import { db } from '@/lib/firebase/firestore';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import { serialize } from '@/lib/serialize';
 import type { Metadata } from 'next';
 import WorkClient from './work-client';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
-function serialize(data: any) {
-  if (!data) return data;
-  return JSON.parse(JSON.stringify(data, (key, value) => {
-    if (value && typeof value === 'object' && value.seconds !== undefined && value.nanoseconds !== undefined) {
-      return new Date(value.seconds * 1000).getTime();
-    }
-    return value;
-  }));
-}
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com';
 
 const getGlobalConfig = cache(async function getGlobalConfig() {
   try {
@@ -69,30 +60,36 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com'}/work`,
-    },
+    alternates: { canonical: `${BASE_URL}/work` },
     openGraph: {
       title,
       description,
-      images: ogImage ? [{ url: ogImage }] : [],
+      url: `${BASE_URL}/work`,
+      siteName: 'Kartik Jindal',
+      type: 'website',
+      ...(ogImage && { images: [{ url: ogImage, width: 1200, height: 630, alt: title }] }),
     },
-    robots: {
-      index: workSeo.indexable ?? true,
-      follow: workSeo.indexable ?? true,
-    }
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      ...(ogImage && { images: [ogImage] }),
+    },
+    robots: { index: workSeo.indexable ?? true, follow: workSeo.indexable ?? true },
   };
 }
 
 export default async function WorkPage() {
-  const config = await getGlobalConfig();
-  const experiments = await getExperiments();
-  const flagships = await getFlagships();
+  const [config, experiments, flagships] = await Promise.all([
+    getGlobalConfig(),
+    getExperiments(),
+    getFlagships(),
+  ]);
 
   return (
-    <WorkClient 
-      config={config} 
-      initialExperiments={experiments} 
+    <WorkClient
+      config={config}
+      initialExperiments={experiments}
       initialFlagships={flagships}
     />
   );

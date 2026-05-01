@@ -31,29 +31,139 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground font-body antialiased selection:bg-primary selection:text-primary-foreground;
     overflow-x: hidden;
   }
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-headline tracking-tight;
   }
-  
+
   @media (min-width: 1024px) {
+
     /* Broad cursor none to handle portals and overlays */
-    html, body, a, button, [role="button"], [role="dialog"], div {
+    html,
+    body,
+    a,
+    button,
+    [role="button"],
+    [role="dialog"],
+    div {
       cursor: none !important;
     }
   }
+
+  /* Restore the OS cursor when the user prefers reduced motion
+     (the custom cursor JS component also skips itself in this case) */
+  @media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+
+    html,
+    body,
+    a,
+    button,
+    [role="button"],
+    [role="dialog"],
+    div {
+      cursor: auto !important;
+    }
+
+    a,
+    button,
+    [role="button"] {
+      cursor: pointer !important;
+    }
+  }
+}
+
+/* ── Tiptap rich text editor ─────────────────────────────────────────────── */
+/* Placeholder text */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: rgba(255, 255, 255, 0.15);
+  pointer-events: none;
+  height: 0;
+  font-style: italic;
+}
+
+/* Editor focus ring */
+.tiptap:focus {
+  outline: none;
+}
+
+/* Prose overrides inside the editor to match the public blog post styles */
+.tiptap h1 {
+  @apply text-4xl font-headline font-black text-white tracking-tight mt-10 mb-4;
+}
+
+.tiptap h2 {
+  @apply text-3xl font-headline font-bold text-white tracking-tight mt-8 mb-3;
+}
+
+.tiptap h3 {
+  @apply text-2xl font-headline font-bold text-white tracking-tight mt-6 mb-2;
+}
+
+.tiptap p {
+  @apply text-white/70 leading-relaxed mb-4;
+}
+
+.tiptap ul {
+  @apply list-disc pl-6 space-y-2 mb-4 text-white/70;
+}
+
+.tiptap ol {
+  @apply list-decimal pl-6 space-y-2 mb-4 text-white/70;
+}
+
+.tiptap li {
+  @apply leading-relaxed;
+}
+
+.tiptap blockquote {
+  @apply border-l-2 border-primary/50 pl-6 italic text-white/60 my-6;
+}
+
+.tiptap pre {
+  @apply bg-white/5 rounded-xl p-4 font-mono text-sm text-white/80 overflow-x-auto my-4;
+}
+
+.tiptap code:not(pre code) {
+  @apply bg-white/10 rounded px-1.5 py-0.5 font-mono text-sm text-primary/80;
+}
+
+.tiptap hr {
+  @apply border-white/10 my-8;
+}
+
+.tiptap a {
+  @apply text-primary underline underline-offset-2 hover:text-accent transition-colors;
+}
+
+.tiptap img {
+  @apply rounded-2xl max-w-full my-6 border border-white/5;
+}
+
+.tiptap mark {
+  @apply bg-primary/20 text-primary rounded px-0.5;
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 4px;
 }
+
 ::-webkit-scrollbar-track {
   @apply bg-background;
 }
+
 ::-webkit-scrollbar-thumb {
   @apply bg-primary/20 rounded-full hover:bg-primary/50 transition-colors;
 }
@@ -62,9 +172,11 @@
 .custom-scrollbar::-webkit-scrollbar {
   width: 3px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
   @apply bg-transparent;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
   @apply bg-white/10 rounded-full hover:bg-primary/40 transition-all;
 }
@@ -108,6 +220,53 @@
 }
 
 @keyframes reveal {
-  from { mask-position: 100% 0; }
-  to { mask-position: 0% 0; }
+  from {
+    mask-position: 100% 0;
+  }
+
+  to {
+    mask-position: 0% 0;
+  }
+}
+
+/*
+  Intro screen — page content fade-in.
+  When IntroScreen removes #intro-hide and adds .intro-revealing,
+  the content fades in smoothly underneath the sliding intro.
+*/
+#page-content.intro-revealing {
+  animation: page-fade-in 0.9s ease-out forwards;
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/*
+  Accessibility: respect the user's OS-level motion preference.
+  This catches any CSS animations/transitions not already guarded in JS.
+  Framer Motion respects this automatically when using its built-in
+  `useReducedMotion` hook, but CSS keyframes need an explicit rule.
+*/
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Keep the reading progress bar visible but static */
+  .motion-safe\:origin-left {
+    transform: scaleX(1) !important;
+  }
 }

@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { writeAuditLog } from '@/lib/audit-log';
+import { useAuth } from '@/context/auth-context';
 
 export default function BlogAdminPage() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -18,6 +20,7 @@ export default function BlogAdminPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const { toast } = useToast();
+  const { user, role } = useAuth();
 
   useEffect(() => {
     fetchPosts();
@@ -41,6 +44,11 @@ export default function BlogAdminPage() {
     try {
       await updateDoc(doc(db, 'blog', id), { status: newStatus });
       setPosts(prev => prev.map(p => p.id === id ? { ...p, status: newStatus } : p));
+      const post = posts.find(p => p.id === id);
+      writeAuditLog(newStatus === 'published' ? 'PUBLISH' : 'DRAFT', 'blog', {
+        entityId: id, entityTitle: post?.title,
+        actorEmail: user?.email ?? undefined, actorRole: role ?? undefined,
+      });
       toast({ title: 'Editorial Sync', description: `Entry visibility marked as ${newStatus}` });
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Sync Failed', description: error.message });
@@ -61,8 +69,13 @@ export default function BlogAdminPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('Permanently delete this journal entry?')) return;
     try {
+      const post = posts.find(p => p.id === id);
       await deleteDoc(doc(db, 'blog', id));
       setPosts(prev => prev.filter(p => p.id !== id));
+      writeAuditLog('DELETE', 'blog', {
+        entityId: id, entityTitle: post?.title,
+        actorEmail: user?.email ?? undefined, actorRole: role ?? undefined,
+      });
       toast({ title: 'Success', description: 'Post deleted' });
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Error', description: error.message });

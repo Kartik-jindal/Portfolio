@@ -6,19 +6,12 @@ import { Footer } from '@/components/portfolio/footer';
 import { BlogListClient } from '@/components/portfolio/blog-list-client';
 import { db } from '@/lib/firebase/firestore';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import { serialize } from '@/lib/serialize';
 import type { Metadata } from 'next';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
-function serialize(data: any) {
-  if (!data) return data;
-  return JSON.parse(JSON.stringify(data, (key, value) => {
-    if (value && typeof value === 'object' && value.seconds !== undefined && value.nanoseconds !== undefined) {
-      return new Date(value.seconds * 1000).getTime();
-    }
-    return value;
-  }));
-}
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com';
 
 const getBlogData = cache(async function getBlogData() {
   try {
@@ -28,7 +21,7 @@ const getBlogData = cache(async function getBlogData() {
     );
     const snap = await getDocs(q);
     const data = snap.docs.map(d => serialize({ id: d.id, ...d.data() }));
-    
+
     return data.sort((a: any, b: any) => {
       const timeA = typeof a.createdAt === 'number' ? a.createdAt : (a.createdAt?.toMillis?.() || 0);
       const timeB = typeof b.createdAt === 'number' ? b.createdAt : (b.createdAt?.toMillis?.() || 0);
@@ -65,36 +58,39 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com'}/blog`,
-    },
+    alternates: { canonical: `${BASE_URL}/blog` },
     openGraph: {
       title,
       description,
-      images: ogImage ? [{ url: ogImage }] : [],
+      url: `${BASE_URL}/blog`,
+      siteName: 'Kartik Jindal',
+      type: 'website',
+      ...(ogImage && { images: [{ url: ogImage, width: 1200, height: 630, alt: title }] }),
     },
-    robots: {
-      index: blogSeo.indexable ?? true,
-      follow: blogSeo.indexable ?? true,
-    }
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      ...(ogImage && { images: [ogImage] }),
+    },
+    robots: { index: blogSeo.indexable ?? true, follow: blogSeo.indexable ?? true },
   };
 }
 
 export default async function BlogPage() {
-  const posts = await getBlogData();
-  const config = await getGlobalConfig();
+  const [posts, config] = await Promise.all([getBlogData(), getGlobalConfig()]);
 
   return (
     <main className="bg-transparent min-h-screen">
       <Navbar resumeUrl={config?.resume?.fileUrl} />
-      
-      <section className="pt-48 pb-24 px-6 relative overflow-hidden">
+
+      <section className="pt-28 sm:pt-36 md:pt-48 pb-24 px-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/4" />
-        
+
         <div className="max-w-[1600px] mx-auto relative z-10">
           <div className="mb-32">
             <span className="text-primary uppercase tracking-[0.6em] text-sm font-black block mb-6">Archive of Thoughts</span>
-            <h1 className="text-5xl md:text-8xl font-headline font-black mb-8 italic tracking-tighter leading-tight break-words">
+            <h1 className="text-4xl sm:text-6xl md:text-8xl font-headline font-black mb-8 italic tracking-tighter leading-tight break-words">
               The <span className="text-outline">Journal</span>.
             </h1>
             <p className="text-xl md:text-3xl text-white/80 font-body font-light max-w-3xl leading-relaxed break-words">

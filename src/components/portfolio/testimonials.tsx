@@ -1,24 +1,12 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Quote } from 'lucide-react';
-import { db } from '@/lib/firebase/firestore';
-import { collection, getDocs } from 'firebase/firestore';
 
 export const Testimonials = ({ initialData }: { initialData?: any[] }) => {
-  const [testimonials, setTestimonials] = useState<any[]>(initialData || []);
-
-  useEffect(() => {
-    if (!initialData) {
-      const fetchT = async () => {
-        const snap = await getDocs(collection(db, 'testimonials'));
-        setTestimonials(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-      };
-      fetchT();
-    }
-  }, [initialData]);
+  const testimonials = initialData || [];
 
   if (testimonials.length === 0) return null;
 
@@ -27,7 +15,7 @@ export const Testimonials = ({ initialData }: { initialData?: any[] }) => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-20">
           <span className="text-primary uppercase tracking-widest text-xs font-bold block mb-4">Social Proof</span>
-          <h2 className="text-5xl md:text-7xl font-headline font-black tracking-tighter">Voices.</h2>
+          <h2 className="text-4xl sm:text-5xl md:text-7xl font-headline font-black tracking-tighter">Voices.</h2>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 md:gap-8">
@@ -38,7 +26,7 @@ export const Testimonials = ({ initialData }: { initialData?: any[] }) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.8 }}
-              className="bg-card p-10 rounded-3xl border border-white/5 flex flex-col justify-between hover:border-accent/30 transition-all duration-500 group"
+              className="bg-card p-6 sm:p-8 md:p-10 rounded-3xl border border-white/5 flex flex-col justify-between hover:border-accent/30 transition-all duration-500 group"
             >
               <div>
                 <Quote className="w-10 h-10 text-accent mb-8 opacity-20 group-hover:opacity-100 transition-opacity" />
