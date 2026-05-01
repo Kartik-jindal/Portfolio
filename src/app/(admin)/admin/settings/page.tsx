@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase/config';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { uploadToS3 } from '@/lib/aws/s3-actions';
+import { uploadMedia } from '@/lib/aws/media-actions';
 import { motion } from 'framer-motion';
 import { Save, Share2, Eye, FileUp, User, Briefcase, Plus, Trash2, ShieldCheck, Globe, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -95,7 +95,7 @@ export default function SettingsAdminPage() {
       uploadFormData.append('file', file);
       uploadFormData.append('path', path);
       
-      const result = await uploadToS3(uploadFormData);
+      const result = await uploadMedia(uploadFormData);
       
       if (result.success && result.url) {
         const updatedSettings = { ...settings };

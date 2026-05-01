@@ -11,7 +11,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { uploadToS3 } from '@/lib/aws/s3-actions';
+import { uploadMedia } from '@/lib/aws/media-actions';
 import { listMedia } from '@/lib/aws/media-actions';
 import { type MediaItem, type ListMediaResult, MEDIA_FOLDERS } from '@/lib/aws/media-types';
 import { getAssetUrl } from '@/lib/utils';
@@ -48,7 +48,7 @@ export function ImageSelector({ value, onChange, uploadPath = 'general', disable
       const fd = new FormData();
       fd.append('file', file);
       fd.append('path', uploadPath);
-      const result = await uploadToS3(fd);
+      const result = await uploadMedia(fd);
       if (result.success && result.url) {
         onChange(result.url);
         toast({ title: 'Upload Complete', description: 'Asset synced to CDN.' });

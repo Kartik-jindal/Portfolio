@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SeoHud } from '@/components/admin/seo-hud';
+import { ImageSelector } from '@/components/admin/image-selector';
 
 export default function SeoAdminPage() {
   const [loading, setLoading] = useState(true);
@@ -179,11 +180,10 @@ export default function SeoAdminPage() {
                     </div>
                     <div className="space-y-2">
                       <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">OG Image URL</Label>
-                      <Input
+                      <ImageSelector
                         value={pageData.home?.ogImage || ''}
-                        onChange={e => updatePage('home', 'ogImage', e.target.value)}
-                        className="bg-white/5 border-white/5 rounded-xl h-14"
-                        placeholder="https://..."
+                        onChange={val => updatePage('home', 'ogImage', val)}
+                        uploadPath="seo"
                       />
                     </div>
                   </div>
@@ -239,11 +239,10 @@ export default function SeoAdminPage() {
                     </div>
                     <div className="space-y-2">
                       <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Global OG Image URL</Label>
-                      <Input
+                      <ImageSelector
                         value={globalSeo.ogImage || ''}
-                        onChange={e => updateGlobal('ogImage', e.target.value)}
-                        className="bg-white/5 border-white/5 rounded-xl h-14"
-                        placeholder="https://..."
+                        onChange={val => updateGlobal('ogImage', val)}
+                        uploadPath="seo"
                       />
                     </div>
                   </div>
@@ -313,10 +312,10 @@ export default function SeoAdminPage() {
                     </div>
                     <div className="space-y-2">
                       <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">OG Image URL</Label>
-                      <Input
+                      <ImageSelector
                         value={pageData.work.ogImage}
-                        onChange={e => updatePage('work', 'ogImage', e.target.value)}
-                        className="bg-white/5 border-white/5 rounded-xl h-14"
+                        onChange={val => updatePage('work', 'ogImage', val)}
+                        uploadPath="seo"
                       />
                     </div>
                   </div>
@@ -373,6 +372,26 @@ export default function SeoAdminPage() {
                       className="bg-white/5 border-white/5 rounded-xl min-h-[120px]"
                       placeholder="Deep dives into engineering and creative code..."
                     />
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">Keywords (CSV)</Label>
+                      <Input
+                        value={pageData.blog.keywords}
+                        onChange={e => updatePage('blog', 'keywords', e.target.value)}
+                        className="bg-white/5 border-white/5 rounded-xl h-14"
+                        placeholder="Journal, Tech, Engineering"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] uppercase font-black tracking-widest text-white/40">OG Image URL</Label>
+                      <ImageSelector
+                        value={pageData.blog.ogImage}
+                        onChange={val => updatePage('blog', 'ogImage', val)}
+                        uploadPath="seo"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

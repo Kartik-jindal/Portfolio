@@ -10,6 +10,7 @@
 import {
   ListObjectsV2Command,
   DeleteObjectCommand,
+  PutObjectCommand,
   type _Object,
 } from "@aws-sdk/client-s3";
 import { s3Client } from "./s3-client";
@@ -25,7 +26,7 @@ const CDN_BASE = process.env.NEXT_PUBLIC_CDN_URL || 'https://assets.kartikjindal
 export async function listMedia(
   prefix?: string,
   continuationToken?: string,
-  maxKeys: number = 50,
+  maxKeys: number = 1000,
 ): Promise<ListMediaResult> {
   try {
     const command = new ListObjectsV2Command({
@@ -106,4 +107,38 @@ export async function extractKeyFromUrl(url: string): Promise<string | null> {
   if (url.startsWith('/')) return url.slice(1);
 
   return null;
+}
+
+/**
+ * Uploads a file to S3 and returns its CDN URL.
+ * Automatically sanitizes filename and ensures correct Content-Type.
+ */
+export async function uploadMedia(formData: FormData): Promise<{ success: boolean; url?: string; error?: string }> {
+  try {
+    const file = formData.get('file') as File;
+    const path = formData.get('path') as string || 'general';
+    
+    if (!file) return { success: false, error: "No file payload." };
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+    // Sanitize filename: remove spaces, add timestamp to prevent collisions
+    const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+    const key = `${path}/${fileName}`;
+
+    const command = new PutObjectCommand({
+      Bucket: BUCKET,
+      Key: key,
+      Body: buffer,
+      ContentType: file.type,
+      CacheControl: 'public, max-age=31536000, immutable',
+    });
+
+    await s3Client.send(command);
+    const url = `${CDN_BASE}/${key}`;
+    
+    return { success: true, url };
+  } catch (error: any) {
+    console.error("S3 Upload Error:", error);
+    return { success: false, error: error.message };
+  }
 }

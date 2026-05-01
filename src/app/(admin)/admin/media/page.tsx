@@ -5,10 +5,10 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { listMedia, deleteMedia } from '@/lib/aws/media-actions';
+import { listMedia, deleteMedia, uploadMedia } from '@/lib/aws/media-actions';
 import { MEDIA_FOLDERS, type MediaItem } from '@/lib/aws/media-types';
 import { getAssetUrl } from '@/lib/utils';
-import { Image as ImageIcon, Trash2, Copy, Loader2, ChevronDown, FolderOpen, AlertTriangle, Check } from 'lucide-react';
+import { Image as ImageIcon, Trash2, Copy, Loader2, ChevronDown, FolderOpen, AlertTriangle, Check, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
@@ -20,6 +20,7 @@ export default function MediaLibraryPage() {
   const [selectedItem, setSelectedItem] = useState<MediaItem | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -73,6 +74,33 @@ export default function MediaLibraryPage() {
     }
   };
 
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('path', activeFolder || 'general');
+
+      const result = await uploadMedia(formData);
+      if (result.success) {
+        toast({ title: 'Success', description: 'File uploaded successfully.' });
+        // Refresh the list to show the new item
+        fetchItems(activeFolder);
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Upload Failed', description: error.message });
+    } finally {
+      setUploading(false);
+      // Reset input
+      e.target.value = '';
+    }
+  };
+
   return (
     <div className="space-y-12 pb-20">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-8">
@@ -80,9 +108,33 @@ export default function MediaLibraryPage() {
           <span className="text-primary font-black uppercase tracking-[0.6em] text-[12px]">Asset Management</span>
           <h1 className="text-6xl font-headline font-black italic tracking-tighter text-white">Media Library.</h1>
         </div>
-        <div className="flex items-center gap-3 text-white/30">
-          <FolderOpen className="w-5 h-5" />
-          <span className="text-[11px] font-black uppercase tracking-widest">{items.length} assets loaded</span>
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 text-white/30">
+            <FolderOpen className="w-5 h-5" />
+            <span className="text-[11px] font-black uppercase tracking-widest">{items.length} assets loaded</span>
+          </div>
+          
+          <div className="relative">
+            <input
+              type="file"
+              id="media-upload"
+              className="hidden"
+              onChange={handleUpload}
+              accept="image/*,application/pdf"
+            />
+            <Button
+              onClick={() => document.getElementById('media-upload')?.click()}
+              disabled={uploading}
+              className="h-14 rounded-2xl bg-primary text-black font-black uppercase tracking-widest px-8 group"
+            >
+              {uploading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Upload className="w-5 h-5 mr-2 group-hover:-translate-y-1 transition-transform" />
+              )}
+              {uploading ? 'Uploading...' : 'Upload Asset'}
+            </Button>
+          </div>
         </div>
       </header>
 

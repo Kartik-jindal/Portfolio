@@ -64,8 +64,7 @@ export async function GET() {
                 const ta = typeof a.createdAt === 'number' ? a.createdAt : (a.createdAt?.seconds ? a.createdAt.seconds * 1000 : 0);
                 const tb = typeof b.createdAt === 'number' ? b.createdAt : (b.createdAt?.seconds ? b.createdAt.seconds * 1000 : 0);
                 return tb - ta;
-            })
-            .slice(0, 50); // cap at 50 items
+            });
     } catch { /* return empty feed on error */ }
 
     const items = posts.map((post: any) => {

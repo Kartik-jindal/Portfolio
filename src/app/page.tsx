@@ -1,5 +1,3 @@
-
-import { cache } from 'react';
 import { Navbar } from '@/components/portfolio/navbar';
 import { Hero } from '@/components/portfolio/hero';
 import { About } from '@/components/portfolio/about';
@@ -15,60 +13,68 @@ import { serialize } from '@/lib/serialize';
 import { getAssetUrl } from '@/lib/utils';
 import type { Metadata } from 'next';
 
-export const revalidate = 60;
+// Force dynamic to debug caching issues with SEO overrides
+export const revalidate = 0;
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com';
 
-const getGlobalConfig = cache(async function getGlobalConfig() {
+async function getGlobalConfig() {
   try {
     const docSnap = await getDoc(doc(db, 'site_config', 'global'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
-  } catch { return null; }
-});
+  } catch (e) { 
+    console.error('Error fetching global config:', e);
+    return null; 
+  }
+}
 
-const getSeoPageConfig = cache(async function getSeoPageConfig() {
+async function getSeoPageConfig() {
   try {
     const docSnap = await getDoc(doc(db, 'site_config', 'seo_pages'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
-  } catch { return null; }
-});
+  } catch (e) { 
+    console.error('Error fetching SEO page config:', e);
+    return null; 
+  }
+}
 
-const getHeroData = cache(async function getHeroData() {
+// Data fetchers for the main page content
+async function getHeroData() {
   try {
     const docSnap = await getDoc(doc(db, 'site_config', 'hero'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch { return null; }
-});
+}
 
-const getNavbarData = cache(async function getNavbarData() {
+async function getNavbarData() {
   try {
     const docSnap = await getDoc(doc(db, 'site_config', 'navbar'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch { return null; }
-});
+}
 
-const getFooterData = cache(async function getFooterData() {
+async function getFooterData() {
   try {
     const docSnap = await getDoc(doc(db, 'site_config', 'footer'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch { return null; }
-});
+}
 
-const getAboutData = cache(async function getAboutData() {
+async function getAboutData() {
   try {
     const docSnap = await getDoc(doc(db, 'site_config', 'about'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch { return null; }
-});
+}
 
-const getContactData = cache(async function getContactData() {
+async function getContactData() {
   try {
     const docSnap = await getDoc(doc(db, 'site_config', 'contact'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch { return null; }
-});
+}
 
-const getProjects = cache(async function getProjects(count: number) {
+async function getProjects(count: number) {
   try {
     const snap = await getDocs(query(collection(db, 'projects'), where('status', '==', 'published')));
     return snap.docs
@@ -77,32 +83,34 @@ const getProjects = cache(async function getProjects(count: number) {
       .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
       .slice(0, count);
   } catch { return []; }
-});
+}
 
-const getExperience = cache(async function getExperience() {
+async function getExperience() {
   try {
     const snap = await getDocs(collection(db, 'experience'));
     return snap.docs
       .map(d => serialize({ id: d.id, ...d.data() }))
       .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
   } catch { return []; }
-});
+}
 
-const getTestimonials = cache(async function getTestimonials() {
+async function getTestimonials() {
   try {
     const snap = await getDocs(collection(db, 'testimonials'));
     return snap.docs.map(d => serialize({ id: d.id, ...d.data() }));
   } catch { return []; }
-});
+}
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [globalConfig, seoPageConfig] = await Promise.all([getGlobalConfig(), getSeoPageConfig()]);
+  // Fetch data sequentially to ensure no race conditions in cache()
+  const globalConfig = await getGlobalConfig();
+  const seoPageConfig = await getSeoPageConfig();
+  
   const homeSeo = seoPageConfig?.home || {};
 
   const title = homeSeo.title || globalConfig?.seo?.defaultTitle || 'Kartik Jindal | Full Stack Architect';
   const description = homeSeo.description || globalConfig?.seo?.defaultDescription || 'Engineering digital landscapes where architectural precision meets artistic motion.';
   const keywords = homeSeo.keywords || globalConfig?.seo?.keywords || 'Portfolio, Full Stack, Developer, Creative Engineering';
-  // No picsum fallback — only use a real image if one is set
   const ogImage = homeSeo.ogImage || globalConfig?.seo?.ogImage || null;
 
   return {

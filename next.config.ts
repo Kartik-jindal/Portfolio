@@ -101,6 +101,11 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '50mb', // Set to a high value to effectively remove the cap
+    },
+  },
 };
 
 export default nextConfig;
