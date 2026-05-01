@@ -61,12 +61,6 @@ export const Contact = ({ initialData }: { initialData?: any }) => {
     }
   }, [initialData]);
 
-  // Listen for the navbar "Start Project" button — opens the dialog directly
-  useEffect(() => {
-    const handler = () => setIsOpen(true);
-    window.addEventListener('open-contact', handler);
-    return () => window.removeEventListener('open-contact', handler);
-  }, []);
 
   const content = data || {
     badge: 'Now accepting inquiries',
