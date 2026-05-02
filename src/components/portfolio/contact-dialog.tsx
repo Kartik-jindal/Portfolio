@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Send, X, CheckCircle2, Globe, Shield, Terminal } from 'lucide-react';
 import { db } from '@/lib/firebase/firestore';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -35,6 +35,7 @@ type ContactFormData = z.infer<typeof ContactSchema>;
  * the 'open-contact' custom event on window.
  */
 export const GlobalContactDialog = () => {
+    const [data, setData] = useState<any>(null);
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
@@ -50,6 +51,16 @@ export const GlobalContactDialog = () => {
     });
 
     useEffect(() => {
+        const fetchContact = async () => {
+            try {
+                const docSnap = await getDoc(doc(db, 'site_config', 'contact'));
+                if (docSnap.exists()) setData(docSnap.data());
+            } catch (e) {
+                console.error("Contact Config Error:", e);
+            }
+        };
+        fetchContact();
+
         const handler = () => setIsOpen(true);
         window.addEventListener('open-contact', handler);
         return () => window.removeEventListener('open-contact', handler);
@@ -87,7 +98,7 @@ export const GlobalContactDialog = () => {
         }
     };
 
-    const content = {
+    const content = data || {
         dialogTitle: 'Inquiry Payload.',
         dialogSubtitle: 'Initialize project architectural parameters',
         labels: {
@@ -136,10 +147,7 @@ export const GlobalContactDialog = () => {
                                 <div className="absolute inset-0 bg-primary/5 z-0" />
                                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-0 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]" />
                                 <div className="relative z-10 space-y-1.5 pr-14 sm:pr-16">
-                                    <div className="flex items-center gap-3 text-primary/60 mb-2">
-                                        <Terminal className="w-4 h-4" />
-                                        <span className="text-[9px] font-black uppercase tracking-[0.4em]">Secure_Link_Established</span>
-                                    </div>
+                                    {/*  */}
                                     <DialogTitle className="text-2xl sm:text-4xl md:text-5xl font-headline font-black italic tracking-tighter text-white leading-none">
                                         {content.dialogTitle}
                                     </DialogTitle>

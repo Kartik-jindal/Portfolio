@@ -42,7 +42,7 @@ export const Footer = ({ config, footerLayout }: FooterProps) => {
           <div className="lg:col-span-4 space-y-8 lg:space-y-10">
             <div className="space-y-4 lg:space-y-6">
               <h3 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-headline font-bold italic tracking-tighter text-white">
-                Kartik Jindal.
+                Kartik Jindal
               </h3>
               <p className="text-muted-foreground max-w-sm lg:max-w-md text-base md:text-lg lg:text-xl xl:text-2xl font-light leading-relaxed font-body">
                 {footerBio}

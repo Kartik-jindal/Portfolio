@@ -187,10 +187,7 @@ export const Contact = ({ initialData }: { initialData?: any }) => {
                   <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-0 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]" />
 
                   <div className="relative z-10 space-y-1.5 pr-14 sm:pr-16">
-                    <div className="flex items-center gap-3 text-primary/60 mb-2">
-                      <Terminal className="w-4 h-4" />
-                      <span className="text-[9px] font-black uppercase tracking-[0.4em]">Secure_Link_Established</span>
-                    </div>
+
                     <DialogTitle className="text-2xl sm:text-4xl md:text-5xl font-headline font-black italic tracking-tighter text-white leading-none">{content.dialogTitle}</DialogTitle>
                     <DialogDescription className="text-white/30 text-[9px] uppercase font-black tracking-[0.4em]">{content.dialogSubtitle}</DialogDescription>
                   </div>
