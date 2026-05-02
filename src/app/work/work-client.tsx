@@ -1,4 +1,6 @@
 "use client";
+// Forced re-compile
+
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -9,6 +11,7 @@ import { Projects } from '@/components/portfolio/projects';
 import { ProjectDetailContent } from '@/components/portfolio/project-detail-content';
 import { ArrowUpRight, Binary } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { getAssetUrl } from '@/lib/utils';
 
 export default function WorkClient({ config, initialExperiments, initialFlagships }: { config: any, initialExperiments: any[], initialFlagships: any[] }) {
@@ -45,7 +48,7 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
             </h2>
           </motion.div>
         </div>
-        <Projects initialData={initialFlagships} hideHeader />
+        <Projects initialData={initialFlagships} hideHeader useModal />
       </section>
 
       {config?.visibility?.showExperiments && (
@@ -76,12 +79,6 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
                     transition={{ delay: i * 0.1 }}
                     className="glass p-6 sm:p-8 rounded-3xl border-white/5 hover:border-primary/30 transition-all duration-500 group relative flex flex-col justify-between min-h-[400px] sm:min-h-[480px] cursor-none"
                   >
-                    <button
-                      onClick={() => setSelectedExperiment(project)}
-                      className="absolute inset-0 z-10 cursor-none"
-                      aria-label={`View ${project.title} case study`}
-                    />
-
                     <div className="space-y-6">
                       <div className="flex justify-between items-start">
                         <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-primary transition-colors duration-500">
@@ -90,7 +87,11 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
                         <span className="text-[10px] font-black uppercase tracking-widest text-white/20">{project.type}</span>
                       </div>
 
-                      <div className="relative aspect-video rounded-xl overflow-hidden mb-8 border border-white/5 shadow-2xl">
+                      <div 
+                        className="relative aspect-video rounded-xl overflow-hidden mb-8 border border-white/5 shadow-2xl cursor-none"
+                        onClick={() => setSelectedExperiment(project)}
+                        data-cursor="View"
+                      >
                         <Image
                           src={getAssetUrl(project.image)}
                           alt={project.title}
@@ -118,9 +119,13 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
                           <span key={t} className="text-[9px] font-bold text-white/30 uppercase tracking-widest">{t}</span>
                         ))}
                       </div>
-                      <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors">
+                      <a 
+                        href={`/work/${project.slug || project.id}`}
+                        className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors cursor-none relative z-50 pointer-events-auto"
+                        data-cursor="Read"
+                      >
                         Access Lab Notes <ArrowUpRight className="w-3 h-3" />
-                      </div>
+                      </a>
                     </div>
                   </motion.div>
                 ))}

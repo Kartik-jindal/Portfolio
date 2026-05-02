@@ -13,24 +13,34 @@ import { getAssetUrl } from '@/lib/utils';
 export const revalidate = 3600; // ISR: revalidate project pages every hour
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com';
+export const dynamic = 'force-dynamic';
 
-const getProject = cache(async function getProject(slug: string) {
+async function getProject(slug: string) {
   try {
-    const q = query(collection(db, 'projects'), where('slug', '==', slug), limit(1));
+    const decodedSlug = decodeURIComponent(slug);
+    console.log(`[Fetch] Project: ${decodedSlug}`);
+    const q = query(collection(db, 'projects'), where('slug', '==', decodedSlug), limit(1));
     const snap = await getDocs(q);
     if (!snap.empty) return serialize({ id: snap.docs[0].id, ...snap.docs[0].data() });
-    const docSnap = await getDoc(doc(db, 'projects', slug));
+    
+    // Fallback to ID
+    const docSnap = await getDoc(doc(db, 'projects', decodedSlug));
     if (docSnap.exists()) return serialize({ id: docSnap.id, ...docSnap.data() });
+    
     return null;
-  } catch { return null; }
-});
+  } catch (e) {
+    console.error('Error fetching project:', e);
+    return null;
+  }
+}
 
-const getGlobalConfig = cache(async function getGlobalConfig() {
+async function getGlobalConfig() {
   try {
     const docSnap = await getDoc(doc(db, 'site_config', 'global'));
     return docSnap.exists() ? serialize(docSnap.data()) : null;
   } catch { return null; }
-});
+}
+
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;

@@ -346,6 +346,26 @@ export default function EditProjectPage() {
                 </div>
               </div>
             </div>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Live URL</Label>
+                <Input value={formData.liveUrl} onChange={e => setFormData({ ...formData, liveUrl: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg font-mono" placeholder="https://..." />
+              </div>
+              <div className="space-y-3">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">GitHub URL</Label>
+                <Input value={formData.githubUrl} onChange={e => setFormData({ ...formData, githubUrl: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg font-mono" placeholder="https://github.com/..." />
+              </div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Display Order</Label>
+                <Input type="number" value={formData.order} onChange={e => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" />
+              </div>
+              <div className="space-y-3">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Impact Quote</Label>
+                <Input value={formData.impact} onChange={e => setFormData({ ...formData, impact: e.target.value })} className="bg-white/5 border-white/5 rounded-xl h-16 text-lg" placeholder="One-line impact statement..." />
+              </div>
+            </div>
           </div>
 
           {/* Narrative Section */}

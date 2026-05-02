@@ -220,19 +220,13 @@
 }
 
 @keyframes reveal {
-  from {
-    mask-position: 100% 0;
-  }
-
-  to {
-    mask-position: 0% 0;
-  }
+  from { mask-position: 100% 0; }
+  to { mask-position: 0% 0; }
 }
 
-/*
+/* 
   Intro screen — page content fade-in.
-  When IntroScreen removes #intro-hide and adds .intro-revealing,
-  the content fades in smoothly underneath the sliding intro.
+  When the intro slides up, we add .intro-revealing to fade content in.
 */
 #page-content.intro-revealing {
   animation: page-fade-in 0.9s ease-out forwards;

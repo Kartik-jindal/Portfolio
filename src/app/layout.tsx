@@ -35,16 +35,32 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`dark scroll-smooth ${playfair.variable} ${ptSans.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`dark scroll-smooth ${playfair.variable} ${ptSans.variable}`}>
+      <head>
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              .loading-intro #page-content { visibility: hidden !important; }
+            `,
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var isHome = window.location.pathname === '/';
+                  var isBot = /bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent);
+                  if (isHome && !isBot) {
+                    document.documentElement.classList.add('loading-intro');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body suppressHydrationWarning className="font-body antialiased bg-background text-foreground min-h-screen relative">
-        {/*
-          Hides page content from first paint until IntroScreen mounts.
-          Injected as an inline script that writes the style tag directly,
-          bypassing React's reconciliation so it never causes an insertBefore
-          mismatch with the dynamically-loaded IntroScreen sibling.
-        */}
-        {/* eslint-disable-next-line react/no-danger */}
-        <script dangerouslySetInnerHTML={{ __html: `(function(){var s=document.createElement('style');s.id='intro-hide';s.textContent='#page-content{visibility:hidden}';document.head.appendChild(s);})();` }} />
         <IntroScreen />
 
         {/* Global 3D Background */}

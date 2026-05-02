@@ -1,4 +1,6 @@
 "use client";
+// Forced re-compile to resolve hydration mismatch after routing changes
+
 
 import React, { useRef, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence, useSpring } from 'framer-motion';
@@ -123,7 +125,7 @@ const ProjectCard = ({
 
         {/* ── Info column — staggered children ── */}
         <motion.div
-          className="lg:w-[40%] w-full space-y-6 md:space-y-10"
+          className="lg:w-[40%] w-full space-y-6 md:space-y-10 relative z-20"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
@@ -207,38 +209,26 @@ const ProjectCard = ({
               hidden: { opacity: 0, y: 16 },
               visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } },
             }}
-            className="pt-4 flex items-center justify-center lg:justify-start gap-12"
+            className="pt-4 flex items-center justify-center lg:justify-start gap-12 relative z-50"
           >
-            {useModal ? (
-              <button
-                onClick={() => onCaseStudyClick(project)}
-                className="text-white text-sm font-black uppercase tracking-[0.3em] group hover:text-primary transition-colors flex items-center gap-3 cursor-none"
+            <a
+              href={`/work/${project.slug || project.id}`}
+              className="text-white text-sm font-black uppercase tracking-[0.3em] group hover:text-primary transition-colors flex items-center gap-3 cursor-none pointer-events-auto"
+              data-cursor="Read"
+            >
+              Case Study
+              <motion.span
+                whileHover={{ x: 3, y: -3 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
               >
-                Case Study
-                <motion.span
-                  whileHover={{ x: 3, y: -3 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                >
-                  <ArrowUpRight className="w-4 h-4" />
-                </motion.span>
-              </button>
-            ) : (
-              <Link
-                href={`/work/${project.slug || project.id}`}
-                className="text-white text-sm font-black uppercase tracking-[0.3em] group hover:text-primary transition-colors flex items-center gap-3"
-              >
-                Case Study
-                <motion.span
-                  whileHover={{ x: 3, y: -3 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                >
-                  <ArrowUpRight className="w-4 h-4" />
-                </motion.span>
-              </Link>
-            )}
-            {project.githubUrl && (
+                <ArrowUpRight className="w-4 h-4" />
+              </motion.span>
+            </a>
+            {project.githubUrl && project.githubUrl.trim() !== '' && (
               <motion.a
                 href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ scale: 1.2, rotate: 5 }}
                 transition={{ type: "spring", stiffness: 400, damping: 20 }}
                 className="text-white/20 hover:text-white transition-colors"

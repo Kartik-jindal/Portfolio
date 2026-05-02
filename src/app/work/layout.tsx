@@ -1,16 +1,14 @@
 import React from 'react';
+// Forced re-compile to clear parallel route cache
 
 export default function WorkLayout({
   children,
-  modal,
 }: {
   children: React.ReactNode;
-  modal: React.ReactNode;
 }) {
   return (
     <>
       {children}
-      {modal}
     </>
   );
 }

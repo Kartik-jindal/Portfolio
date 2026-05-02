@@ -5,7 +5,7 @@ import { collection, query, where, getDocs, doc, getDoc, limit } from 'firebase/
 import { serialize } from '@/lib/serialize';
 import type { Metadata } from 'next';
 import PostClient from './post-client';
-import DOMPurify from 'isomorphic-dompurify';
+import { sanitize } from '@/lib/sanitize';
 import { draftMode } from 'next/headers';
 import { getAssetUrl } from '@/lib/utils';
 
@@ -180,25 +180,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
 
   // Sanitize blog HTML server-side before passing to the client component.
   // This prevents XSS from admin-authored content rendered via dangerouslySetInnerHTML.
-  const sanitizedContent = post?.content
-    ? DOMPurify.sanitize(post.content, {
-      ALLOWED_TAGS: [
-        'p', 'br', 'strong', 'em', 'u', 's', 'b', 'i',
-        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-        'ul', 'ol', 'li', 'blockquote', 'pre', 'code',
-        'a', 'img', 'figure', 'figcaption',
-        'table', 'thead', 'tbody', 'tr', 'th', 'td',
-        'hr', 'div', 'span',
-      ],
-      ALLOWED_ATTR: [
-        'href', 'src', 'alt', 'title', 'class', 'id',
-        'target', 'rel', 'width', 'height',
-        'data-ai-hint',
-      ],
-      ALLOW_DATA_ATTR: false,
-      FORCE_BODY: false,
-    })
-    : '';
+  const sanitizedContent = sanitize(post?.content);
 
   // ── Server-rendered JSON-LD ──────────────────────────────────────────────
   const authorName = config?.identity?.authorName || 'Kartik Jindal';

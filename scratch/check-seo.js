@@ -12,26 +12,26 @@ if (!serviceAccountPath) {
 const serviceAccount = require(serviceAccountPath);
 
 initializeApp({
-  credential: cert(serviceAccount)
+    credential: cert(serviceAccount)
 });
 
 const db = getFirestore();
 
 async function checkSeo() {
     console.log('--- Checking SEO Config ---');
-    
+
     const seoPagesRef = db.collection('site_config').doc('seo_pages');
     const seoPagesSnap = await seoPagesRef.get();
-    
+
     if (seoPagesSnap.exists) {
         console.log('seo_pages data:', JSON.stringify(seoPagesSnap.data(), null, 2));
     } else {
         console.log('seo_pages document does NOT exist');
     }
-    
+
     const globalRef = db.collection('site_config').doc('global');
     const globalSnap = await globalRef.get();
-    
+
     if (globalSnap.exists) {
         console.log('global data (seo part):', JSON.stringify(globalSnap.data().seo, null, 2));
     } else {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Github, ArrowUpRight, ExternalLink, Target, Code, Calendar } from 'lucide-react';
 import Image from 'next/image';
-import DOMPurify from 'isomorphic-dompurify';
+import { sanitize } from '@/lib/sanitize';
 import { getAssetUrl } from '@/lib/utils';
 
 interface ProjectDetailContentProps {
@@ -9,26 +9,7 @@ interface ProjectDetailContentProps {
   isModal?: boolean;
 }
 
-/** Sanitize HTML from the rich text editor before rendering. */
-function sanitizeHtml(html: string): string {
-  if (!html) return '';
-  // Check if it looks like plain text (no HTML tags) — render as-is wrapped in <p>
-  if (!/<[a-z][\s\S]*>/i.test(html)) {
-    return `<p>${html}</p>`;
-  }
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: [
-      'p', 'br', 'strong', 'em', 'u', 's', 'b', 'i',
-      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-      'ul', 'ol', 'li', 'blockquote', 'pre', 'code',
-      'a', 'img', 'figure', 'figcaption',
-      'table', 'thead', 'tbody', 'tr', 'th', 'td',
-      'hr', 'div', 'span',
-    ],
-    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel', 'width', 'height'],
-    ALLOW_DATA_ATTR: false,
-  });
-}
+
 
 export const ProjectDetailContent = ({ project, isModal = false }: ProjectDetailContentProps) => {
   if (!project) return null;
@@ -78,7 +59,7 @@ export const ProjectDetailContent = ({ project, isModal = false }: ProjectDetail
                   prose-code:bg-white/10 prose-code:rounded prose-code:px-1.5 prose-code:py-0.5 prose-code:text-primary/80
                   prose-a:text-primary prose-a:underline prose-a:underline-offset-2 hover:prose-a:text-accent
                   break-words"
-                dangerouslySetInnerHTML={{ __html: sanitizeHtml(project.longDesc || project.desc || '') }}
+                dangerouslySetInnerHTML={{ __html: sanitize(project.longDesc || project.desc || '') }}
               />
             </div>
 
@@ -136,13 +117,21 @@ export const ProjectDetailContent = ({ project, isModal = false }: ProjectDetail
               <div className="flex items-center justify-between px-2">
                 <span className="text-[9px] font-black text-white/20 tracking-[0.4em] uppercase">STATUS: DEPLOYED</span>
                 <div className="flex gap-4">
-                  {project.githubUrl && <a href={project.githubUrl} target="_blank" rel="noopener"><Github className="w-5 h-5 text-white/20 hover:text-white transition-colors cursor-pointer" /></a>}
-                  {project.liveUrl && <a href={project.liveUrl} target="_blank" rel="noopener"><ExternalLink className="w-5 h-5 text-white/20 hover:text-white transition-colors cursor-pointer" /></a>}
+                  {project.githubUrl && project.githubUrl.trim() !== '' && (
+                    <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                      <Github className="w-5 h-5 text-white/20 hover:text-white transition-colors cursor-pointer" />
+                    </a>
+                  )}
+                  {project.liveUrl && project.liveUrl.trim() !== '' && (
+                    <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="w-5 h-5 text-white/20 hover:text-white transition-colors cursor-pointer" />
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
 
-            {project.liveUrl && (
+            {project.liveUrl && project.liveUrl.trim() !== '' && (
               <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3 w-full py-6 sm:py-10 rounded-[1.5rem] sm:rounded-[2rem] bg-white text-black hover:bg-primary transition-all font-black uppercase tracking-[0.3em] shadow-2xl group text-sm">
                 Check Live <ArrowUpRight className="w-5 h-5 ml-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </a>

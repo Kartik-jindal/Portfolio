@@ -11,27 +11,28 @@ export const IntroScreen = () => {
   const [stage, setStage] = useState(0); // 0: Welcome, 1: Phrases, 2: Exiting
   const [isVisible, setIsVisible] = useState(false);
 
+  const cleanup = () => {
+    document.documentElement.classList.remove('loading-intro');
+  };
+
   useEffect(() => {
-    // Remove the page-hide style on any non-home route immediately
+    // Remove the loading state on any non-home route immediately
     if (isAdmin || !isHome) {
-      const hideStyle = document.getElementById('intro-hide');
-      if (hideStyle) hideStyle.remove();
+      cleanup();
       return;
     }
 
     // Skip for bots
     const isBot = /bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent);
     if (isBot) {
-      const hideStyle = document.getElementById('intro-hide');
-      if (hideStyle) hideStyle.remove();
+      cleanup();
       return;
     }
 
     // Skip for users who prefer reduced motion — show content immediately
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) {
-      const hideStyle = document.getElementById('intro-hide');
-      if (hideStyle) hideStyle.remove();
+      cleanup();
       return;
     }
 
@@ -42,8 +43,7 @@ export const IntroScreen = () => {
 
     // Pre-reveal: fade in page content 600ms before the intro slides away
     const timerReveal = setTimeout(() => {
-      const hideStyle = document.getElementById('intro-hide');
-      if (hideStyle) hideStyle.remove();
+      cleanup(); // Reveal the content
       const pageContent = document.getElementById('page-content');
       if (pageContent) pageContent.classList.add('intro-revealing');
     }, 2900);
@@ -66,6 +66,13 @@ export const IntroScreen = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (stage === 2) {
+      cleanup();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stage]);
 
   if (!isVisible) return null;
 
