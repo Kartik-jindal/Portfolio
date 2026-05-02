@@ -116,8 +116,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
     ...(project.githubUrl && { codeRepository: project.githubUrl }),
     // AEO/GEO fields
     ...(project.aeo?.quickAnswer && { abstract: project.aeo.quickAnswer }),
-    ...(project.geo?.outcomes?.length > 0 && {
-      description: [project.longDesc || project.desc, ...project.geo.outcomes].join(' '),
+    ...(project.entity?.outcomes?.length > 0 && {
+      description: [project.longDesc || project.desc, ...project.entity.outcomes].join(' '),
     }),
   };
 

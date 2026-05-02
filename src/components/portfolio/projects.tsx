@@ -216,7 +216,7 @@ const ProjectCard = ({
               className="text-white text-sm font-black uppercase tracking-[0.3em] group hover:text-primary transition-colors flex items-center gap-3 cursor-none pointer-events-auto"
               data-cursor="Read"
             >
-              Case Study
+              Read more
               <motion.span
                 whileHover={{ x: 3, y: -3 }}
                 transition={{ type: "spring", stiffness: 400, damping: 20 }}

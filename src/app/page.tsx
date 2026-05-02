@@ -137,18 +137,20 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
+  const config = await getGlobalConfig();
+  const projectLimit = config?.visibility?.featuredProjectsCount || 3;
+
   const [
-    config, heroData, navData, footerLayout,
+    heroData, navData, footerLayout,
     aboutData, contactData, initialProjects,
     experiences, testimonials,
   ] = await Promise.all([
-    getGlobalConfig(),
     getHeroData(),
     getNavbarData(),
     getFooterData(),
     getAboutData(),
     getContactData(),
-    getProjects(3),
+    getProjects(projectLimit),
     getExperience(),
     getTestimonials(),
   ]);
@@ -204,7 +206,7 @@ export default async function Home() {
       <ScrollIndicator />
       <Hero initialData={heroData} />
       <About initialData={aboutData} />
-      <Projects initialData={initialProjects} limit={3} useModal />
+      <Projects initialData={initialProjects} limit={projectLimit} useModal />
       {visibility.showExperience && <Experience initialData={experiences} />}
       {visibility.showTestimonials && <Testimonials initialData={testimonials} />}
       <Contact initialData={contactData} />

@@ -22,7 +22,7 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
       <Navbar resumeUrl={config?.resume?.fileUrl} />
 
       <section className="pt-48 pb-12 px-6 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-[1536px] mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -40,7 +40,7 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
       </section>
 
       <section className="pb-32">
-        <div className="max-w-7xl mx-auto px-6 mb-20">
+        <div className="max-w-[1536px] mx-auto px-6 mb-20">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="text-primary uppercase tracking-[0.5em] text-[10px] font-black block mb-6">Discovery</span>
             <h2 className="text-5xl md:text-8xl font-headline font-black tracking-tighter leading-none">
@@ -53,7 +53,7 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
 
       {config?.visibility?.showExperiments && (
         <section className="py-32 px-6 bg-white/[0.02]">
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-[1536px] mx-auto">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
               <div>
                 <span className="text-primary uppercase tracking-[0.5em] text-[10px] font-black block mb-4">Technical Lab</span>
@@ -79,6 +79,12 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
                     transition={{ delay: i * 0.1 }}
                     className="glass p-6 sm:p-8 rounded-3xl border-white/5 hover:border-primary/30 transition-all duration-500 group relative flex flex-col justify-between min-h-[400px] sm:min-h-[480px] cursor-none"
                   >
+                    {/* Accent Glow */}
+                    <div
+                      className="absolute -inset-4 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 blur-[60px] -z-10 rounded-3xl"
+                      style={{ backgroundColor: project.accentColor || '#10B981' }}
+                    />
+
                     <div className="space-y-6">
                       <div className="flex justify-between items-start">
                         <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-primary transition-colors duration-500">
@@ -87,7 +93,7 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
                         <span className="text-[10px] font-black uppercase tracking-widest text-white/20">{project.type}</span>
                       </div>
 
-                      <div 
+                      <div
                         className="relative aspect-video rounded-xl overflow-hidden mb-8 border border-white/5 shadow-2xl cursor-none"
                         onClick={() => setSelectedExperiment(project)}
                         data-cursor="View"
@@ -119,12 +125,12 @@ export default function WorkClient({ config, initialExperiments, initialFlagship
                           <span key={t} className="text-[9px] font-bold text-white/30 uppercase tracking-widest">{t}</span>
                         ))}
                       </div>
-                      <a 
+                      <a
                         href={`/work/${project.slug || project.id}`}
                         className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-primary transition-colors cursor-none relative z-50 pointer-events-auto"
                         data-cursor="Read"
                       >
-                        Access Lab Notes <ArrowUpRight className="w-3 h-3" />
+                        Read More <ArrowUpRight className="w-3 h-3" />
                       </a>
                     </div>
                   </motion.div>

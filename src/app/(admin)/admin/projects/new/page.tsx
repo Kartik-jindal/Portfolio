@@ -102,10 +102,19 @@ function ProjectFormContent() {
 
   const handleAddItem = (section: string, field: string, val: any) => {
     if (!val) return;
-    setFormData((prev: any) => ({
-      ...prev,
-      [section]: { ...prev[section], [field]: [...(prev[section][field] || []), val] },
-    }));
+    
+    if (section === 'formData') {
+      setFormData((prev: any) => ({
+        ...prev,
+        [field]: [...(prev[field] || []), val]
+      }));
+    } else {
+      setFormData((prev: any) => ({
+        ...prev,
+        [section]: { ...prev[section], [field]: [...(prev[section][field] || []), val] },
+      }));
+    }
+    
     if (field === 'facts') setNewFact('');
     if (field === 'citations') setNewCitation('');
     if (field === 'outcomes') setNewOutcome('');

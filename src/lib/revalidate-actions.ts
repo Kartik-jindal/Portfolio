@@ -64,6 +64,5 @@ export async function generatePreviewUrl(
     const sig = await crypto.subtle.sign('HMAC', key, enc.encode(payload));
     const token = `${payload}.${Buffer.from(sig).toString('base64url')}`;
 
-    const base = (process.env.NEXT_PUBLIC_BASE_URL || 'https://kartikjindal.com').replace(/\/$/, '');
-    return `${base}/api/preview?token=${token}`;
+    return `/api/preview?token=${token}`;
 }

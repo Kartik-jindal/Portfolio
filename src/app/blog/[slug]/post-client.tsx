@@ -198,7 +198,7 @@ const RelatedProjects = ({ projects }: { projects: any[] }) => {
                   </div>
                 )}
                 <div className="flex items-center justify-between pt-2">
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 group-hover:text-primary transition-colors">Case Study</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 group-hover:text-primary transition-colors">Read More</span>
                   <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-primary group-hover:bg-primary group-hover:text-black transition-all duration-300">
                     <ArrowUpRight className="w-3.5 h-3.5" />
                   </div>

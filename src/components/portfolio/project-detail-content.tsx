@@ -1,15 +1,16 @@
+'use client';
+
 import React from 'react';
-import { Github, ArrowUpRight, ExternalLink, Target, Code, Calendar } from 'lucide-react';
+import { Github, ArrowUpRight, ExternalLink, Target, Code, Calendar, Cpu, Sparkles, Zap, Binary, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 import { sanitize } from '@/lib/sanitize';
 import { getAssetUrl } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 interface ProjectDetailContentProps {
   project: any;
   isModal?: boolean;
 }
-
-
 
 export const ProjectDetailContent = ({ project, isModal = false }: ProjectDetailContentProps) => {
   if (!project) return null;
@@ -138,6 +139,128 @@ export const ProjectDetailContent = ({ project, isModal = false }: ProjectDetail
             )}
           </div>
         </div>
+
+        {/* ── Technical Intelligence (AEO/GEO) ── */}
+        {(project.aeo?.quickAnswer || (project.aeo?.takeaways?.length > 0) || (project.entity?.facts?.length > 0) || (project.aeo?.faqs?.length > 0)) && (
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-7xl mx-auto pt-16 border-t border-white/5 space-y-20"
+          >
+            <div className="flex flex-col md:flex-row gap-12 items-start">
+              <div className="md:w-1/3 space-y-4">
+                <div className="flex items-center gap-3 text-primary">
+                  <Cpu className="w-5 h-5" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.5em]">Intelligence Unit</span>
+                </div>
+                <h2 className="text-4xl md:text-5xl font-headline font-black italic text-white tracking-tighter">Technical Log.</h2>
+                <p className="text-sm text-white/40 leading-relaxed max-w-xs">
+                  A high-fidelity breakdown of the build's architectural achievements and performance markers.
+                </p>
+              </div>
+
+              <div className="md:w-2/3 space-y-12">
+                {/* Quick Answer / Abstract */}
+                {project.aeo?.quickAnswer && (
+                  <motion.div 
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="relative p-10 rounded-[2rem] bg-primary/[0.03] border border-primary/10 overflow-hidden group"
+                  >
+                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <Sparkles className="w-20 h-20 text-primary" />
+                    </div>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/60 mb-6 flex items-center gap-2">
+                      <Zap className="w-3 h-3" /> Synthesis
+                    </h3>
+                    <p className="text-xl md:text-2xl font-headline font-medium text-white italic leading-relaxed relative z-10">
+                      "{project.aeo.quickAnswer}"
+                    </p>
+                  </motion.div>
+                )}
+
+                {/* Technical Facts (GEO) */}
+                {project.entity?.facts?.length > 0 && (
+                  <div className="space-y-6">
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 flex items-center gap-2">
+                      <Binary className="w-3 h-3" /> Hard Evidence
+                    </h3>
+                    <div className="flex flex-wrap gap-3">
+                      {project.entity.facts.map((fact: string, i: number) => (
+                        <motion.div 
+                          key={i}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          whileInView={{ opacity: 1, scale: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: i * 0.05 }}
+                          className="px-5 py-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-3 group hover:border-primary/30 transition-colors"
+                        >
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary/40 group-hover:bg-primary transition-colors" />
+                          <span className="text-[11px] font-mono text-white/60 uppercase tracking-wider">{fact}</span>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Key Takeaways */}
+                {project.aeo?.takeaways?.length > 0 && (
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    {project.aeo.takeaways.map((takeaway: string, i: number) => (
+                      <motion.div 
+                        key={i}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.3 + (i * 0.1) }}
+                        className="glass p-8 rounded-3xl border-white/5 flex gap-5 group hover:bg-white/[0.04] transition-all"
+                      >
+                        <div className="shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                          <ShieldCheck className="w-5 h-5" />
+                        </div>
+                        <div className="space-y-2">
+                          <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Marker {i + 1}</span>
+                          <p className="text-sm text-white/70 font-medium leading-relaxed">{takeaway}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+
+                {/* FAQs */}
+                {project.aeo?.faqs?.length > 0 && (
+                  <div className="space-y-8 pt-8 border-t border-white/5">
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Query Archive</h3>
+                    <div className="space-y-4">
+                      {project.aeo.faqs.map((faq: any, i: number) => (
+                        <motion.div 
+                          key={i}
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: 0.5 + (i * 0.1) }}
+                          className="p-8 rounded-2xl bg-white/[0.01] border border-white/5 space-y-4"
+                        >
+                          <div className="text-base font-bold text-white flex gap-4">
+                            <span className="text-primary/40 font-mono text-xs mt-1">0{i+1}</span>
+                            {faq.q}
+                          </div>
+                          <div className="pl-9 text-sm text-white/40 leading-relaxed font-body">
+                            {faq.a}
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
       </div>
     </div>
   );

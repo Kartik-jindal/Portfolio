@@ -105,18 +105,28 @@ export default function EditProjectPage() {
 
   const handleAddItem = (section: string, field: string, val: any) => {
     if (!val) return;
-    setFormData({
-      ...formData,
-      [section]: {
-        ...formData[section],
-        [field]: [...(formData[section][field] || []), val]
-      }
-    });
+    
+    if (section === 'formData') {
+      setFormData({
+        ...formData,
+        [field]: [...(formData[field] || []), val]
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [section]: {
+          ...formData[section],
+          [field]: [...(formData[section][field] || []), val]
+        }
+      });
+    }
+    
     if (field === 'facts') setNewFact('');
     if (field === 'citations') setNewCitation('');
     if (field === 'outcomes') setNewOutcome('');
     if (field === 'takeaways') setNewTakeaway('');
     if (field === 'faqs') setNewFaq({ q: '', a: '' });
+    if (field === 'challenges') setNewChallenge('');
   };
 
   const handleRemoveItem = (section: string, field: string, val: any) => {
@@ -390,6 +400,55 @@ export default function EditProjectPage() {
                   minHeight="400px"
                 />
               </div>
+              <div className="space-y-3">
+                <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Strategic Methodology</Label>
+                <Textarea
+                  value={formData.methodology || ''}
+                  onChange={e => setFormData({ ...formData, methodology: e.target.value })}
+                  className="bg-white/5 border-white/5 rounded-xl min-h-[100px] text-lg italic"
+                  placeholder="Describe the approach and process..."
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Engineering Challenges Section */}
+          <div className="glass p-10 rounded-[3rem] border-white/5 space-y-8">
+            <h3 className="text-2xl font-headline font-black italic tracking-tight text-white/60">Engineering Challenges</h3>
+            <div className="flex gap-3">
+              <Input
+                value={newChallenge}
+                onChange={e => setNewChallenge(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddItem('formData', 'challenges', newChallenge))}
+                className="bg-white/5 border-white/10 h-14 rounded-xl"
+                placeholder="Describe a technical challenge..."
+              />
+              <Button
+                onClick={() => {
+                  if (newChallenge) {
+                    setFormData({ ...formData, challenges: [...(formData.challenges || []), newChallenge] });
+                    setNewChallenge('');
+                  }
+                }}
+                variant="outline"
+                className="h-14 w-14 rounded-xl border-white/10"
+              >
+                +
+              </Button>
+            </div>
+            <div className="grid gap-3">
+              {formData.challenges?.map((item: string, i: number) => (
+                <div key={i} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex items-start gap-4 group">
+                  <div className="mt-1.5 w-2 h-2 rounded-full bg-primary shrink-0" />
+                  <span className="text-sm text-white/60 flex-1">{item}</span>
+                  <button
+                    onClick={() => setFormData({ ...formData, challenges: formData.challenges.filter((_: any, idx: number) => idx !== i) })}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Trash2 className="w-4 h-4 text-destructive" />
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
 

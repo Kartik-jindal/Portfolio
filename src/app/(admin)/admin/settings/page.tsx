@@ -49,7 +49,7 @@ export default function SettingsAdminPage() {
           seo: { defaultTitle: '', defaultDescription: '', keywords: '', ogImage: '' },
           socials: { github: '', linkedin: '', twitter: '', instagram: '', email: '' },
           resume: { fileUrl: '' },
-          visibility: { showTestimonials: true, showExperience: true, showExperiments: true },
+          visibility: { showTestimonials: true, showExperience: true, showExperiments: true, featuredProjectsCount: 3 },
           identity: { authorName: 'Kartik Jindal', jobTitle: 'Full Stack Architect', bio: '', expertise: [], services: [], credentials: [], sameAs: [] }
         };
         setSettings(initial);
@@ -377,15 +377,46 @@ export default function SettingsAdminPage() {
               <h3 className="text-2xl font-headline font-black italic tracking-tight">Interface Toggles</h3>
             </div>
             <div className="grid md:grid-cols-2 gap-8">
-              {Object.keys(settings?.visibility || {}).map((key) => (
-                <div key={key} className="flex items-center justify-between p-8 rounded-[2rem] bg-white/[0.02] border border-white/5 hover:border-primary/20 transition-all">
-                  <span className="text-sm uppercase font-black tracking-widest text-white/60">{key.replace('show', 'Show ')}</span>
-                  <Switch 
-                    checked={settings.visibility[key]} 
-                    onCheckedChange={(checked) => setSettings({ ...settings, visibility: { ...settings.visibility, [key]: checked } })}
-                  />
+              {Object.keys(settings?.visibility || {})
+                .filter(key => typeof settings.visibility[key] === 'boolean')
+                .map((key) => (
+                  <div key={key} className="flex items-center justify-between p-8 rounded-[2rem] bg-white/[0.02] border border-white/5 hover:border-primary/20 transition-all">
+                    <span className="text-sm uppercase font-black tracking-widest text-white/60">{key.replace('show', 'Show ')}</span>
+                    <Switch 
+                      checked={settings.visibility[key]} 
+                      onCheckedChange={(checked) => setSettings({ ...settings, visibility: { ...settings.visibility, [key]: checked } })}
+                    />
+                  </div>
+                ))}
+            </div>
+
+            <div className="pt-10 border-t border-white/5 space-y-8">
+              <div className="flex items-center gap-4 text-primary">
+                <Briefcase className="w-6 h-6" />
+                <h4 className="text-lg font-headline font-black italic tracking-tight">Content Limits</h4>
+              </div>
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <Label className="text-[13px] uppercase font-black tracking-widest text-white/40">Featured Projects (Homescreen)</Label>
+                  <div className="flex items-center gap-4">
+                    <Input 
+                      type="number"
+                      min={1}
+                      max={10}
+                      value={settings?.visibility?.featuredProjectsCount || 3} 
+                      onChange={(e) => setSettings({ 
+                        ...settings, 
+                        visibility: { 
+                          ...settings.visibility, 
+                          featuredProjectsCount: parseInt(e.target.value) || 3 
+                        } 
+                      })}
+                      className="bg-white/5 border-white/5 rounded-xl h-16 text-lg font-mono w-32"
+                    />
+                    <span className="text-xs text-white/20 uppercase font-black tracking-widest">Sets the maximum projects displayed on the main page.</span>
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </TabsContent>
